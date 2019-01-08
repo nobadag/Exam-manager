@@ -12,21 +12,21 @@ public class Manager extends Application {
   }
 
   public void start(Stage stage) throws Exception {
-    Label wel = new Label("Exam-manager Ç…ÇÊÇ§Ç±Çª");
+    Label wel = new Label("Exam-manager Ç…ÇÊÇ§Ç±Çª\n");
     Button nw = new Button("êVãK");
     Button op = new Button("äJÇ≠");
 
-    wel.setFont(Font.font("SanSerif", FontWeight.BOLD, 36));
+    wel.setFont(Font.font("SansSerif", FontWeight.BOLD, 36));
+
+    nw.setFont(new Font(20));
+    op.setFont(new Font(20));
 
     BorderPane bp = new BorderPane();
-    HBox btn = new HBox();
-    VBox vb = new VBox();
-
-    btn.getChildren().add(nw);
-    btn.getChildren().add(op);
+    VBox vb = new VBox(20);
 
     vb.getChildren().add(wel);
-    vb.getChildren().add(btn);
+    vb.getChildren().add(nw);
+    vb.getChildren().add(op);
 
     vb.setAlignment(Pos.CENTER);
     bp.setCenter(vb);
