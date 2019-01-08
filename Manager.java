@@ -4,6 +4,7 @@ import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.geometry.*;
+import javafx.scene.text.*;
 
 public class Manager extends Application {
   public static void main(String[] args) {
@@ -11,9 +12,11 @@ public class Manager extends Application {
   }
 
   public void start(Stage stage) throws Exception {
-    Label wel = new Label("Exam-managerÇ…ÇÊÇ§Ç±Çª");
+    Label wel = new Label("Exam-manager Ç…ÇÊÇ§Ç±Çª");
     Button nw = new Button("êVãK");
     Button op = new Button("äJÇ≠");
+
+    wel.setFont(Font.font("SanSerif", FontWeight.BOLD, 36));
 
     BorderPane bp = new BorderPane();
     HBox btn = new HBox();
