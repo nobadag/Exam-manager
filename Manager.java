@@ -3,8 +3,8 @@ import javafx.stage.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.geometry.*;
 import javafx.scene.text.*;
+import javafx.geometry.*;
 
 public class Manager extends Application {
   public static void main(String[] args) {
@@ -22,18 +22,18 @@ public class Manager extends Application {
     op.setFont(new Font(20));
 
     BorderPane bp = new BorderPane();
-    VBox vb = new VBox(20);
+    VBox home = new VBox(20);
 
-    vb.getChildren().add(wel);
-    vb.getChildren().add(nw);
-    vb.getChildren().add(op);
+    home.getChildren().add(wel);
+    home.getChildren().add(nw);
+    home.getChildren().add(op);
 
-    vb.setAlignment(Pos.CENTER);
-    bp.setCenter(vb);
+    home.setAlignment(Pos.CENTER);
+    bp.setCenter(home);
 
-    Scene sc = new Scene(bp, 600, 400);
+    Scene welcome = new Scene(bp, 600, 400);
 
-    stage.setScene(sc);
+    stage.setScene(welcome);
 
     stage.setTitle("Exam-manager");
     stage.show();
