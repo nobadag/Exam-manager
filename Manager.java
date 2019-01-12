@@ -1,3 +1,4 @@
+import java.util.*;
 import javafx.application.*;
 import javafx.stage.*;
 import javafx.scene.*;
@@ -76,8 +77,19 @@ public class Manager extends Application {
     public void handle(ActionEvent event) {
       int check = 0;
       if (check == 0) {
+        Alert really = new Alert(Alert.AlertType.CONFIRMATION);
+        really.setTitle("確認");
+        really.getDialogPane().setHeaderText("本当に " + tf.getText() + " がアカウント名でいいですか？");
+
         msg.setText("このアカウント名を使うことができます。");
         ok.setDisable(false);
+
+        ok.setOnAction(e -> {
+          Optional<ButtonType> res = really.showAndWait();
+          if (res.get() == ButtonType.OK) {
+
+          }
+        });
       } else {
         msg.setText("このアカウント名を使うことはできません。");
       }
