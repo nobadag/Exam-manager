@@ -9,6 +9,7 @@ import javafx.geometry.*;
 import javafx.event.*;
 
 public class Manager extends Application {
+  public static Stage stage;
   private TextField tf;
   private Label msg;
   private Button ok;
@@ -17,7 +18,8 @@ public class Manager extends Application {
     launch(args);
   }
 
-  public void start(Stage stage) throws Exception {
+  public void start(Stage temp) throws Exception {
+    stage = temp;
     stage.setTitle("Exam-manager");
 
     Label wel = new Label("Exam-manager ‚É‚æ‚¤‚±‚»\n");
