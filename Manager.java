@@ -5,8 +5,13 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.*;
 import javafx.geometry.*;
+import javafx.event.*;
 
 public class Manager extends Application {
+  private TextField tf;
+  private Label msg;
+  private Button ok;
+
   public static void main(String[] args) {
     launch(args);
   }
@@ -38,25 +43,44 @@ public class Manager extends Application {
     stage.setScene(welcome);
 
     Label acc = new Label("アカウント名を入力してください。");
-    TextField tf = new TextField();
+    tf = new TextField();
+    msg = new Label();
+    ok = new Button("  OK  ");
 
     acc.setFont(new Font(20));
+    msg.setFont(new Font(20));
+    ok.setDisable(true);
+    tf.setOnAction(new Check_name());
 
     BorderPane bp2 = new BorderPane();
     VBox acvb = new VBox(20);
 
     acvb.getChildren().add(acc);
     acvb.getChildren().add(tf);
+    acvb.getChildren().add(msg);
+    acvb.getChildren().add(ok);
 
     acvb.setAlignment(Pos.CENTER);
 
     bp2.setCenter(acvb);
 
     Scene make_acc = new Scene(bp2, 600, 400);
-    nw.setOnAction(event -> {
+    nw.setOnAction(e -> {
       stage.setScene(make_acc);
     });
 
     stage.show();
+  }
+
+  class Check_name implements EventHandler<ActionEvent> {
+    public void handle(ActionEvent event) {
+      int check = 0;
+      if (check == 0) {
+        msg.setText("このアカウント名を使うことができます。");
+        ok.setDisable(false);
+      } else {
+        msg.setText("このアカウント名を使うことはできません。");
+      }
+    }
   }
 }
