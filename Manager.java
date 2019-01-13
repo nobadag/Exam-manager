@@ -10,6 +10,8 @@ import javafx.event.*;
 
 public class Manager extends Application {
   public static Stage stage;
+  public final String[] subjects = { "‘Œê", "Ğ‰ï", "”Šw", "—‰È", "‰pŒê", "”üp", "‹Zp", "‰Æ’ë", "•ÛŒ’‘Ìˆç", "‰¹Šy" };
+
   private TextField tf;
   private Label msg;
   private Button ok;
