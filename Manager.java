@@ -24,6 +24,7 @@ public class Manager extends Application {
     stage = temp;
     stage.setTitle("Exam-manager");
 
+    // welcomeの画面
     Label wel = new Label("Exam-manager にようこそ\n");
     Button nw = new Button("新規");
     Button op = new Button("開く");
@@ -47,6 +48,7 @@ public class Manager extends Application {
 
     stage.setScene(welcome);
 
+    // アカウント作成の画面
     Label acc = new Label("アカウント名を入力してください。");
     tf = new TextField();
     msg = new Label();
@@ -70,6 +72,8 @@ public class Manager extends Application {
     bp2.setCenter(acvb);
 
     Scene make_acc = new Scene(bp2, 600, 400);
+
+    // 「新規」を押すと、make_acc シーンへ
     nw.setOnAction(e -> {
       stage.setScene(make_acc);
     });
@@ -79,8 +83,10 @@ public class Manager extends Application {
 
   class Check_name implements EventHandler<ActionEvent> {
     public void handle(ActionEvent event) {
+      // アカウント名が有効か判定する
       int check = 0;
       if (check == 0) {
+        // アカウント名確定のためのアラート
         Alert really = new Alert(Alert.AlertType.CONFIRMATION);
         really.setTitle("確認");
         really.getDialogPane().setHeaderText("本当に " + tf.getText() + " がアカウント名でいいですか？");
