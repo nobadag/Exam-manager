@@ -12,6 +12,7 @@ public class Manager extends Application {
   public static Stage stage;
   public final String[] subjects = { "‘Œê", "Ğ‰ï", "”Šw", "—‰È", "‰pŒê", "”üp", "‹Zp", "‰Æ’ë", "•ÛŒ’‘Ìˆç", "‰¹Šy" };
 
+  private Scene setting;
   private TextField tf;
   private Label msg;
   private Button ok;
@@ -78,6 +79,31 @@ public class Manager extends Application {
       stage.setScene(make_acc);
     });
 
+    // ‹³‰È‘I‘ğ
+    Label des = new Label("‹³‰È‚ğ‘I‚ñ‚Å‚­‚¾‚³‚¢B");
+    CheckBox[] subs = new CheckBox[subjects.length];
+    Button ok1 = new Button("  OK  ");
+
+    BorderPane bp3 = new BorderPane();
+    VBox subvb = new VBox(10);
+
+    des.setFont(new Font(15));
+    subvb.getChildren().add(des);
+    for (int i = 0; i < subjects.length; i++) {
+      subs[i] = new CheckBox(subjects[i]);
+      subs[i].setFont(new Font(15));
+      subs[i].setPrefWidth(100);
+      subvb.getChildren().add(subs[i]);
+    }
+
+    subvb.getChildren().add(ok1);
+
+    subvb.setAlignment(Pos.CENTER);
+
+    bp3.setCenter(subvb);
+
+    setting = new Scene(bp3, 600, 400);
+
     stage.show();
   }
 
@@ -97,7 +123,7 @@ public class Manager extends Application {
         ok.setOnAction(e -> {
           Optional<ButtonType> res = really.showAndWait();
           if (res.get() == ButtonType.OK) {
-
+            stage.setScene(setting);
           }
         });
       } else {
