@@ -11,8 +11,10 @@ import javafx.event.*;
 public class Manager extends Application {
   public static Stage stage;
   public final String[] subjects = { "国語", "社会", "数学", "理科", "英語", "美術", "技術", "家庭", "保健体育", "音楽" };
+  public final String[] when = { "１学期実力テスト", "１学期中間テスト", "１学期期末テスト", "２学期確認テスト", "２学期中間テスト", "２学期期末テスト", "３学期実力テスト",
+      "３学期学年末テスト" };
 
-  private Scene setting;
+  private Scene select_sub;
   private TextField tf;
   private Label msg;
   private Button ok;
@@ -58,6 +60,7 @@ public class Manager extends Application {
     acc.setFont(new Font(20));
     msg.setFont(new Font(20));
     ok.setDisable(true);
+
     tf.setOnAction(new Check_name());
 
     BorderPane bp2 = new BorderPane();
@@ -75,34 +78,69 @@ public class Manager extends Application {
     Scene make_acc = new Scene(bp2, 600, 400);
 
     // 「新規」を押すと、make_acc シーンへ
-    nw.setOnAction(e -> {
+    nw.setOnAction(e1 -> {
       stage.setScene(make_acc);
     });
 
     // 教科選択
-    Label des = new Label("教科を選んでください。");
+    Label des1 = new Label("教科を選んでください。");
     CheckBox[] subs = new CheckBox[subjects.length];
     Button ok1 = new Button("  OK  ");
 
-    BorderPane bp3 = new BorderPane();
     VBox subvb = new VBox(10);
 
-    des.setFont(new Font(15));
-    subvb.getChildren().add(des);
+    des1.setFont(new Font(15));
+    subvb.getChildren().add(des1);
+
     for (int i = 0; i < subjects.length; i++) {
       subs[i] = new CheckBox(subjects[i]);
       subs[i].setFont(new Font(15));
       subs[i].setPrefWidth(100);
       subvb.getChildren().add(subs[i]);
     }
-
     subvb.getChildren().add(ok1);
 
     subvb.setAlignment(Pos.CENTER);
 
+    BorderPane bp3 = new BorderPane();
+
     bp3.setCenter(subvb);
 
-    setting = new Scene(bp3, 600, 400);
+    select_sub = new Scene(bp3, 600, 400);
+
+    // いつの試験か選択
+    Label des2 = new Label("いつの試験か選んでください。");
+    RadioButton[] wh = new RadioButton[when.length];
+    ToggleGroup whs = new ToggleGroup();
+    Button ok2 = new Button("  OK  ");
+
+    VBox whvb = new VBox(10);
+
+    des2.setFont(new Font(15));
+    whvb.getChildren().add(des2);
+
+    for (int i = 0; i < when.length; i++) {
+      wh[i] = new RadioButton(when[i]);
+      wh[i].setFont(new Font(15));
+      wh[i].setPrefWidth(150);
+      wh[i].setToggleGroup(whs);
+      whvb.getChildren().add(wh[i]);
+    }
+    wh[0].setSelected(true);
+
+    whvb.getChildren().add(ok2);
+
+    whvb.setAlignment(Pos.CENTER);
+
+    BorderPane bp4 = new BorderPane();
+
+    bp4.setCenter(whvb);
+
+    Scene select_when = new Scene(bp4, 600, 400);
+
+    ok1.setOnAction(e2 -> {
+      stage.setScene(select_when);
+    });
 
     stage.show();
   }
@@ -123,7 +161,7 @@ public class Manager extends Application {
         ok.setOnAction(e -> {
           Optional<ButtonType> res = really.showAndWait();
           if (res.get() == ButtonType.OK) {
-            stage.setScene(setting);
+            stage.setScene(select_sub);
           }
         });
       } else {
