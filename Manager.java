@@ -15,7 +15,8 @@ public class Manager extends Application {
       "３学期学年末テスト" };
 
   private Scene select_sub;
-  private TextField tf;
+  private TextField tf1;
+  private PasswordField pwf1;
   private Label msg;
   private Button ok;
 
@@ -52,22 +53,36 @@ public class Manager extends Application {
     stage.setScene(welcome);
 
     // アカウント作成の画面
-    Label acc = new Label("アカウント名を入力してください。");
-    tf = new TextField();
+    Label des = new Label("アカウントを作成しましょう");
+    Label acc = new Label("アカウント名：");
+    Label pas = new Label("パスワード：");
+    tf1 = new TextField();
+    pwf1 = new PasswordField();
     msg = new Label();
     ok = new Button("  OK  ");
 
-    acc.setFont(new Font(20));
-    msg.setFont(new Font(20));
+    des.setFont(new Font(20));
+    acc.setFont(new Font(17));
+    pas.setFont(new Font(17));
+    msg.setFont(new Font(18));
+    pwf1.setPrefWidth(200);
     ok.setDisable(true);
 
-    tf.setOnAction(new Check_name());
+    tf1.setOnAction(new Check_name());
 
     BorderPane bp2 = new BorderPane();
     VBox acvb = new VBox(20);
+    GridPane gp1 = new GridPane();
 
-    acvb.getChildren().add(acc);
-    acvb.getChildren().add(tf);
+    gp1.add(acc, 0, 0);
+    gp1.add(pas, 0, 1);
+    gp1.add(tf1, 1, 0);
+    gp1.add(pwf1, 1, 1);
+
+    gp1.setAlignment(Pos.CENTER);
+
+    acvb.getChildren().add(des);
+    acvb.getChildren().add(gp1);
     acvb.getChildren().add(msg);
     acvb.getChildren().add(ok);
 
@@ -78,7 +93,7 @@ public class Manager extends Application {
     Scene make_acc = new Scene(bp2, 600, 400);
 
     // 「新規」を押すと、make_acc シーンへ
-    nw.setOnAction(e1 -> {
+    nw.setOnAction(e -> {
       stage.setScene(make_acc);
     });
 
@@ -138,7 +153,7 @@ public class Manager extends Application {
 
     Scene select_when = new Scene(bp4, 600, 400);
 
-    ok1.setOnAction(e2 -> {
+    ok1.setOnAction(e -> {
       stage.setScene(select_when);
     });
 
@@ -153,7 +168,7 @@ public class Manager extends Application {
         // アカウント名確定のためのアラート
         Alert really = new Alert(Alert.AlertType.CONFIRMATION);
         really.setTitle("確認");
-        really.getDialogPane().setHeaderText("本当に " + tf.getText() + " がアカウント名でいいですか？");
+        really.getDialogPane().setHeaderText("本当に " + tf1.getText() + " がアカウント名でいいですか？");
 
         msg.setText("このアカウント名を使うことができます。");
         ok.setDisable(false);
