@@ -30,8 +30,8 @@ public class Manager extends Application {
 
     // welcomeの画面
     Label wel = new Label("Exam-manager にようこそ\n");
-    Button nw = new Button("新規");
-    Button op = new Button("開く");
+    Button nw = new Button("新規作成");
+    Button op = new Button("ログイン");
 
     wel.setFont(Font.font("SansSerif", FontWeight.BOLD, 36));
 
