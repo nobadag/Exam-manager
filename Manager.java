@@ -38,6 +38,9 @@ public class Manager extends Application {
     nw.setFont(new Font(20));
     op.setFont(new Font(20));
 
+    nw.setTooltip(new Tooltip("アカウントを新規作成します"));
+    op.setTooltip(new Tooltip("アカウントにログインします"));
+
     BorderPane bp1 = new BorderPane();
     VBox home = new VBox(20);
 
