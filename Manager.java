@@ -87,6 +87,7 @@ public class Manager extends Application {
     gp1.add(tf1, 1, 0);
     gp1.add(pwf1, 1, 1);
 
+    gp1.setVgap(10);
     gp1.setAlignment(Pos.CENTER);
 
     acvb.getChildren().add(des);
@@ -109,6 +110,7 @@ public class Manager extends Application {
     Label des1 = new Label("ã≥â»ÇëIÇÒÇ≈Ç≠ÇæÇ≥Ç¢ÅB");
     CheckBox[] subs = new CheckBox[subjects.length];
     Button ok1 = new Button("  OK  ");
+    GridPane gp2 = new GridPane();
 
     VBox subvb = new VBox(10);
 
@@ -117,12 +119,24 @@ public class Manager extends Application {
 
     ok1.setFont(new Font(15));
 
+    int x = 0, y = 0;
     for (int i = 0; i < subjects.length; i++) {
       subs[i] = new CheckBox(subjects[i]);
       subs[i].setFont(new Font(15));
       subs[i].setPrefWidth(100);
-      subvb.getChildren().add(subs[i]);
+      if (i % 3 == 0) {
+        x = 0;
+        y++;
+      }
+      gp2.add(subs[i], x, y);
+      x++;
     }
+
+    gp2.setHgap(10);
+    gp2.setVgap(10);
+    gp2.setAlignment(Pos.CENTER);
+
+    subvb.getChildren().add(gp2);
     subvb.getChildren().add(ok1);
 
     subs[0].setSelected(true);
