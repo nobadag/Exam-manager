@@ -65,7 +65,7 @@ public class Manager extends Application {
     acc.setFont(new Font(17));
     pas.setFont(new Font(17));
     msg.setFont(new Font(18));
-    pwf1.setPrefWidth(200);
+    pwf1.setPrefWidth(300);
     ok.setDisable(true);
 
     tf1.setOnAction(new Check_name());
@@ -114,6 +114,8 @@ public class Manager extends Application {
       subvb.getChildren().add(subs[i]);
     }
     subvb.getChildren().add(ok1);
+
+    subs[0].setSelected(true);
 
     subvb.setAlignment(Pos.CENTER);
 
