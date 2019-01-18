@@ -38,6 +38,9 @@ public class Manager extends Application {
     nw.setFont(new Font(20));
     op.setFont(new Font(20));
 
+    nw.setPrefWidth(150);
+    op.setPrefWidth(150);
+
     nw.setTooltip(new Tooltip("アカウントを新規作成します"));
     op.setTooltip(new Tooltip("アカウントにログインします"));
 
@@ -72,6 +75,8 @@ public class Manager extends Application {
     ok.setDisable(true);
 
     tf1.setOnAction(new Check_name());
+
+    ok.setFont(new Font(15));
 
     BorderPane bp2 = new BorderPane();
     VBox acvb = new VBox(20);
@@ -110,6 +115,8 @@ public class Manager extends Application {
     des1.setFont(new Font(15));
     subvb.getChildren().add(des1);
 
+    ok1.setFont(new Font(15));
+
     for (int i = 0; i < subjects.length; i++) {
       subs[i] = new CheckBox(subjects[i]);
       subs[i].setFont(new Font(15));
@@ -138,6 +145,8 @@ public class Manager extends Application {
 
     des2.setFont(new Font(15));
     whvb.getChildren().add(des2);
+
+    ok2.setFont(new Font(15));
 
     for (int i = 0; i < when.length; i++) {
       wh[i] = new RadioButton(when[i]);
