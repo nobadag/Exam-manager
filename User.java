@@ -1,3 +1,5 @@
+import java.util.*;
+
 class User {
   private String name;
   private String password;
@@ -16,5 +18,14 @@ class User {
 
   public String getPassword() {
     return password;
+  }
+}
+
+class Subject {
+  public String name;
+  private ArrayList<Integer> scores = new ArrayList<>();
+
+  void addScore(int tmp) {
+    scores.add(tmp);
   }
 }
