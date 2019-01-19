@@ -71,6 +71,7 @@ public class Manager extends Application {
     acc.setFont(new Font(17));
     pas.setFont(new Font(17));
     msg.setFont(new Font(18));
+    tf1.setFont(new Font(15));
     pwf1.setPrefWidth(300);
     ok.setDisable(true);
 
