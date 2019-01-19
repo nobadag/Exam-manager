@@ -14,6 +14,7 @@ public class Manager extends Application {
   public final String[] when = { "１学期実力テスト", "１学期中間テスト", "１学期期末テスト", "２学期確認テスト", "２学期中間テスト", "２学期期末テスト", "３学期実力テスト",
       "３学期学年末テスト" };
   private ArrayList<Subject> subdatas;
+  private String usewhen;
 
   private Scene select_sub;
   private TextField tf1;
@@ -191,11 +192,19 @@ public class Manager extends Application {
       }
     });
 
+    ok2.setOnAction(e -> {
+      Toggle sel = whs.getSelectedToggle();
+      RadioButton tmp = (RadioButton) sel;
+      usewhen = tmp.getText();
+    });
+
     // 点数入力画面
+    Label selwh = new Label(usewhen);
     Label sub = new Label();
     TextField tf2 = new TextField();
     Button[] tenkey = new Button[12];
 
+    selwh.setFont(new Font(20));
     sub.setFont(Font.font("SansSerif", FontWeight.BLACK, 25));
     tf2.setFont(new Font(30));
 
@@ -241,6 +250,7 @@ public class Manager extends Application {
 
     gp3.setAlignment(Pos.CENTER);
 
+    vb1.getChildren().add(selwh);
     vb1.getChildren().add(sub);
     vb1.getChildren().add(tf2);
     vb1.setAlignment(Pos.CENTER);
