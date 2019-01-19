@@ -14,6 +14,7 @@ public class Manager extends Application {
   public final String[] when = { "１学期実力テスト", "１学期中間テスト", "１学期期末テスト", "２学期確認テスト", "２学期中間テスト", "２学期期末テスト", "３学期実力テスト",
       "３学期学年末テスト" };
   private ArrayList<Subject> subdatas;
+
   private Scene select_sub;
   private TextField tf1;
   private PasswordField pwf1;
@@ -185,9 +186,7 @@ public class Manager extends Application {
       stage.setScene(select_when);
       for (int i = 0; i < subs.length; i++) {
         if (subs[i].isSelected()) {
-          Subject tmp = new Subject();
-          tmp.name = subs[i].getText();
-          subdatas.add(tmp);
+          subdatas.add(new Subject(subs[i].getText()));
         }
       }
     });
@@ -216,12 +215,15 @@ public class Manager extends Application {
       gp3.add(tenkey[i], x, y);
       x++;
     }
+
     tenkey[0] = new Button(String.valueOf(0));
     tenkey[10] = new Button("Clear");
     tenkey[11] = new Button("Enter");
+
     gp3.add(tenkey[0], 1, 4);
     gp3.add(tenkey[10], 0, 4);
     gp3.add(tenkey[11], 2, 4);
+
     for (int i = 0; i < 12; i++) {
       tenkey[i].setPrefHeight(50);
       tenkey[i].setPrefWidth(50);
@@ -232,6 +234,7 @@ public class Manager extends Application {
         });
       }
     }
+
     tenkey[10].setOnAction(e -> {
       tf2.setText("");
     });
