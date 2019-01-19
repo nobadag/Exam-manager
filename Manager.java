@@ -13,7 +13,7 @@ public class Manager extends Application {
   public final String[] subjects = { "国語", "社会", "数学", "理科", "英語", "美術", "技術", "家庭", "保健体育", "音楽" };
   public final String[] when = { "１学期実力テスト", "１学期中間テスト", "１学期期末テスト", "２学期確認テスト", "２学期中間テスト", "２学期期末テスト", "３学期実力テスト",
       "３学期学年末テスト" };
-
+  private ArrayList<Subject> subdatas;
   private Scene select_sub;
   private TextField tf1;
   private PasswordField pwf1;
@@ -156,6 +156,7 @@ public class Manager extends Application {
     ToggleGroup whs = new ToggleGroup();
     Button ok2 = new Button("  OK  ");
 
+    BorderPane bp4 = new BorderPane();
     VBox whvb = new VBox(10);
 
     des2.setFont(new Font(15));
@@ -176,14 +177,81 @@ public class Manager extends Application {
 
     whvb.setAlignment(Pos.CENTER);
 
-    BorderPane bp4 = new BorderPane();
-
     bp4.setCenter(whvb);
 
     Scene select_when = new Scene(bp4, 600, 400);
 
     ok1.setOnAction(e -> {
       stage.setScene(select_when);
+      for (int i = 0; i < subs.length; i++) {
+        if (subs[i].isSelected()) {
+          Subject tmp = new Subject();
+          tmp.name = subs[i].getText();
+          subdatas.add(tmp);
+        }
+      }
+    });
+
+    // 点数入力画面
+    Label sub = new Label();
+    TextField tf2 = new TextField();
+    Button[] tenkey = new Button[12];
+
+    sub.setFont(Font.font("SansSerif", FontWeight.BLACK, 25));
+    tf2.setFont(new Font(30));
+
+    BorderPane bp5 = new BorderPane();
+    VBox vb1 = new VBox(20);
+    HBox hb1 = new HBox(30);
+    GridPane gp3 = new GridPane();
+
+    x = 0;
+    y = 0;
+    for (int i = 1; i <= 9; i++) {
+      tenkey[i] = new Button(String.valueOf(i));
+      if (i % 3 == 1) {
+        x = 0;
+        y++;
+      }
+      gp3.add(tenkey[i], x, y);
+      x++;
+    }
+    tenkey[0] = new Button(String.valueOf(0));
+    tenkey[10] = new Button("Clear");
+    tenkey[11] = new Button("Enter");
+    gp3.add(tenkey[0], 1, 4);
+    gp3.add(tenkey[10], 0, 4);
+    gp3.add(tenkey[11], 2, 4);
+    for (int i = 0; i < 12; i++) {
+      tenkey[i].setPrefHeight(50);
+      tenkey[i].setPrefWidth(50);
+      if (i <= 9) {
+        tenkey[i].setOnAction(e -> {
+          Button tmp = (Button) e.getSource();
+          tf2.setText(tf2.getText() + tmp.getText());
+        });
+      }
+    }
+    tenkey[10].setOnAction(e -> {
+      tf2.setText("");
+    });
+
+    gp3.setAlignment(Pos.CENTER);
+
+    vb1.getChildren().add(sub);
+    vb1.getChildren().add(tf2);
+    vb1.setAlignment(Pos.CENTER);
+
+    hb1.getChildren().add(vb1);
+    hb1.getChildren().add(gp3);
+    hb1.setAlignment(Pos.CENTER);
+
+    bp5.setCenter(hb1);
+
+    Scene input = new Scene(bp5, 600, 400);
+
+    ok2.setOnAction(e -> {
+      stage.setScene(input);
     });
 
     stage.show();
