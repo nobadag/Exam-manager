@@ -23,14 +23,14 @@ class User {
 
 class Subject {
   private String name;
-  private ArrayList<Integer> scores = new ArrayList<>();
+  private int score;
 
   Subject(String tmp) {
     name = tmp;
   }
 
-  void addScore(int tmp) {
-    scores.add(tmp);
+  void setScore(int tmp) {
+    score = tmp;
   }
 
   String getName() {
