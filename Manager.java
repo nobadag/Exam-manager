@@ -155,6 +155,8 @@ public class Manager extends Application {
       x++;
     }
 
+    ok1.setDisable(true);
+
     gp2.setHgap(10);
     gp2.setVgap(10);
     gp2.setAlignment(Pos.CENTER);
@@ -226,7 +228,7 @@ public class Manager extends Application {
     selwh.setFont(new Font(20));
     sub.setFont(Font.font("SansSerif", FontWeight.BLACK, 25));
     if (subsList.size() != 0) {
-      sub.setText(subsList.get(count).getName());
+      sub.setText(subsList.get(0).getName());
     }
     msg1.setFont(new Font(17));
     scotf.setFont(new Font(30));
