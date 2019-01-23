@@ -22,6 +22,8 @@ public class Manager extends Application {
   private Label msg;
   private Button ok;
 
+  private int dis = 0;
+
   private Label sub;
   private Label msg1;
   private TextField scotf;
@@ -137,6 +139,19 @@ public class Manager extends Application {
         y++;
       }
       gp2.add(subs[i], x, y);
+      subs[i].setOnAction(e -> {
+        CheckBox t = (CheckBox) e.getSource();
+        if (t.isSelected()) {
+          dis++;
+        } else {
+          dis--;
+        }
+        if (dis == 0) {
+          ok1.setDisable(true);
+        } else {
+          ok1.setDisable(false);
+        }
+      });
       x++;
     }
 
@@ -146,8 +161,6 @@ public class Manager extends Application {
 
     subvb.getChildren().add(gp2);
     subvb.getChildren().add(ok1);
-
-    subs[0].setSelected(true);
 
     subvb.setAlignment(Pos.CENTER);
 
@@ -212,7 +225,9 @@ public class Manager extends Application {
 
     selwh.setFont(new Font(20));
     sub.setFont(Font.font("SansSerif", FontWeight.BLACK, 25));
-    sub.setText(subsList.get(count).getName());
+    if (subsList.size() != 0) {
+      sub.setText(subsList.get(count).getName());
+    }
     msg1.setFont(new Font(17));
     scotf.setFont(new Font(30));
 
