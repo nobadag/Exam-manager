@@ -27,11 +27,11 @@ class Subject {
     name = tmp;
   }
 
-  void setScore(int tmp) {
+  public void setScore(int tmp) {
     score = tmp;
   }
 
-  String getName() {
+  public String getName() {
     return name;
   }
 }

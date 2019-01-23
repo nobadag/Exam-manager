@@ -13,14 +13,19 @@ public class Manager extends Application {
   public final String[] subjects = { "国語", "社会", "数学", "理科", "英語", "美術", "技術", "家庭", "保健体育", "音楽" };
   public final String[] when = { "１学期実力テスト", "１学期中間テスト", "１学期期末テスト", "２学期確認テスト", "２学期中間テスト", "２学期期末テスト", "３学期実力テスト",
       "３学期学年末テスト" };
-  private ArrayList<Subject> subdatas;
+  private ArrayList<Subject> subsList;
   private String usewhen;
 
   private Scene select_sub;
-  private TextField tf1;
+  private TextField actf;
   private PasswordField pwf1;
   private Label msg;
   private Button ok;
+
+  private Label sub;
+  private Label msg1;
+  private TextField scotf;
+  public static int count = 0;
 
   public static void main(String[] args) {
     launch(args);
@@ -64,7 +69,7 @@ public class Manager extends Application {
     Label des = new Label("アカウントを作成しましょう");
     Label acc = new Label("アカウント名：");
     Label pas = new Label("パスワード：");
-    tf1 = new TextField();
+    actf = new TextField();
     pwf1 = new PasswordField();
     msg = new Label();
     ok = new Button("  OK  ");
@@ -73,11 +78,11 @@ public class Manager extends Application {
     acc.setFont(new Font(17));
     pas.setFont(new Font(17));
     msg.setFont(new Font(18));
-    tf1.setFont(new Font(15));
+    actf.setFont(new Font(15));
     pwf1.setPrefWidth(300);
     ok.setDisable(true);
 
-    tf1.setOnAction(new Check_name());
+    actf.setOnAction(new Check_name());
 
     ok.setFont(new Font(15));
 
@@ -87,7 +92,7 @@ public class Manager extends Application {
 
     gp1.add(acc, 0, 0);
     gp1.add(pas, 0, 1);
-    gp1.add(tf1, 1, 0);
+    gp1.add(actf, 1, 0);
     gp1.add(pwf1, 1, 1);
 
     gp1.setVgap(10);
@@ -155,7 +160,7 @@ public class Manager extends Application {
     // いつの試験か選択
     Label des2 = new Label("いつの試験か選んでください。");
     RadioButton[] wh = new RadioButton[when.length];
-    ToggleGroup whs = new ToggleGroup();
+    ToggleGroup whtg = new ToggleGroup();
     Button ok2 = new Button("  OK  ");
 
     BorderPane bp4 = new BorderPane();
@@ -170,7 +175,7 @@ public class Manager extends Application {
       wh[i] = new RadioButton(when[i]);
       wh[i].setFont(new Font(15));
       wh[i].setPrefWidth(150);
-      wh[i].setToggleGroup(whs);
+      wh[i].setToggleGroup(whtg);
       whvb.getChildren().add(wh[i]);
     }
     wh[0].setSelected(true);
@@ -183,30 +188,33 @@ public class Manager extends Application {
 
     Scene select_when = new Scene(bp4, 600, 400);
 
+    subsList = new ArrayList<Subject>();
+
     ok1.setOnAction(e -> {
       stage.setScene(select_when);
       for (int i = 0; i < subs.length; i++) {
         if (subs[i].isSelected()) {
-          subdatas.add(new Subject(subs[i].getText()));
+          subsList.add(new Subject(subs[i].getText()));
         }
       }
     });
 
-    ok2.setOnAction(e -> {
-      Toggle sel = whs.getSelectedToggle();
-      RadioButton tmp = (RadioButton) sel;
-      usewhen = tmp.getText();
-    });
-
     // 点数入力画面
+    Toggle sel = whtg.getSelectedToggle();
+    RadioButton t = (RadioButton) sel;
+    usewhen = t.getText();
+
     Label selwh = new Label(usewhen);
-    Label sub = new Label();
-    TextField tf2 = new TextField();
+    sub = new Label();
+    msg1 = new Label();
+    scotf = new TextField();
     Button[] tenkey = new Button[12];
 
     selwh.setFont(new Font(20));
     sub.setFont(Font.font("SansSerif", FontWeight.BLACK, 25));
-    tf2.setFont(new Font(30));
+    sub.setText(subsList.get(count).getName());
+    msg1.setFont(new Font(17));
+    scotf.setFont(new Font(30));
 
     BorderPane bp5 = new BorderPane();
     VBox vb1 = new VBox(20);
@@ -239,20 +247,21 @@ public class Manager extends Application {
       if (i <= 9) {
         tenkey[i].setOnAction(e -> {
           Button tmp = (Button) e.getSource();
-          tf2.setText(tf2.getText() + tmp.getText());
+          scotf.setText(scotf.getText() + tmp.getText());
         });
       }
     }
 
     tenkey[10].setOnAction(e -> {
-      tf2.setText("");
+      scotf.setText("");
     });
-
+    tenkey[11].setOnAction(new Check_score());
     gp3.setAlignment(Pos.CENTER);
 
     vb1.getChildren().add(selwh);
     vb1.getChildren().add(sub);
-    vb1.getChildren().add(tf2);
+    vb1.getChildren().add(scotf);
+    vb1.getChildren().add(msg1);
     vb1.setAlignment(Pos.CENTER);
 
     hb1.getChildren().add(vb1);
@@ -278,7 +287,7 @@ public class Manager extends Application {
         // アカウント名確定のためのアラート
         Alert really = new Alert(Alert.AlertType.CONFIRMATION);
         really.setTitle("確認");
-        really.getDialogPane().setHeaderText("本当に " + tf1.getText() + " がアカウント名でいいですか？");
+        really.getDialogPane().setHeaderText("本当に " + actf.getText() + " がアカウント名でいいですか？");
 
         msg.setText("このアカウント名を使うことができます。");
         ok.setDisable(false);
@@ -291,6 +300,30 @@ public class Manager extends Application {
         });
       } else {
         msg.setText("このアカウント名を使うことはできません。");
+      }
+    }
+  }
+
+  class Check_score implements EventHandler<ActionEvent> {
+    public void handle(ActionEvent event) {
+      try {
+        int score = Integer.parseInt(scotf.getText());
+        if (score < 0 || score > 100) {
+          msg1.setText("有効な数値ではありません。");
+          scotf.setText("");
+        } else {
+          msg1.setText("");
+          subsList.get(count).setScore(score);
+          count++;
+          sub.setText(subsList.get(count).getName());
+          scotf.setText("");
+          if (count >= subsList.size()) {
+            System.exit(0);
+          }
+        }
+      } catch (NumberFormatException exp) {
+        msg1.setText("数字以外が混じっています。");
+        scotf.setText("");
       }
     }
   }
