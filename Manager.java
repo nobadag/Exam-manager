@@ -227,9 +227,6 @@ public class Manager extends Application {
 
     selwh.setFont(new Font(20));
     sub.setFont(Font.font("SansSerif", FontWeight.BLACK, 25));
-    if (subsList.size() != 0) {
-      sub.setText(subsList.get(0).getName());
-    }
     msg1.setFont(new Font(17));
     scotf.setFont(new Font(30));
 
@@ -290,6 +287,7 @@ public class Manager extends Application {
     Scene input = new Scene(bp5, 600, 400);
 
     ok2.setOnAction(e -> {
+      sub.setText(subsList.get(count).getName());
       stage.setScene(input);
     });
 
