@@ -269,7 +269,10 @@ public class Manager extends Application {
     tenkey[10].setOnAction(e -> {
       scotf.setText("");
     });
+
     tenkey[11].setOnAction(new Check_score());
+    scotf.setOnAction(new Check_score());
+
     gp3.setAlignment(Pos.CENTER);
 
     vb1.getChildren().add(selwh);
@@ -337,7 +340,7 @@ public class Manager extends Application {
           }
         }
       } catch (NumberFormatException exp) {
-        msg1.setText("数字以外が混じっています。");
+        msg1.setText("数値として読み取ることができません。");
         scotf.setText("");
       }
     }
