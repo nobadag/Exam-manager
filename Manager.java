@@ -9,14 +9,21 @@ import javafx.geometry.*;
 import javafx.event.*;
 
 public class Manager extends Application {
-  public static Stage stage;
+  public Stage stage;
+
   public final String[] subjects = { "国語", "社会", "数学", "理科", "英語", "美術", "技術", "家庭", "保健体育", "音楽" };
   public final String[] when = { "１学期実力テスト", "１学期中間テスト", "１学期期末テスト", "２学期確認テスト", "２学期中間テスト", "２学期期末テスト", "３学期実力テスト",
       "３学期学年末テスト" };
+
+  private Scene welcome;
+  private Scene make_acc;
+  private Scene select_sub;
+  private Scene select_when;
+  private Scene input_sco;
+
   private ArrayList<Subject> subsList;
   private String usewhen;
 
-  private Scene select_sub;
   private TextField actf;
   private PasswordField pwf1;
   private Label msg;
@@ -29,7 +36,7 @@ public class Manager extends Application {
   private TextField scotf;
   public static int count = 0;
 
-  private Scene check;
+  private Scene check_sco;
 
   public static void main(String[] args) {
     launch(args);
@@ -39,6 +46,14 @@ public class Manager extends Application {
     stage = temp;
     stage.setTitle("Exam-manager");
 
+    subsList = new ArrayList<Subject>();
+
+    welcome();
+
+    stage.show();
+  }
+
+  void welcome() {
     // welcomeの画面
     Label wel = new Label("Exam-manager にようこそ\n");
     Button nw = new Button("新規作成");
@@ -65,14 +80,22 @@ public class Manager extends Application {
     home.setAlignment(Pos.CENTER);
     bp1.setCenter(home);
 
-    Scene welcome = new Scene(bp1, 600, 400);
+    welcome = new Scene(bp1, 600, 400);
+
+    // 「新規」を押すと、make_acc シーンへ
+    nw.setOnAction(e -> {
+      make_acc();
+    });
 
     stage.setScene(welcome);
+  }
 
-    // アカウント作成の画面
+  void make_acc() {
+    // アカウント作成
     Label des = new Label("アカウントを作成しましょう");
     Label acc = new Label("アカウント名：");
     Label pas = new Label("パスワード：");
+
     actf = new TextField();
     pwf1 = new PasswordField();
     msg = new Label();
@@ -111,13 +134,12 @@ public class Manager extends Application {
 
     bp2.setCenter(acvb);
 
-    Scene make_acc = new Scene(bp2, 600, 400);
+    make_acc = new Scene(bp2, 600, 400);
 
-    // 「新規」を押すと、make_acc シーンへ
-    nw.setOnAction(e -> {
-      stage.setScene(make_acc);
-    });
+    stage.setScene(make_acc);
+  }
 
+  void select_sub() {
     // 教科選択
     Label des1 = new Label("教科を選んでください。");
     CheckBox[] subs = new CheckBox[subjects.length];
@@ -174,6 +196,19 @@ public class Manager extends Application {
 
     select_sub = new Scene(bp3, 600, 400);
 
+    ok1.setOnAction(e -> {
+      select_when();
+      for (int i = 0; i < subs.length; i++) {
+        if (subs[i].isSelected()) {
+          subsList.add(new Subject(subs[i].getText()));
+        }
+      }
+    });
+
+    stage.setScene(select_sub);
+  }
+
+  void select_when() {
     // いつの試験か選択
     Label des2 = new Label("いつの試験か選んでください。");
     RadioButton[] wh = new RadioButton[when.length];
@@ -203,26 +238,23 @@ public class Manager extends Application {
 
     bp4.setCenter(whvb);
 
-    Scene select_when = new Scene(bp4, 600, 400);
+    select_when = new Scene(bp4, 600, 400);
 
-    subsList = new ArrayList<Subject>();
-
-    ok1.setOnAction(e -> {
-      stage.setScene(select_when);
-      for (int i = 0; i < subs.length; i++) {
-        if (subs[i].isSelected()) {
-          subsList.add(new Subject(subs[i].getText()));
-        }
-      }
+    ok2.setOnAction(e -> {
+      input_sco();
     });
 
-    // 点数入力画面
     Toggle sel = whtg.getSelectedToggle();
     RadioButton t = (RadioButton) sel;
     usewhen = t.getText();
 
+    stage.setScene(select_when);
+  }
+
+  void input_sco() {
+    // 点数入力画面
     Label selwh = new Label(usewhen);
-    sub = new Label();
+    sub = new Label(subsList.get(0).getName());
     msg1 = new Label();
     scotf = new TextField();
     Button[] tenkey = new Button[12];
@@ -237,8 +269,8 @@ public class Manager extends Application {
     HBox hb1 = new HBox(30);
     GridPane gp3 = new GridPane();
 
-    x = 0;
-    y = 0;
+    int x = 0;
+    int y = 0;
     for (int i = 1; i <= 9; i++) {
       tenkey[i] = new Button(String.valueOf(i));
       if (i % 3 == 1) {
@@ -289,13 +321,12 @@ public class Manager extends Application {
 
     bp5.setCenter(hb1);
 
-    Scene input = new Scene(bp5, 600, 400);
+    input_sco = new Scene(bp5, 600, 400);
 
-    ok2.setOnAction(e -> {
-      sub.setText(subsList.get(count).getName());
-      stage.setScene(input);
-    });
+    stage.setScene(input_sco);
+  }
 
+  void check_sco() {
     // 確認画面
     Label right = new Label("この点数でいいですか？");
     Button ok3 = new Button("  OK  ");
@@ -328,9 +359,9 @@ public class Manager extends Application {
 
     bp6.setCenter(chvb);
 
-    check = new Scene(bp6, 600, 400);
+    check_sco = new Scene(bp6, 600, 400);
 
-    stage.show();
+    stage.setScene(check_sco);
   }
 
   class Check_name implements EventHandler<ActionEvent> {
@@ -349,7 +380,7 @@ public class Manager extends Application {
         ok.setOnAction(e -> {
           Optional<ButtonType> res = really.showAndWait();
           if (res.get() == ButtonType.OK) {
-            stage.setScene(select_sub);
+            select_sub();
           }
         });
       } else {
@@ -370,7 +401,7 @@ public class Manager extends Application {
           subsList.get(count).setScore(score);
           count++;
           if (count >= subsList.size()) {
-            stage.setScene(check);
+            check_sco();
           } else {
             sub.setText(subsList.get(count).getName());
             scotf.setText("");
