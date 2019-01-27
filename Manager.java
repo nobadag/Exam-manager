@@ -402,14 +402,16 @@ public class Manager extends Application {
     VBox chvb = new VBox(10);
     BorderPane bp6 = new BorderPane();
 
+    ok3.setFont(new Font(15));
+    right.setFont(new Font(15));
+
     for (int i = 0; i < subsList.size(); i++) {
       subch[i] = new Label(subsList.get(i).getName() + "F");
       scoch[i] = new TextField();
       subch[i].setFont(new Font(15));
       scoch[i].setFont(new Font(15));
       scoch[i].setPrefWidth(150);
-      subch[i].setText(subsList.get(i).getName());
-      subch[i].setText("" + subsList.get(i).getScore());
+      scoch[i].setText("" + subsList.get(i).getScore());
       gp4.add(subch[i], 0, i);
       gp4.add(scoch[i], 1, i);
     }
