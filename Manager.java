@@ -82,7 +82,7 @@ public class Manager extends Application {
 
     welcome = new Scene(bp1, 600, 400);
 
-    // 「新規」を押すと、make_acc シーンへ
+    // 「新規」を押すと、アカウント作成画面へ
     nw.setOnAction(e -> {
       make_acc();
     });
@@ -91,7 +91,7 @@ public class Manager extends Application {
   }
 
   void make_acc() {
-    // アカウント作成
+    // アカウント作成画面
     Label des = new Label("アカウントを作成しましょう");
     Label acc = new Label("アカウント名：");
     Label pas = new Label("パスワード：");
@@ -139,8 +139,35 @@ public class Manager extends Application {
     stage.setScene(make_acc);
   }
 
+  class Check_name implements EventHandler<ActionEvent> {
+    public void handle(ActionEvent event) {
+      // アカウント名が有効か判定する
+      int c = 0;
+      if (c == 0) {
+        // アカウント名確定のためのアラート
+        Alert really = new Alert(Alert.AlertType.CONFIRMATION);
+        really.setTitle("確認");
+        really.getDialogPane().setHeaderText("本当に " + actf.getText() + " がアカウント名でいいですか？");
+
+        msg.setText("このアカウント名を使うことができます。");
+        ok.setDisable(false);
+
+        ok.setOnAction(e -> {
+          // 「OK」を押すと、アラートを表示
+          Optional<ButtonType> res = really.showAndWait();
+          // 「OK」を押すと、教科選択画面へ
+          if (res.get() == ButtonType.OK) {
+            select_sub();
+          }
+        });
+      } else {
+        msg.setText("このアカウント名を使うことはできません。");
+      }
+    }
+  }
+
   void select_sub() {
-    // 教科選択
+    // 教科選択画面
     Label des1 = new Label("教科を選んでください。");
     CheckBox[] subs = new CheckBox[subjects.length];
     Button ok1 = new Button("  OK  ");
@@ -164,6 +191,7 @@ public class Manager extends Application {
       }
       gp2.add(subs[i], x, y);
       subs[i].setOnAction(e -> {
+        // １つ以上チェックされていないと「OK」を無効にする
         CheckBox t = (CheckBox) e.getSource();
         if (t.isSelected()) {
           dis++;
@@ -197,7 +225,9 @@ public class Manager extends Application {
     select_sub = new Scene(bp3, 600, 400);
 
     ok1.setOnAction(e -> {
+      // 「OK」を押すと、試験選択画面へ
       select_when();
+      // チェックされた分、Subjectのオブジェクトを生成
       for (int i = 0; i < subs.length; i++) {
         if (subs[i].isSelected()) {
           subsList.add(new Subject(subs[i].getText()));
@@ -209,7 +239,7 @@ public class Manager extends Application {
   }
 
   void select_when() {
-    // いつの試験か選択
+    // 試験選択画面
     Label des2 = new Label("いつの試験か選んでください。");
     RadioButton[] wh = new RadioButton[when.length];
     ToggleGroup whtg = new ToggleGroup();
@@ -241,9 +271,11 @@ public class Manager extends Application {
     select_when = new Scene(bp4, 600, 400);
 
     ok2.setOnAction(e -> {
+      // 「OK」を押すと、点数入力画面へ
       input_sco();
     });
 
+    // どの試験なのか記憶
     Toggle sel = whtg.getSelectedToggle();
     RadioButton t = (RadioButton) sel;
     usewhen = t.getText();
@@ -269,6 +301,7 @@ public class Manager extends Application {
     HBox hb1 = new HBox(30);
     GridPane gp3 = new GridPane();
 
+    // テンキーの実装
     int x = 0;
     int y = 0;
     for (int i = 1; i <= 9; i++) {
@@ -294,6 +327,7 @@ public class Manager extends Application {
       tenkey[i].setPrefWidth(50);
       if (i <= 9) {
         tenkey[i].setOnAction(e -> {
+          // 押すとテキストフィールドに入力されていく
           Button tmp = (Button) e.getSource();
           scotf.setText(scotf.getText() + tmp.getText());
         });
@@ -301,6 +335,7 @@ public class Manager extends Application {
     }
 
     tenkey[10].setOnAction(e -> {
+      // テキストフィールドをクリア
       scotf.setText("");
     });
 
@@ -326,8 +361,38 @@ public class Manager extends Application {
     stage.setScene(input_sco);
   }
 
+  class Check_score implements EventHandler<ActionEvent> {
+    public void handle(ActionEvent event) {
+      // 有効な数値か判定
+      try {
+        int score = Integer.parseInt(scotf.getText());
+        if (score < 0 || score > 100) {
+          // 範囲内かの判定
+          msg1.setText("有効な数値ではありません。");
+          scotf.setText("");
+        } else {
+          msg1.setText("");
+          subsList.get(count).setScore(score);
+          count++;
+          if (count >= subsList.size()) {
+            // 最後の教科が終わると点数確認画面へ
+            check_sco();
+          } else {
+            // 次の教科へ
+            sub.setText(subsList.get(count).getName());
+            scotf.setText("");
+          }
+        }
+      } catch (NumberFormatException exp) {
+        // 文字が含まれていた場合
+        msg1.setText("数値として読み取ることができません。");
+        scotf.setText("");
+      }
+    }
+  }
+
   void check_sco() {
-    // 確認画面
+    // 点数確認画面
     Label right = new Label("この点数でいいですか？");
     Button ok3 = new Button("  OK  ");
     Label[] subch = new Label[subsList.size()];
@@ -362,55 +427,5 @@ public class Manager extends Application {
     check_sco = new Scene(bp6, 600, 400);
 
     stage.setScene(check_sco);
-  }
-
-  class Check_name implements EventHandler<ActionEvent> {
-    public void handle(ActionEvent event) {
-      // アカウント名が有効か判定する
-      int c = 0;
-      if (c == 0) {
-        // アカウント名確定のためのアラート
-        Alert really = new Alert(Alert.AlertType.CONFIRMATION);
-        really.setTitle("確認");
-        really.getDialogPane().setHeaderText("本当に " + actf.getText() + " がアカウント名でいいですか？");
-
-        msg.setText("このアカウント名を使うことができます。");
-        ok.setDisable(false);
-
-        ok.setOnAction(e -> {
-          Optional<ButtonType> res = really.showAndWait();
-          if (res.get() == ButtonType.OK) {
-            select_sub();
-          }
-        });
-      } else {
-        msg.setText("このアカウント名を使うことはできません。");
-      }
-    }
-  }
-
-  class Check_score implements EventHandler<ActionEvent> {
-    public void handle(ActionEvent event) {
-      try {
-        int score = Integer.parseInt(scotf.getText());
-        if (score < 0 || score > 100) {
-          msg1.setText("有効な数値ではありません。");
-          scotf.setText("");
-        } else {
-          msg1.setText("");
-          subsList.get(count).setScore(score);
-          count++;
-          if (count >= subsList.size()) {
-            check_sco();
-          } else {
-            sub.setText(subsList.get(count).getName());
-            scotf.setText("");
-          }
-        }
-      } catch (NumberFormatException exp) {
-        msg1.setText("数値として読み取ることができません。");
-        scotf.setText("");
-      }
-    }
   }
 }
