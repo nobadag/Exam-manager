@@ -29,6 +29,8 @@ public class Manager extends Application {
   private TextField scotf;
   public static int count = 0;
 
+  private Scene check;
+
   public static void main(String[] args) {
     launch(args);
   }
@@ -294,14 +296,48 @@ public class Manager extends Application {
       stage.setScene(input);
     });
 
+    // 確認画面
+    Label right = new Label("この点数でいいですか？");
+    Button ok3 = new Button("  OK  ");
+    Label[] subch = new Label[subsList.size()];
+    TextField[] scoch = new TextField[subsList.size()];
+
+    GridPane gp4 = new GridPane();
+    VBox chvb = new VBox(10);
+    BorderPane bp6 = new BorderPane();
+
+    for (int i = 0; i < subsList.size(); i++) {
+      subch[i] = new Label(subsList.get(i).getName() + "：");
+      scoch[i] = new TextField();
+      subch[i].setFont(new Font(15));
+      scoch[i].setFont(new Font(15));
+      scoch[i].setPrefWidth(150);
+      subch[i].setText(subsList.get(i).getName());
+      subch[i].setText("" + subsList.get(i).getScore());
+      gp4.add(subch[i], 0, i);
+      gp4.add(scoch[i], 1, i);
+    }
+
+    gp4.setAlignment(Pos.CENTER);
+
+    chvb.getChildren().add(right);
+    chvb.getChildren().add(gp4);
+    chvb.getChildren().add(ok3);
+
+    chvb.setAlignment(Pos.CENTER);
+
+    bp6.setCenter(chvb);
+
+    check = new Scene(bp6, 600, 400);
+
     stage.show();
   }
 
   class Check_name implements EventHandler<ActionEvent> {
     public void handle(ActionEvent event) {
       // アカウント名が有効か判定する
-      int check = 0;
-      if (check == 0) {
+      int c = 0;
+      if (c == 0) {
         // アカウント名確定のためのアラート
         Alert really = new Alert(Alert.AlertType.CONFIRMATION);
         really.setTitle("確認");
@@ -333,10 +369,11 @@ public class Manager extends Application {
           msg1.setText("");
           subsList.get(count).setScore(score);
           count++;
-          sub.setText(subsList.get(count).getName());
-          scotf.setText("");
           if (count >= subsList.size()) {
-            System.exit(0);
+            stage.setScene(check);
+          } else {
+            sub.setText(subsList.get(count).getName());
+            scotf.setText("");
           }
         }
       } catch (NumberFormatException exp) {
