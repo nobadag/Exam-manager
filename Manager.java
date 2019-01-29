@@ -107,6 +107,8 @@ public class Manager extends Application {
     msg.setFont(new Font(18));
     actf.setFont(new Font(15));
     pwf1.setPrefWidth(300);
+    actf.setPrefHeight(30);
+    pwf1.setPrefHeight(30);
     ok.setDisable(true);
 
     actf.setOnAction(new Check_name());
@@ -301,6 +303,7 @@ public class Manager extends Application {
     HBox hb1 = new HBox(30);
     GridPane gp3 = new GridPane();
 
+    scotf.setAlignment(Pos.CENTER);
     // ÉeÉìÉLÅ[ÇÃé¿ëï
     int x = 0;
     int y = 0;
@@ -410,13 +413,16 @@ public class Manager extends Application {
       scoch[i] = new TextField();
       subch[i].setFont(new Font(15));
       scoch[i].setFont(new Font(15));
+      subch[i].setPrefWidth(100);
       scoch[i].setPrefWidth(150);
-      scoch[i].setText("" + subsList.get(i).getScore());
+      subch[i].setAlignment(Pos.CENTER_RIGHT);
+      scoch[i].setText(String.valueOf(subsList.get(i).getScore()));
       gp4.add(subch[i], 0, i);
       gp4.add(scoch[i], 1, i);
     }
 
     gp4.setAlignment(Pos.CENTER);
+    gp4.setVgap(10);
 
     chvb.getChildren().add(right);
     chvb.getChildren().add(gp4);
