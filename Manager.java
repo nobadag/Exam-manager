@@ -177,7 +177,7 @@ public class Manager extends Application {
 
     VBox subvb = new VBox(10);
 
-    des1.setFont(new Font(15));
+    des1.setFont(new Font(20));
     subvb.getChildren().add(des1);
 
     ok1.setFont(new Font(15));
@@ -250,7 +250,7 @@ public class Manager extends Application {
     BorderPane bp4 = new BorderPane();
     VBox whvb = new VBox(10);
 
-    des2.setFont(new Font(15));
+    des2.setFont(new Font(20));
     whvb.getChildren().add(des2);
 
     ok2.setFont(new Font(15));
@@ -406,7 +406,7 @@ public class Manager extends Application {
     BorderPane bp6 = new BorderPane();
 
     ok3.setFont(new Font(15));
-    right.setFont(new Font(15));
+    right.setFont(new Font(20));
 
     for (int i = 0; i < subsList.size(); i++) {
       subch[i] = new Label(subsList.get(i).getName() + "F");
