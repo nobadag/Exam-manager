@@ -46,6 +46,9 @@ public class Manager extends Application {
     stage = temp;
     stage.setTitle("Exam-manager");
 
+    stage.setHeight(400);
+    stage.setWidth(600);
+
     subsList = new ArrayList<Subject>();
 
     welcome();
@@ -80,7 +83,7 @@ public class Manager extends Application {
     home.setAlignment(Pos.CENTER);
     bp1.setCenter(home);
 
-    welcome = new Scene(bp1, 600, 400);
+    welcome = new Scene(bp1);
 
     // 「新規」を押すと、アカウント作成画面へ
     nw.setOnAction(e -> {
@@ -136,7 +139,7 @@ public class Manager extends Application {
 
     bp2.setCenter(acvb);
 
-    make_acc = new Scene(bp2, 600, 400);
+    make_acc = new Scene(bp2);
 
     stage.setScene(make_acc);
   }
@@ -224,7 +227,7 @@ public class Manager extends Application {
 
     bp3.setCenter(subvb);
 
-    select_sub = new Scene(bp3, 600, 400);
+    select_sub = new Scene(bp3);
 
     ok1.setOnAction(e -> {
       // 「OK」を押すと、試験選択画面へ
@@ -270,7 +273,7 @@ public class Manager extends Application {
 
     bp4.setCenter(whvb);
 
-    select_when = new Scene(bp4, 600, 400);
+    select_when = new Scene(bp4);
 
     ok2.setOnAction(e -> {
       // 「OK」を押すと、点数入力画面へ
@@ -359,7 +362,7 @@ public class Manager extends Application {
 
     bp5.setCenter(hb1);
 
-    input_sco = new Scene(bp5, 600, 400);
+    input_sco = new Scene(bp5);
 
     stage.setScene(input_sco);
   }
@@ -432,7 +435,7 @@ public class Manager extends Application {
 
     bp6.setCenter(chvb);
 
-    check_sco = new Scene(bp6, 600, 400);
+    check_sco = new Scene(bp6);
 
     stage.setScene(check_sco);
   }
