@@ -276,14 +276,13 @@ public class Manager extends Application {
     select_when = new Scene(bp4);
 
     ok2.setOnAction(e -> {
+      // どの試験なのか記憶
+      Toggle sel = whtg.getSelectedToggle();
+      RadioButton t = (RadioButton) sel;
+      usewhen = t.getText();
       // 「OK」を押すと、点数入力画面へ
       input_sco();
     });
-
-    // どの試験なのか記憶
-    Toggle sel = whtg.getSelectedToggle();
-    RadioButton t = (RadioButton) sel;
-    usewhen = t.getText();
 
     stage.setScene(select_when);
   }
