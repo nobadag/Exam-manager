@@ -47,8 +47,8 @@ public class Manager extends Application {
   }
 
   public void init() throws Exception {
-    maru = new Image("マル.png", 50, 0, true, false);
-    batsu = new Image("バツ.png", 50, 0, true, false);
+    maru = new Image("Image\\マル.png", 50, 0, true, false);
+    batsu = new Image("Image\\バツ.png", 50, 0, true, false);
   }
 
   public void start(Stage temp) throws Exception {
