@@ -23,6 +23,8 @@ public class Manager extends Application {
   private Scene select_when;
   private Scene input_sco;
 
+  private File Datas;
+
   private Image maru;
   private Image batsu;
 
@@ -50,6 +52,12 @@ public class Manager extends Application {
   public void init() throws Exception {
     maru = new Image("Image\\ƒ}ƒ‹.png", 50, 0, true, false);
     batsu = new Image("Image\\ƒoƒc.png", 50, 0, true, false);
+
+    Datas = new File("Datas");
+
+    if (!Datas.exists()) {
+      Datas.mkdir();
+    }
   }
 
   public void start(Stage temp) throws Exception {
