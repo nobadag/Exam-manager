@@ -5,6 +5,7 @@ import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.*;
+import javafx.scene.image.*;
 import javafx.geometry.*;
 import javafx.event.*;
 
@@ -20,6 +21,9 @@ public class Manager extends Application {
   private Scene select_sub;
   private Scene select_when;
   private Scene input_sco;
+
+  private Image maru;
+  private Image batsu;
 
   private ArrayList<Subject> subsList;
   private String usewhen;
@@ -40,6 +44,11 @@ public class Manager extends Application {
 
   public static void main(String[] args) {
     launch(args);
+  }
+
+  public void init() throws Exception {
+    maru = new Image(getClass().getResourceAsStream("ƒ}ƒ‹.png"));
+    batsu = new Image(getClass().getResourceAsStream("ƒoƒc.png"));
   }
 
   public void start(Stage temp) throws Exception {
