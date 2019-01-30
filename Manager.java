@@ -47,8 +47,8 @@ public class Manager extends Application {
   }
 
   public void init() throws Exception {
-    maru = new Image(getClass().getResourceAsStream("マル.png"));
-    batsu = new Image(getClass().getResourceAsStream("バツ.png"));
+    maru = new Image("マル.png", 50, 0, true, false);
+    batsu = new Image("バツ.png", 50, 0, true, false);
   }
 
   public void start(Stage temp) throws Exception {
@@ -113,7 +113,7 @@ public class Manager extends Application {
     msg = new Label();
     ok = new Button("  OK  ");
 
-    des.setFont(new Font(20));
+    des.setFont(new Font(18));
     acc.setFont(new Font(17));
     pas.setFont(new Font(17));
     msg.setFont(new Font(18));
@@ -189,7 +189,7 @@ public class Manager extends Application {
 
     VBox subvb = new VBox(10);
 
-    des1.setFont(new Font(20));
+    des1.setFont(new Font(18));
     subvb.getChildren().add(des1);
 
     ok1.setFont(new Font(15));
@@ -262,7 +262,7 @@ public class Manager extends Application {
     BorderPane bp4 = new BorderPane();
     VBox whvb = new VBox(10);
 
-    des2.setFont(new Font(20));
+    des2.setFont(new Font(18));
     whvb.getChildren().add(des2);
 
     ok2.setFont(new Font(15));
@@ -315,6 +315,7 @@ public class Manager extends Application {
     GridPane gp3 = new GridPane();
 
     scotf.setAlignment(Pos.CENTER);
+
     // テンキーの実装
     int x = 0;
     int y = 0;
@@ -417,7 +418,7 @@ public class Manager extends Application {
     BorderPane bp6 = new BorderPane();
 
     ok3.setFont(new Font(15));
-    right.setFont(new Font(20));
+    right.setFont(new Font(18));
 
     for (int i = 0; i < subsList.size(); i++) {
       subch[i] = new Label(subsList.get(i).getName() + "：");
