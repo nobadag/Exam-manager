@@ -164,6 +164,7 @@ public class Manager extends Application {
         really.getDialogPane().setHeaderText("本当に " + actf.getText() + " がアカウント名でいいですか？");
 
         msg.setText("このアカウント名を使うことができます。");
+        msg.setGraphic(new ImageView(maru));
         ok.setDisable(false);
 
         ok.setOnAction(e -> {
@@ -176,6 +177,7 @@ public class Manager extends Application {
         });
       } else {
         msg.setText("このアカウント名を使うことはできません。");
+        msg.setGraphic(new ImageView(batsu));
       }
     }
   }
@@ -384,6 +386,7 @@ public class Manager extends Application {
         if (score < 0 || score > 100) {
           // 範囲内かの判定
           msg1.setText("有効な数値ではありません。");
+          msg1.setGraphic(new ImageView(batsu));
           scotf.setText("");
         } else {
           msg1.setText("");
@@ -401,6 +404,7 @@ public class Manager extends Application {
       } catch (NumberFormatException exp) {
         // 文字が含まれていた場合
         msg1.setText("数値として読み取ることができません。");
+        msg1.setGraphic(new ImageView(batsu));
         scotf.setText("");
       }
     }
