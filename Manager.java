@@ -1,3 +1,4 @@
+import java.io.*;
 import java.util.*;
 import javafx.application.*;
 import javafx.stage.*;
@@ -390,6 +391,7 @@ public class Manager extends Application {
           scotf.setText("");
         } else {
           msg1.setText("");
+          msg1.setGraphic(null);
           subsList.get(count).setScore(score);
           count++;
           if (count >= subsList.size()) {
