@@ -443,15 +443,15 @@ public class Manager extends Application {
       scoch[i].setFont(new Font(17));
       subch[i].setPrefWidth(100);
       scoch[i].setPrefWidth(100);
-      subch[i].setAlignment(Pos.CENTER_RIGHT);
       subch[i].setAlignment(Pos.CENTER);
+      scoch[i].setAlignment(Pos.CENTER);
       gp4.add(subch[i], 0, i);
       gp4.add(scoch[i], 1, i);
       gp4.add(edit[i], 2, i);
     }
 
     gp4.setAlignment(Pos.CENTER);
-    gp4.setVgap(10);
+    gp4.setGridLinesVisible(true);
 
     chvb.getChildren().add(right);
     chvb.getChildren().add(gp4);
