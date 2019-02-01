@@ -27,6 +27,7 @@ public class Manager extends Application {
 
   private Image maru;
   private Image batsu;
+  private Image pencil;
 
   private HashMap<String, Subject> subsMap = new HashMap<String, Subject>();
   private ArrayList<String> usesubs = new ArrayList<>();
@@ -53,6 +54,7 @@ public class Manager extends Application {
   public void init() throws Exception {
     maru = new Image("Image\\マル.png", 50, 0, true, false);
     batsu = new Image("Image\\バツ.png", 50, 0, true, false);
+    pencil = new Image("Image\\エンピツ.png", 30, 0, true, false);
 
     Datas = new File("Datas");
 
@@ -310,7 +312,7 @@ public class Manager extends Application {
   void input_sco() {
     // 点数入力画面
     Label selwh = new Label(usewhen);
-    sub = new Label(usesubs.get(0));
+    sub = new Label(usesubs.get(count));
     msg1 = new Label();
     scotf = new TextField();
     Button[] tenkey = new Button[12];
@@ -398,9 +400,6 @@ public class Manager extends Application {
           msg1.setGraphic(new ImageView(batsu));
           scotf.setText("");
         } else {
-          msg1.setText("");
-          msg1.setGraphic(null);
-          sub.setText(usesubs.get(count));
           subsMap.get(usesubs.get(count)).setScore(score);
           count++;
           if (count >= subsMap.size()) {
@@ -408,8 +407,7 @@ public class Manager extends Application {
             check_sco();
           } else {
             // 次の教科へ
-            sub.setText(usesubs.get(count));
-            scotf.setText("");
+            input_sco();
           }
         }
       } catch (NumberFormatException exp) {
@@ -426,7 +424,8 @@ public class Manager extends Application {
     Label right = new Label("この点数でいいですか？");
     Button ok3 = new Button("  OK  ");
     Label[] subch = new Label[subsMap.size()];
-    TextField[] scoch = new TextField[subsMap.size()];
+    Label[] scoch = new Label[subsMap.size()];
+    Button[] edit = new Button[subsMap.size()];
 
     GridPane gp4 = new GridPane();
     VBox chvb = new VBox(10);
@@ -436,16 +435,19 @@ public class Manager extends Application {
     right.setFont(new Font(18));
 
     for (int i = 0; i < subsMap.size(); i++) {
-      subch[i] = new Label(usesubs.get(i));
-      scoch[i] = new TextField();
-      subch[i].setFont(new Font(15));
-      scoch[i].setFont(new Font(15));
+      subch[i] = new Label(usesubs.get(i) + "：");
+      scoch[i] = new Label(String.valueOf(subsMap.get(usesubs.get(i)).getScore()) + " 点");
+      edit[i] = new Button("変更");
+      edit[i].setGraphic(new ImageView(pencil));
+      subch[i].setFont(new Font(17));
+      scoch[i].setFont(new Font(17));
       subch[i].setPrefWidth(100);
-      scoch[i].setPrefWidth(150);
+      scoch[i].setPrefWidth(100);
       subch[i].setAlignment(Pos.CENTER_RIGHT);
-      scoch[i].setText(String.valueOf(subsMap.get(usesubs.get(i)).getScore()));
+      subch[i].setAlignment(Pos.CENTER);
       gp4.add(subch[i], 0, i);
       gp4.add(scoch[i], 1, i);
+      gp4.add(edit[i], 2, i);
     }
 
     gp4.setAlignment(Pos.CENTER);
