@@ -13,7 +13,7 @@ import javafx.event.*;
 public class Manager extends Application {
   public Stage stage;
 
-  public final String[] subjects = { "国語", "社会", "数学", "理科", "英語", "美術", "技術", "家庭", "保健体育", "音楽" };
+  public final String[] subnames = { "国語", "社会", "数学", "理科", "英語", "美術", "技術", "家庭", "保健体育", "音楽" };
   public final String[] when = { "１学期実力テスト", "１学期中間テスト", "１学期期末テスト", "２学期確認テスト", "２学期中間テスト", "２学期期末テスト", "３学期実力テスト",
       "３学期学年末テスト" };
 
@@ -28,7 +28,8 @@ public class Manager extends Application {
   private Image maru;
   private Image batsu;
 
-  private ArrayList<Subject> subsList;
+  private HashMap<String, Subject> subsMap = new HashMap<String, Subject>();
+  private ArrayList<String> usesubs = new ArrayList<>();
   private String usewhen;
 
   private TextField actf;
@@ -66,8 +67,6 @@ public class Manager extends Application {
 
     stage.setHeight(400);
     stage.setWidth(600);
-
-    subsList = new ArrayList<Subject>();
 
     welcome();
 
@@ -194,7 +193,7 @@ public class Manager extends Application {
   void select_sub() {
     // 教科選択画面
     Label des1 = new Label("教科を選んでください。");
-    CheckBox[] subs = new CheckBox[subjects.length];
+    CheckBox[] subs = new CheckBox[subnames.length];
     Button ok1 = new Button("  OK  ");
     GridPane gp2 = new GridPane();
 
@@ -206,8 +205,8 @@ public class Manager extends Application {
     ok1.setFont(new Font(15));
 
     int x = 0, y = 0;
-    for (int i = 0; i < subjects.length; i++) {
-      subs[i] = new CheckBox(subjects[i]);
+    for (int i = 0; i < subnames.length; i++) {
+      subs[i] = new CheckBox(subnames[i]);
       subs[i].setFont(new Font(15));
       subs[i].setPrefWidth(100);
       if (i % 3 == 0) {
@@ -255,7 +254,8 @@ public class Manager extends Application {
       // チェックされた分、Subjectのオブジェクトを生成
       for (int i = 0; i < subs.length; i++) {
         if (subs[i].isSelected()) {
-          subsList.add(new Subject(subs[i].getText()));
+          usesubs.add(subs[i].getText());
+          subsMap.put(subs[i].getText(), new Subject(subs[i].getText()));
         }
       }
     });
@@ -310,7 +310,7 @@ public class Manager extends Application {
   void input_sco() {
     // 点数入力画面
     Label selwh = new Label(usewhen);
-    sub = new Label(subsList.get(0).getName());
+    sub = new Label(usesubs.get(0));
     msg1 = new Label();
     scotf = new TextField();
     Button[] tenkey = new Button[12];
@@ -400,14 +400,15 @@ public class Manager extends Application {
         } else {
           msg1.setText("");
           msg1.setGraphic(null);
-          subsList.get(count).setScore(score);
+          sub.setText(usesubs.get(count));
+          subsMap.get(usesubs.get(count)).setScore(score);
           count++;
-          if (count >= subsList.size()) {
+          if (count >= subsMap.size()) {
             // 最後の教科が終わると点数確認画面へ
             check_sco();
           } else {
             // 次の教科へ
-            sub.setText(subsList.get(count).getName());
+            sub.setText(usesubs.get(count));
             scotf.setText("");
           }
         }
@@ -424,8 +425,8 @@ public class Manager extends Application {
     // 点数確認画面
     Label right = new Label("この点数でいいですか？");
     Button ok3 = new Button("  OK  ");
-    Label[] subch = new Label[subsList.size()];
-    TextField[] scoch = new TextField[subsList.size()];
+    Label[] subch = new Label[subsMap.size()];
+    TextField[] scoch = new TextField[subsMap.size()];
 
     GridPane gp4 = new GridPane();
     VBox chvb = new VBox(10);
@@ -434,15 +435,15 @@ public class Manager extends Application {
     ok3.setFont(new Font(15));
     right.setFont(new Font(18));
 
-    for (int i = 0; i < subsList.size(); i++) {
-      subch[i] = new Label(subsList.get(i).getName() + "：");
+    for (int i = 0; i < subsMap.size(); i++) {
+      subch[i] = new Label(usesubs.get(i));
       scoch[i] = new TextField();
       subch[i].setFont(new Font(15));
       scoch[i].setFont(new Font(15));
       subch[i].setPrefWidth(100);
       scoch[i].setPrefWidth(150);
       subch[i].setAlignment(Pos.CENTER_RIGHT);
-      scoch[i].setText(String.valueOf(subsList.get(i).getScore()));
+      scoch[i].setText(String.valueOf(subsMap.get(usesubs.get(i)).getScore()));
       gp4.add(subch[i], 0, i);
       gp4.add(scoch[i], 1, i);
     }

@@ -23,7 +23,7 @@ class User {
 
 class Exams {
   private String name;
-  private ArrayList<Subject> subsdata = new ArrayList<>();
+  private HashMap<String, Subject> subsdata = new HashMap<String, Subject>();
 
   public void setName(String tmp) {
     name = tmp;
@@ -33,11 +33,11 @@ class Exams {
     return name;
   }
 
-  public void setData(ArrayList<Subject> tmp) {
-    subsdata.addAll(tmp);
+  public void setData(HashMap<String, Subject> tmp) {
+    subsdata.putAll(tmp);
   }
 
-  public ArrayList<Subject> getData() {
+  public HashMap<String, Subject> getData() {
     return subsdata;
   }
 }
