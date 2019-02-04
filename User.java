@@ -25,7 +25,7 @@ class Exams {
   private String name;
   private HashMap<String, Subject> subsdata = new HashMap<String, Subject>();
 
-  public void setName(String tmp) {
+  Exams(String tmp) {
     name = tmp;
   }
 
