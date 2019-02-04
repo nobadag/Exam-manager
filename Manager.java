@@ -22,6 +22,7 @@ public class Manager extends Application {
   private Scene select_sub;
   private Scene select_when;
   private Scene input_sco;
+  private Scene check_sco;
 
   private File Datas;
 
@@ -45,7 +46,7 @@ public class Manager extends Application {
   private TextField scotf;
   public static int count = 0;
 
-  private Scene check_sco;
+  private boolean rand = false;
 
   public static void main(String[] args) {
     launch(args);
@@ -402,11 +403,13 @@ public class Manager extends Application {
         } else {
           subsMap.get(usesubs.get(count)).setScore(score);
           count++;
-          if (count >= subsMap.size()) {
+          if (count >= subsMap.size() || rand) {
             // 最後の教科が終わると点数確認画面へ
+            // 点数変更によるランダムアクセスならば点数確認画面へ
+            rand = false;
             check_sco();
           } else {
-            // 次の教科へ
+            // 初回の入力ならば次の教科へ
             input_sco();
           }
         }
@@ -425,7 +428,7 @@ public class Manager extends Application {
     Button ok3 = new Button("  OK  ");
     Label[] subch = new Label[subsMap.size()];
     Label[] scoch = new Label[subsMap.size()];
-    Button[] edit = new Button[subsMap.size()];
+    Button[] change = new Button[subsMap.size()];
 
     GridPane gp4 = new GridPane();
     VBox chvb = new VBox(10);
@@ -437,8 +440,8 @@ public class Manager extends Application {
     for (int i = 0; i < subsMap.size(); i++) {
       subch[i] = new Label(usesubs.get(i) + "：");
       scoch[i] = new Label(String.valueOf(subsMap.get(usesubs.get(i)).getScore()) + " 点");
-      edit[i] = new Button("変更");
-      edit[i].setGraphic(new ImageView(pencil));
+      change[i] = new Button("変更");
+      change[i].setGraphic(new ImageView(pencil));
       subch[i].setFont(new Font(17));
       scoch[i].setFont(new Font(17));
       subch[i].setPrefWidth(100);
@@ -447,7 +450,14 @@ public class Manager extends Application {
       scoch[i].setAlignment(Pos.CENTER);
       gp4.add(subch[i], 0, i);
       gp4.add(scoch[i], 1, i);
-      gp4.add(edit[i], 2, i);
+      gp4.add(change[i], 2, i);
+      change[i].setOnAction(e -> {
+        Button t = (Button) e.getSource();
+        int pos = GridPane.getRowIndex(t);
+        count = pos;
+        rand = true;
+        input_sco();
+      });
     }
 
     gp4.setAlignment(Pos.CENTER);
