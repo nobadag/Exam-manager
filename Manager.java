@@ -33,6 +33,7 @@ public class Manager extends Application {
 
   private User user;
   private Exam exam;
+  private HashSet<String> usersname = new HashSet<>();
   private HashMap<String, Subject> subsMap = new HashMap<String, Subject>();
   private ArrayList<String> usesubs = new ArrayList<>();
   private String usewhen;
@@ -67,8 +68,19 @@ public class Manager extends Application {
       Datas.mkdir();
     }
 
-    if (Datas.exists() && !Roster.exists()) {
+    if (!Roster.exists()) {
       Roster.createNewFile();
+    } else {
+      String line;
+      String bin;
+      String[] tmp;
+      BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("Datas\\Roster.csv")));
+      while ((bin = br.readLine()) != null) {
+        line = new String(bin);
+        tmp = line.split(",");
+        usersname.add(tmp[0]);
+      }
+      br.close();
     }
   }
 
@@ -174,13 +186,14 @@ public class Manager extends Application {
 
   class Check_name implements EventHandler<ActionEvent> {
     public void handle(ActionEvent event) {
+      String name = new String(actf.getText());
+
       // アカウント名が有効か判定する
-      int c = 0;
-      if (c == 0) {
+      if (name == null || !usersname.contains(name)) {
         // アカウント名確定のためのアラート
         Alert really = new Alert(Alert.AlertType.CONFIRMATION);
         really.setTitle("確認");
-        really.getDialogPane().setHeaderText("本当に " + actf.getText() + " がアカウント名でいいですか？");
+        really.getDialogPane().setHeaderText("本当に " + name + " がアカウント名でいいですか？");
 
         msg.setText("このアカウント名を使うことができます。");
         msg.setGraphic(new ImageView(maru));
