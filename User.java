@@ -4,6 +4,10 @@ class User {
   private String name;
   private String password;
 
+  User(String tmp) {
+    name = tmp;
+  }
+
   public void setName(String tmp) {
     name = tmp;
   }
@@ -21,11 +25,11 @@ class User {
   }
 }
 
-class Exams {
+class Exam {
   private String name;
   private HashMap<String, Subject> subsdata = new HashMap<String, Subject>();
 
-  Exams(String tmp) {
+  Exam(String tmp) {
     name = tmp;
   }
 

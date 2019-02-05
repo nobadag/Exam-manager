@@ -30,6 +30,8 @@ public class Manager extends Application {
   private Image batsu;
   private Image pencil;
 
+  private User user;
+  private Exam exam;
   private HashMap<String, Subject> subsMap = new HashMap<String, Subject>();
   private ArrayList<String> usesubs = new ArrayList<>();
   private String usewhen;
@@ -44,7 +46,7 @@ public class Manager extends Application {
   private Label sub;
   private Label msg1;
   private TextField scotf;
-  public static int count = 0;
+  private int count = 0;
 
   private boolean rand = false;
 
@@ -181,8 +183,9 @@ public class Manager extends Application {
         ok.setOnAction(e -> {
           // 「OK」を押すと、アラートを表示
           Optional<ButtonType> res = really.showAndWait();
-          // 「OK」を押すと、教科選択画面へ
           if (res.get() == ButtonType.OK) {
+            // 「OK」を押すと、Userのオブジェクトを生成し、教科選択画面へ
+            user = new User(actf.getText());
             select_sub();
           }
         });
@@ -303,6 +306,8 @@ public class Manager extends Application {
       Toggle sel = whtg.getSelectedToggle();
       RadioButton t = (RadioButton) sel;
       usewhen = t.getText();
+      // Examクラスのオブジェクトを生成
+      exam = new Exam(usewhen);
       // 「OK」を押すと、点数入力画面へ
       input_sco();
     });
@@ -452,9 +457,9 @@ public class Manager extends Application {
       gp4.add(scoch[i], 1, i);
       gp4.add(change[i], 2, i);
       change[i].setOnAction(e -> {
+        // 「変更」が押されたら、その教科の点数入力画面に移る
         Button t = (Button) e.getSource();
-        int pos = GridPane.getRowIndex(t);
-        count = pos;
+        count = GridPane.getRowIndex(t);
         rand = true;
         input_sco();
       });
