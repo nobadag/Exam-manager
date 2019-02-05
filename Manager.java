@@ -25,6 +25,7 @@ public class Manager extends Application {
   private Scene check_sco;
 
   private File Datas;
+  private File Roster;
 
   private Image maru;
   private Image batsu;
@@ -60,9 +61,14 @@ public class Manager extends Application {
     pencil = new Image("Image\\ƒGƒ“ƒsƒc.png", 30, 0, true, false);
 
     Datas = new File("Datas");
+    Roster = new File("Datas\\Roster.csv");
 
     if (!Datas.exists()) {
       Datas.mkdir();
+    }
+
+    if (Datas.exists() && !Roster.exists()) {
+      Roster.createNewFile();
     }
   }
 
