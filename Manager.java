@@ -40,17 +40,20 @@ public class Manager extends Application {
 
   private TextField actf;
   private PasswordField pwf1;
-  private Label msg;
+  private Label msg1;
+  private Label msg2;
   private Button ok;
 
   private int dis = 0;
 
   private Label sub;
-  private Label msg1;
+  private Label check;
   private TextField scotf;
   private int count = 0;
 
   private boolean rand = false;
+  private boolean acwrote = false;
+  private boolean pswrote = false;
 
   public static void main(String[] args) {
     launch(args);
@@ -62,7 +65,7 @@ public class Manager extends Application {
     pencil = new Image("Image\\エンピツ.png", 30, 0, true, false);
 
     Datas = new File("Datas");
-    Roster = new File("Datas\\Roster.csv");
+    Roster = new File("Datas\\Roster.txt");
 
     if (!Datas.exists()) {
       Datas.mkdir();
@@ -71,15 +74,8 @@ public class Manager extends Application {
     if (!Roster.exists()) {
       Roster.createNewFile();
     } else {
-      String line;
-      String bin;
-      String[] tmp;
-      BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("Datas\\Roster.csv")));
-      while ((bin = br.readLine()) != null) {
-        line = new String(bin);
-        tmp = line.split(",");
-        usersname.add(tmp[0]);
-      }
+      BufferedReader br = new BufferedReader(new FileReader("Datas\\Roster.txt"));
+      usersname.add(br.readLine());
       br.close();
     }
   }
@@ -141,13 +137,15 @@ public class Manager extends Application {
 
     actf = new TextField();
     pwf1 = new PasswordField();
-    msg = new Label();
+    msg1 = new Label();
+    msg2 = new Label();
     ok = new Button("  OK  ");
 
     des.setFont(new Font(18));
     acc.setFont(new Font(17));
     pas.setFont(new Font(17));
-    msg.setFont(new Font(18));
+    msg1.setFont(new Font(18));
+    msg2.setFont(new Font(18));
     actf.setFont(new Font(15));
     pwf1.setPrefWidth(300);
     actf.setPrefHeight(30);
@@ -155,6 +153,7 @@ public class Manager extends Application {
     ok.setDisable(true);
 
     actf.setOnAction(new Check_name());
+    pwf1.setOnAction(new Check_password());
 
     ok.setFont(new Font(15));
 
@@ -172,7 +171,8 @@ public class Manager extends Application {
 
     acvb.getChildren().add(des);
     acvb.getChildren().add(gp1);
-    acvb.getChildren().add(msg);
+    acvb.getChildren().add(msg1);
+    acvb.getChildren().add(msg2);
     acvb.getChildren().add(ok);
 
     acvb.setAlignment(Pos.CENTER);
@@ -189,28 +189,58 @@ public class Manager extends Application {
       String name = new String(actf.getText());
 
       // アカウント名が有効か判定する
-      if (name == null || !usersname.contains(name)) {
-        // アカウント名確定のためのアラート
-        Alert really = new Alert(Alert.AlertType.CONFIRMATION);
-        really.setTitle("確認");
-        really.getDialogPane().setHeaderText("本当に " + name + " がアカウント名でいいですか？");
+      if (name.length() == 0 || usersname.contains(name)) {
+        msg1.setText("このアカウント名を使うことはできません。");
+        msg1.setGraphic(new ImageView(batsu));
+        ok.setDisable(true);
+        acwrote = false;
+      } else {
+        msg1.setText("このアカウント名を使うことができます。");
+        msg1.setGraphic(new ImageView(maru));
+        if (pswrote) {
+          ok.setDisable(false);
+        }
+        acwrote = true;
+      }
+    }
+  }
 
-        msg.setText("このアカウント名を使うことができます。");
-        msg.setGraphic(new ImageView(maru));
+  class Check_password implements EventHandler<ActionEvent> {
+    public void handle(ActionEvent event) {
+      String pass = new String(pwf1.getText());
+
+      // パスワードが有効か判定する
+      if (pass.length() >= 6 && acwrote) {
+        msg2.setText("このパスワードを使うことができます。");
+        msg2.setGraphic(new ImageView(maru));
         ok.setDisable(false);
-
+        pswrote = true;
         ok.setOnAction(e -> {
+          // アカウント名確定のためのアラート
+          Alert really = new Alert(Alert.AlertType.CONFIRMATION);
+          really.setTitle("確認");
+          really.getDialogPane().setHeaderText("本当に " + actf.getText() + " がアカウント名でいいですか？");
+
           // 「OK」を押すと、アラートを表示
           Optional<ButtonType> res = really.showAndWait();
           if (res.get() == ButtonType.OK) {
             // 「OK」を押すと、Userのオブジェクトを生成し、教科選択画面へ
             user = new User(actf.getText());
+            try {
+              PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter("Datas\\Roster.txt", true)));
+              pw.println(actf.getText());
+              pw.close();
+            } catch (Exception exp) {
+              really.getDialogPane().setHeaderText("エラーメッセージ：アカウント名とパスワードを保存できません。");
+            }
             select_sub();
           }
         });
       } else {
-        msg.setText("このアカウント名を使うことはできません。");
-        msg.setGraphic(new ImageView(batsu));
+        msg2.setText("パスワードの長さが足りません");
+        msg2.setGraphic(new ImageView(batsu));
+        ok.setDisable(true);
+        pswrote = false;
       }
     }
   }
@@ -338,13 +368,13 @@ public class Manager extends Application {
     // 点数入力画面
     Label selwh = new Label(usewhen);
     sub = new Label(usesubs.get(count));
-    msg1 = new Label();
+    check = new Label();
     scotf = new TextField();
     Button[] tenkey = new Button[12];
 
     selwh.setFont(new Font(20));
     sub.setFont(Font.font("SansSerif", FontWeight.BLACK, 25));
-    msg1.setFont(new Font(17));
+    check.setFont(new Font(17));
     scotf.setFont(new Font(30));
 
     BorderPane bp5 = new BorderPane();
@@ -400,7 +430,7 @@ public class Manager extends Application {
     vb1.getChildren().add(selwh);
     vb1.getChildren().add(sub);
     vb1.getChildren().add(scotf);
-    vb1.getChildren().add(msg1);
+    vb1.getChildren().add(check);
     vb1.setAlignment(Pos.CENTER);
 
     hb1.getChildren().add(vb1);
@@ -421,8 +451,8 @@ public class Manager extends Application {
         int score = Integer.parseInt(scotf.getText());
         if (score < 0 || score > 100) {
           // 範囲内かの判定
-          msg1.setText("有効な数値ではありません。");
-          msg1.setGraphic(new ImageView(batsu));
+          check.setText("有効な数値ではありません。");
+          check.setGraphic(new ImageView(batsu));
           scotf.setText("");
         } else {
           subsMap.get(usesubs.get(count)).setScore(score);
@@ -439,8 +469,8 @@ public class Manager extends Application {
         }
       } catch (NumberFormatException exp) {
         // 文字が含まれていた場合
-        msg1.setText("数値として読み取ることができません。");
-        msg1.setGraphic(new ImageView(batsu));
+        check.setText("数値として読み取ることができません。");
+        check.setGraphic(new ImageView(batsu));
         scotf.setText("");
       }
     }
