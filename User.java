@@ -3,9 +3,11 @@ import java.util.*;
 class User {
   private String name;
   private String password;
+  private ArrayList<Exam> examsList = new ArrayList<>();
 
-  User(String tmp) {
-    name = tmp;
+  User(String tmp1, String tmp2) {
+    name = tmp1;
+    password = tmp2;
   }
 
   public void setName(String tmp) {
@@ -22,6 +24,18 @@ class User {
 
   public String getPassword() {
     return password;
+  }
+
+  public void addExam(ArrayList<Exam> tmp) {
+    examsList.addAll(tmp);
+  }
+
+  public Exam getExam(int tmp) {
+    return examsList.get(tmp);
+  }
+
+  public ArrayList<Exam> getExamAll() {
+    return examsList;
   }
 }
 
