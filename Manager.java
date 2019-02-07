@@ -26,6 +26,7 @@ public class Manager extends Application {
 
   private File Datas;
   private File Roster;
+  private File xml;
 
   private Image maru;
   private Image batsu;
@@ -74,8 +75,11 @@ public class Manager extends Application {
     if (!Roster.exists()) {
       Roster.createNewFile();
     } else {
-      BufferedReader br = new BufferedReader(new FileReader("Datas\\Roster.txt"));
-      usersname.add(br.readLine());
+      String line;
+      BufferedReader br = new BufferedReader(new FileReader(Roster.getPath()));
+      while ((line = br.readLine()) != null) {
+        usersname.add(line);
+      }
       br.close();
     }
   }
@@ -225,11 +229,15 @@ public class Manager extends Application {
           Optional<ButtonType> res = really.showAndWait();
           if (res.get() == ButtonType.OK) {
             // 「OK」を押すと、Userのオブジェクトを生成し、教科選択画面へ
-            user = new User(actf.getText());
+            user = new User(actf.getText(), pwf1.getText());
             try {
-              PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter("Datas\\Roster.txt", true)));
+              PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(Roster.getPath(), true)));
               pw.println(actf.getText());
               pw.close();
+              xml = new File("Datas\\" + user.getName() + ".xml");
+              if (!xml.exists()) {
+                xml.createNewFile();
+              }
             } catch (Exception exp) {
               really.getDialogPane().setHeaderText("エラーメッセージ：アカウント名とパスワードを保存できません。");
             }
@@ -524,6 +532,10 @@ public class Manager extends Application {
     chvb.setAlignment(Pos.CENTER);
 
     bp6.setCenter(chvb);
+
+    ok3.setOnAction(e -> {
+      exam.setData(subsMap);
+    });
 
     check_sco = new Scene(bp6);
 
