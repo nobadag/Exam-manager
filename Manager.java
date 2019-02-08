@@ -9,6 +9,11 @@ import javafx.scene.text.*;
 import javafx.scene.image.*;
 import javafx.geometry.*;
 import javafx.event.*;
+import javax.xml.parsers.*;
+import javax.xml.transform.*;
+import javax.xml.transform.stream.*;
+import javax.xml.transform.dom.*;
+import org.w3c.dom.*;
 
 public class Manager extends Application {
   public Stage stage;
@@ -26,7 +31,6 @@ public class Manager extends Application {
 
   private File Datas;
   private File Roster;
-  private File xml;
 
   private Image maru;
   private Image batsu;
@@ -234,10 +238,6 @@ public class Manager extends Application {
               PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(Roster.getPath(), true)));
               pw.println(actf.getText());
               pw.close();
-              xml = new File("Datas\\" + user.getName() + ".xml");
-              if (!xml.exists()) {
-                xml.createNewFile();
-              }
             } catch (Exception exp) {
               really.getDialogPane().setHeaderText("エラーメッセージ：アカウント名とパスワードを保存できません。");
             }
@@ -535,10 +535,49 @@ public class Manager extends Application {
 
     ok3.setOnAction(e -> {
       exam.setData(subsMap);
+      user.addExam(exam);
+      data_write();
     });
 
     check_sco = new Scene(bp6);
 
     stage.setScene(check_sco);
+  }
+
+  void data_write() {
+    try {
+      DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+      DocumentBuilder db = dbf.newDocumentBuilder();
+      Document doc = db.newDocument();
+
+      Element userdata = doc.createElement("user");
+      doc.appendChild(userdata);
+
+      for (int u = 0; u < user.getExamAll().size(); u++) {
+        Element examdata = doc.createElement("exam");
+        userdata.appendChild(examdata);
+        Element examname = doc.createElement("examname");
+        examdata.appendChild(examname);
+        examname.appendChild(doc.createTextNode(user.getExam(u).getName()));
+
+        for (int i = 0; i < user.getExam(u).getDataAll().size(); i++) {
+          Element sub = doc.createElement("subject");
+          Element subname = doc.createElement("subname");
+          Element score = doc.createElement("score");
+          examdata.appendChild(sub);
+          sub.appendChild(subname);
+          sub.appendChild(score);
+          subname.appendChild(doc.createTextNode(exam.getData(exam.getSub(i)).getName()));
+          score.appendChild(doc.createTextNode(String.valueOf((exam.getData(exam.getSub(i)).getScore()))));
+        }
+      }
+      TransformerFactory tff = TransformerFactory.newInstance();
+      Transformer tf = tff.newTransformer();
+      tf.setOutputProperty(OutputKeys.ENCODING, "Shift_JIS");
+      tf.setOutputProperty(OutputKeys.INDENT, "yes");
+      tf.transform(new DOMSource(doc), new StreamResult("Datas\\" + user.getName() + ".xml"));
+    } catch (Exception exp) {
+      System.exit(1);
+    }
   }
 }

@@ -26,8 +26,8 @@ class User {
     return password;
   }
 
-  public void addExam(ArrayList<Exam> tmp) {
-    examsList.addAll(tmp);
+  public void addExam(Exam tmp) {
+    examsList.add(tmp);
   }
 
   public Exam getExam(int tmp) {
@@ -41,6 +41,7 @@ class User {
 
 class Exam {
   private String name;
+  private ArrayList<String> usesubs;
   private HashMap<String, Subject> subsdata = new HashMap<String, Subject>();
 
   Exam(String tmp) {
@@ -53,10 +54,23 @@ class Exam {
 
   public void setData(HashMap<String, Subject> tmp) {
     subsdata.putAll(tmp);
+    usesubs = new ArrayList<>(tmp.keySet());
   }
 
-  public HashMap<String, Subject> getData() {
+  public Subject getData(String key) {
+    return subsdata.get(key);
+  }
+
+  public HashMap<String, Subject> getDataAll() {
     return subsdata;
+  }
+
+  public String getSub(int tmp) {
+    return usesubs.get(tmp);
+  }
+
+  public ArrayList<String> getSubAll() {
+    return usesubs;
   }
 }
 
