@@ -586,7 +586,13 @@ public class Manager extends Application {
       tf.transform(new DOMSource(doc),
           new StreamResult("Datas\\" + String.valueOf(user.getName().getBytes()) + ".xml"));
     } catch (Exception exp) {
-      System.exit(1);
+      Alert err = new Alert(Alert.AlertType.ERROR);
+      err.setTitle("エラー");
+      err.getDialogPane().setHeaderText("データを保存することに失敗しました。\nデータが失われる可能性があります。");
+      Optional<ButtonType> res = err.showAndWait();
+      if (res.get() == ButtonType.OK) {
+        System.exit(1);
+      }
     }
   }
 }
