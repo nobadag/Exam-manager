@@ -24,6 +24,7 @@ public class Manager extends Application {
 
   private Scene welcome;
   private Scene make_acc;
+  private Scene login_acc;
   private Scene select_sub;
   private Scene select_when;
   private Scene input_sco;
@@ -43,11 +44,17 @@ public class Manager extends Application {
   private ArrayList<String> usesubs = new ArrayList<>();
   private String usewhen;
 
-  private TextField actf;
+  private TextField actf1;
   private PasswordField pwf1;
   private Label msg1;
   private Label msg2;
   private Button ok;
+
+  private TextField actf2;
+  private PasswordField pwf2;
+  private Label msg3;
+  private Label msg4;
+  private Button ok1;
 
   private int dis = 0;
 
@@ -117,7 +124,7 @@ public class Manager extends Application {
     nw.setTooltip(new Tooltip("アカウントを新規作成します"));
     op.setTooltip(new Tooltip("アカウントにログインします"));
 
-    BorderPane bp1 = new BorderPane();
+    BorderPane bp = new BorderPane();
     VBox home = new VBox(20);
 
     home.getChildren().add(wel);
@@ -125,15 +132,18 @@ public class Manager extends Application {
     home.getChildren().add(op);
 
     home.setAlignment(Pos.CENTER);
-    bp1.setCenter(home);
+    bp.setCenter(home);
 
-    welcome = new Scene(bp1);
+    welcome = new Scene(bp);
 
     // 「新規」を押すと、アカウント作成画面へ
     nw.setOnAction(e -> {
       make_acc();
     });
 
+    op.setOnAction(e -> {
+      login_acc();
+    });
     stage.setScene(welcome);
   }
 
@@ -143,7 +153,7 @@ public class Manager extends Application {
     Label acc = new Label("アカウント名：");
     Label pas = new Label("パスワード：");
 
-    actf = new TextField();
+    actf1 = new TextField();
     pwf1 = new PasswordField();
     msg1 = new Label();
     msg2 = new Label();
@@ -154,47 +164,47 @@ public class Manager extends Application {
     pas.setFont(new Font(17));
     msg1.setFont(new Font(18));
     msg2.setFont(new Font(18));
-    actf.setFont(new Font(15));
+    actf1.setFont(new Font(15));
     pwf1.setPrefWidth(300);
-    actf.setPrefHeight(30);
+    actf1.setPrefHeight(30);
     pwf1.setPrefHeight(30);
     ok.setDisable(true);
 
-    actf.setOnAction(new Check_name());
+    actf1.setOnAction(new Check_name());
     pwf1.setOnAction(new Check_password());
 
     ok.setFont(new Font(15));
 
-    BorderPane bp2 = new BorderPane();
-    VBox acvb = new VBox(20);
-    GridPane gp1 = new GridPane();
+    BorderPane bp = new BorderPane();
+    VBox vb = new VBox(20);
+    GridPane gp = new GridPane();
 
-    gp1.add(acc, 0, 0);
-    gp1.add(pas, 0, 1);
-    gp1.add(actf, 1, 0);
-    gp1.add(pwf1, 1, 1);
+    gp.add(acc, 0, 0);
+    gp.add(pas, 0, 1);
+    gp.add(actf1, 1, 0);
+    gp.add(pwf1, 1, 1);
 
-    gp1.setVgap(10);
-    gp1.setAlignment(Pos.CENTER);
+    gp.setVgap(10);
+    gp.setAlignment(Pos.CENTER);
 
-    acvb.getChildren().add(des);
-    acvb.getChildren().add(gp1);
-    acvb.getChildren().add(msg1);
-    acvb.getChildren().add(msg2);
-    acvb.getChildren().add(ok);
+    vb.getChildren().add(des);
+    vb.getChildren().add(gp);
+    vb.getChildren().add(msg1);
+    vb.getChildren().add(msg2);
+    vb.getChildren().add(ok);
 
-    acvb.setAlignment(Pos.CENTER);
+    vb.setAlignment(Pos.CENTER);
 
-    bp2.setCenter(acvb);
+    bp.setCenter(vb);
 
-    make_acc = new Scene(bp2);
+    make_acc = new Scene(bp);
 
     stage.setScene(make_acc);
   }
 
   class Check_name implements EventHandler<ActionEvent> {
     public void handle(ActionEvent event) {
-      String name = new String(actf.getText());
+      String name = new String(actf1.getText());
 
       // アカウント名が有効か判定する
       if (name.length() == 0 || usersname.contains(name)) {
@@ -227,19 +237,25 @@ public class Manager extends Application {
           // アカウント名確定のためのアラート
           Alert really = new Alert(Alert.AlertType.CONFIRMATION);
           really.setTitle("確認");
-          really.getDialogPane().setHeaderText("本当に " + actf.getText() + " がアカウント名でいいですか？");
+          really.getDialogPane().setHeaderText("本当に " + actf1.getText() + " がアカウント名でいいですか？");
 
           // 「OK」を押すと、アラートを表示
           Optional<ButtonType> res = really.showAndWait();
           if (res.get() == ButtonType.OK) {
             // 「OK」を押すと、Userのオブジェクトを生成し、教科選択画面へ
-            user = new User(actf.getText(), pass);
+            user = new User(actf1.getText(), pass);
             try {
               PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(Roster.getPath(), true)));
-              pw.println(actf.getText());
+              pw.println(actf1.getText());
               pw.close();
             } catch (Exception exp) {
-              really.getDialogPane().setHeaderText("エラーメッセージ：アカウント名とパスワードを保存できません。");
+              Alert err = new Alert(Alert.AlertType.ERROR);
+              err.setTitle("エラー");
+              err.getDialogPane().setHeaderText("アカウント名とパスワードを保存できません。");
+              Optional<ButtonType> reserr = really.showAndWait();
+              if (reserr.get() == ButtonType.OK) {
+                System.exit(1);
+              }
             }
             select_sub();
           }
@@ -253,19 +269,71 @@ public class Manager extends Application {
     }
   }
 
+  void login_acc() {
+    // ログイン画面
+    Label des = new Label("ログインしましょう");
+    Label acc = new Label("アカウント名：");
+    Label pas = new Label("パスワード：");
+
+    actf2 = new TextField();
+    pwf2 = new PasswordField();
+    msg3 = new Label();
+    msg4 = new Label();
+    ok1 = new Button("  OK  ");
+
+    des.setFont(new Font(18));
+    acc.setFont(new Font(17));
+    pas.setFont(new Font(17));
+    msg3.setFont(new Font(18));
+    msg4.setFont(new Font(18));
+    actf2.setFont(new Font(15));
+    pwf2.setPrefWidth(300);
+    actf2.setPrefHeight(30);
+    pwf2.setPrefHeight(30);
+    ok1.setDisable(true);
+
+    ok1.setFont(new Font(15));
+
+    BorderPane bp = new BorderPane();
+    VBox vb = new VBox(20);
+    GridPane gp = new GridPane();
+
+    gp.add(acc, 0, 0);
+    gp.add(pas, 0, 1);
+    gp.add(actf2, 1, 0);
+    gp.add(pwf2, 1, 1);
+
+    gp.setVgap(10);
+    gp.setAlignment(Pos.CENTER);
+
+    vb.getChildren().add(des);
+    vb.getChildren().add(gp);
+    vb.getChildren().add(msg3);
+    vb.getChildren().add(msg4);
+    vb.getChildren().add(ok1);
+
+    vb.setAlignment(Pos.CENTER);
+
+    bp.setCenter(vb);
+
+    login_acc = new Scene(bp);
+
+    stage.setScene(login_acc);
+  }
+
   void select_sub() {
     // 教科選択画面
-    Label des1 = new Label("教科を選んでください。");
+    Label des = new Label("教科を選んでください。");
     CheckBox[] subs = new CheckBox[subnames.length];
-    Button ok1 = new Button("  OK  ");
-    GridPane gp2 = new GridPane();
+    Button ok2 = new Button("  OK  ");
+    GridPane gp = new GridPane();
 
     VBox subvb = new VBox(10);
 
-    des1.setFont(new Font(18));
-    subvb.getChildren().add(des1);
+    des.setFont(new Font(18));
+    subvb.getChildren().add(des);
 
-    ok1.setFont(new Font(15));
+    ok2.setFont(new Font(15));
 
     int x = 0, y = 0;
     for (int i = 0; i < subnames.length; i++) {
@@ -276,7 +344,7 @@ public class Manager extends Application {
         x = 0;
         y++;
       }
-      gp2.add(subs[i], x, y);
+      gp.add(subs[i], x, y);
       subs[i].setOnAction(e -> {
         // １つ以上チェックされていないと「OK」を無効にする
         CheckBox t = (CheckBox) e.getSource();
@@ -286,32 +354,32 @@ public class Manager extends Application {
           dis--;
         }
         if (dis == 0) {
-          ok1.setDisable(true);
+          ok2.setDisable(true);
         } else {
-          ok1.setDisable(false);
+          ok2.setDisable(false);
         }
       });
       x++;
     }
 
-    ok1.setDisable(true);
+    ok2.setDisable(true);
 
-    gp2.setHgap(10);
-    gp2.setVgap(10);
-    gp2.setAlignment(Pos.CENTER);
+    gp.setHgap(10);
+    gp.setVgap(10);
+    gp.setAlignment(Pos.CENTER);
 
-    subvb.getChildren().add(gp2);
-    subvb.getChildren().add(ok1);
+    subvb.getChildren().add(gp);
+    subvb.getChildren().add(ok2);
 
     subvb.setAlignment(Pos.CENTER);
 
-    BorderPane bp3 = new BorderPane();
+    BorderPane bp = new BorderPane();
 
-    bp3.setCenter(subvb);
+    bp.setCenter(subvb);
 
-    select_sub = new Scene(bp3);
+    select_sub = new Scene(bp);
 
-    ok1.setOnAction(e -> {
+    ok2.setOnAction(e -> {
       // 「OK」を押すと、試験選択画面へ
       select_when();
       // チェックされた分、Subjectのオブジェクトを生成
@@ -328,37 +396,37 @@ public class Manager extends Application {
 
   void select_when() {
     // 試験選択画面
-    Label des2 = new Label("いつの試験か選んでください。");
+    Label des = new Label("いつの試験か選んでください。");
     RadioButton[] wh = new RadioButton[when.length];
     ToggleGroup whtg = new ToggleGroup();
-    Button ok2 = new Button("  OK  ");
+    Button ok3 = new Button("  OK  ");
 
-    BorderPane bp4 = new BorderPane();
-    VBox whvb = new VBox(10);
+    BorderPane bp = new BorderPane();
+    VBox vb = new VBox(10);
 
-    des2.setFont(new Font(18));
-    whvb.getChildren().add(des2);
+    des.setFont(new Font(18));
+    vb.getChildren().add(des);
 
-    ok2.setFont(new Font(15));
+    ok3.setFont(new Font(15));
 
     for (int i = 0; i < when.length; i++) {
       wh[i] = new RadioButton(when[i]);
       wh[i].setFont(new Font(15));
       wh[i].setPrefWidth(150);
       wh[i].setToggleGroup(whtg);
-      whvb.getChildren().add(wh[i]);
+      vb.getChildren().add(wh[i]);
     }
     wh[0].setSelected(true);
 
-    whvb.getChildren().add(ok2);
+    vb.getChildren().add(ok3);
 
-    whvb.setAlignment(Pos.CENTER);
+    vb.setAlignment(Pos.CENTER);
 
-    bp4.setCenter(whvb);
+    bp.setCenter(vb);
 
-    select_when = new Scene(bp4);
+    select_when = new Scene(bp);
 
-    ok2.setOnAction(e -> {
+    ok3.setOnAction(e -> {
       // どの試験なのか記憶
       Toggle sel = whtg.getSelectedToggle();
       RadioButton t = (RadioButton) sel;
@@ -385,10 +453,10 @@ public class Manager extends Application {
     check.setFont(new Font(17));
     scotf.setFont(new Font(30));
 
-    BorderPane bp5 = new BorderPane();
-    VBox vb1 = new VBox(20);
+    BorderPane bp = new BorderPane();
+    VBox vb = new VBox(20);
     HBox hb1 = new HBox(30);
-    GridPane gp3 = new GridPane();
+    GridPane gp = new GridPane();
 
     scotf.setAlignment(Pos.CENTER);
 
@@ -401,7 +469,7 @@ public class Manager extends Application {
         x = 0;
         y++;
       }
-      gp3.add(tenkey[i], x, y);
+      gp.add(tenkey[i], x, y);
       x++;
     }
 
@@ -409,9 +477,9 @@ public class Manager extends Application {
     tenkey[10] = new Button("Clear");
     tenkey[11] = new Button("Enter");
 
-    gp3.add(tenkey[0], 1, 4);
-    gp3.add(tenkey[10], 0, 4);
-    gp3.add(tenkey[11], 2, 4);
+    gp.add(tenkey[0], 1, 4);
+    gp.add(tenkey[10], 0, 4);
+    gp.add(tenkey[11], 2, 4);
 
     for (int i = 0; i < 12; i++) {
       tenkey[i].setPrefHeight(50);
@@ -433,21 +501,21 @@ public class Manager extends Application {
     tenkey[11].setOnAction(new Check_score());
     scotf.setOnAction(new Check_score());
 
-    gp3.setAlignment(Pos.CENTER);
+    gp.setAlignment(Pos.CENTER);
 
-    vb1.getChildren().add(selwh);
-    vb1.getChildren().add(sub);
-    vb1.getChildren().add(scotf);
-    vb1.getChildren().add(check);
-    vb1.setAlignment(Pos.CENTER);
+    vb.getChildren().add(selwh);
+    vb.getChildren().add(sub);
+    vb.getChildren().add(scotf);
+    vb.getChildren().add(check);
+    vb.setAlignment(Pos.CENTER);
 
-    hb1.getChildren().add(vb1);
-    hb1.getChildren().add(gp3);
+    hb1.getChildren().add(vb);
+    hb1.getChildren().add(gp);
     hb1.setAlignment(Pos.CENTER);
 
-    bp5.setCenter(hb1);
+    bp.setCenter(hb1);
 
-    input_sco = new Scene(bp5);
+    input_sco = new Scene(bp);
 
     stage.setScene(input_sco);
   }
@@ -487,16 +555,16 @@ public class Manager extends Application {
   void check_sco() {
     // 点数確認画面
     Label right = new Label("この点数でいいですか？");
-    Button ok3 = new Button("  OK  ");
+    Button ok4 = new Button("  OK  ");
     Label[] subch = new Label[subsMap.size()];
     Label[] scoch = new Label[subsMap.size()];
     Button[] change = new Button[subsMap.size()];
 
-    GridPane gp4 = new GridPane();
-    VBox chvb = new VBox(10);
-    BorderPane bp6 = new BorderPane();
+    GridPane gp = new GridPane();
+    VBox vb = new VBox(10);
+    BorderPane bp7 = new BorderPane();
 
-    ok3.setFont(new Font(15));
+    ok4.setFont(new Font(15));
     right.setFont(new Font(18));
 
     for (int i = 0; i < subsMap.size(); i++) {
@@ -510,9 +578,9 @@ public class Manager extends Application {
       scoch[i].setPrefWidth(100);
       subch[i].setAlignment(Pos.CENTER);
       scoch[i].setAlignment(Pos.CENTER);
-      gp4.add(subch[i], 0, i);
-      gp4.add(scoch[i], 1, i);
-      gp4.add(change[i], 2, i);
+      gp.add(subch[i], 0, i);
+      gp.add(scoch[i], 1, i);
+      gp.add(change[i], 2, i);
       change[i].setOnAction(e -> {
         // 「変更」が押されたら、その教科の点数入力画面に移る
         Button t = (Button) e.getSource();
@@ -522,24 +590,24 @@ public class Manager extends Application {
       });
     }
 
-    gp4.setAlignment(Pos.CENTER);
-    gp4.setGridLinesVisible(true);
+    gp.setAlignment(Pos.CENTER);
+    gp.setGridLinesVisible(true);
 
-    chvb.getChildren().add(right);
-    chvb.getChildren().add(gp4);
-    chvb.getChildren().add(ok3);
+    vb.getChildren().add(right);
+    vb.getChildren().add(gp);
+    vb.getChildren().add(ok4);
 
-    chvb.setAlignment(Pos.CENTER);
+    vb.setAlignment(Pos.CENTER);
 
-    bp6.setCenter(chvb);
+    bp7.setCenter(vb);
 
-    ok3.setOnAction(e -> {
+    ok4.setOnAction(e -> {
       exam.setData(subsMap);
       user.addExam(exam);
       data_write();
     });
 
-    check_sco = new Scene(bp6);
+    check_sco = new Scene(bp7);
 
     stage.setScene(check_sco);
   }
@@ -589,8 +657,8 @@ public class Manager extends Application {
       Alert err = new Alert(Alert.AlertType.ERROR);
       err.setTitle("エラー");
       err.getDialogPane().setHeaderText("データを保存することに失敗しました。\nデータが失われる可能性があります。");
-      Optional<ButtonType> res = err.showAndWait();
-      if (res.get() == ButtonType.OK) {
+      Optional<ButtonType> reserr = err.showAndWait();
+      if (reserr.get() == ButtonType.OK) {
         System.exit(1);
       }
     }
