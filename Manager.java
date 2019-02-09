@@ -233,7 +233,7 @@ public class Manager extends Application {
           Optional<ButtonType> res = really.showAndWait();
           if (res.get() == ButtonType.OK) {
             // 「OK」を押すと、Userのオブジェクトを生成し、教科選択画面へ
-            user = new User(actf.getText(), pwf1.getText());
+            user = new User(actf.getText(), pass);
             try {
               PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(Roster.getPath(), true)));
               pw.println(actf.getText());
@@ -553,6 +553,14 @@ public class Manager extends Application {
       Element userdata = doc.createElement("user");
       doc.appendChild(userdata);
 
+      Element name = doc.createElement("username");
+      userdata.appendChild(name);
+      name.appendChild(doc.createTextNode(String.valueOf(user.getName().getBytes())));
+
+      Element password = doc.createElement("password");
+      userdata.appendChild(password);
+      password.appendChild(doc.createTextNode(String.valueOf(user.getPassword().getBytes())));
+
       for (int u = 0; u < user.getExamAll().size(); u++) {
         Element examdata = doc.createElement("exam");
         userdata.appendChild(examdata);
@@ -575,7 +583,8 @@ public class Manager extends Application {
       Transformer tf = tff.newTransformer();
       tf.setOutputProperty(OutputKeys.ENCODING, "Shift_JIS");
       tf.setOutputProperty(OutputKeys.INDENT, "yes");
-      tf.transform(new DOMSource(doc), new StreamResult("Datas\\" + user.getName() + ".xml"));
+      tf.transform(new DOMSource(doc),
+          new StreamResult("Datas\\" + String.valueOf(user.getName().getBytes()) + ".xml"));
     } catch (Exception exp) {
       System.exit(1);
     }
