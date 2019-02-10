@@ -360,7 +360,7 @@ public class Manager extends Application {
     } catch (Exception exp) {
       Alert err = new Alert(Alert.AlertType.ERROR);
       err.setTitle("エラー");
-      err.getDialogPane().setHeaderText("データを読み込むことに失敗しました。\nデータが失われる可能性があります。");
+      err.getDialogPane().setHeaderText("データを読み込むことに失敗しました。");
       Optional<ButtonType> reserr = err.showAndWait();
       if (reserr.get() == ButtonType.OK) {
         System.exit(1);
@@ -651,7 +651,6 @@ public class Manager extends Application {
     ok4.setOnAction(e -> {
       exam.setData(subsMap);
       user.addExam(exam);
-      data_write();
     });
 
     check_sco = new Scene(bp7);
@@ -672,6 +671,12 @@ public class Manager extends Application {
       if (reserr.get() == ButtonType.OK) {
         System.exit(1);
       }
+    }
+  }
+
+  public void stop() {
+    if (user != null) {
+      data_write();
     }
   }
 }
