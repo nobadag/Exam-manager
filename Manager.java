@@ -9,11 +9,6 @@ import javafx.scene.text.*;
 import javafx.scene.image.*;
 import javafx.geometry.*;
 import javafx.event.*;
-import javax.xml.parsers.*;
-import javax.xml.transform.*;
-import javax.xml.transform.stream.*;
-import javax.xml.transform.dom.*;
-import org.w3c.dom.*;
 
 public class Manager extends Application {
   public Stage stage;
@@ -72,12 +67,12 @@ public class Manager extends Application {
   }
 
   public void init() throws Exception {
-    maru = new Image("Image\\マル.png", 50, 0, true, false);
-    batsu = new Image("Image\\バツ.png", 50, 0, true, false);
-    pencil = new Image("Image\\エンピツ.png", 30, 0, true, false);
+    maru = new Image("Image/マル.png", 50, 0, true, false);
+    batsu = new Image("Image/バツ.png", 50, 0, true, false);
+    pencil = new Image("Image/エンピツ.png", 30, 0, true, false);
 
     Datas = new File("Datas");
-    Roster = new File("Datas\\Roster.txt");
+    Roster = new File("Datas/Roster.txt");
 
     if (!Datas.exists()) {
       Datas.mkdir();
@@ -294,6 +289,9 @@ public class Manager extends Application {
 
     ok1.setFont(new Font(15));
 
+    actf2.setOnAction(new Check_acc());
+    pwf2.setOnAction(new Check_acc());
+
     BorderPane bp = new BorderPane();
     VBox vb = new VBox(20);
     GridPane gp = new GridPane();
@@ -319,6 +317,55 @@ public class Manager extends Application {
     login_acc = new Scene(bp);
 
     stage.setScene(login_acc);
+  }
+
+  class Check_acc implements EventHandler<ActionEvent> {
+    public void handle(ActionEvent event) {
+      if (usersname.contains(actf2.getText())) {
+        msg3.setText("アカウントが見つかりました。");
+        msg3.setGraphic(new ImageView(maru));
+        data_read();
+        if (user.getPassword().equals(pwf2.getText())) {
+          msg4.setText("パスワードが一致しました。");
+          msg4.setGraphic(new ImageView(maru));
+          ok1.setDisable(false);
+        } else {
+          if (pwf2.getText().length() != 0) {
+            msg4.setText("パスワードが一致しません。");
+            msg4.setGraphic(new ImageView(batsu));
+            ok1.setDisable(true);
+          } else {
+            msg4.setText("");
+            msg4.setGraphic(null);
+          }
+        }
+      } else {
+        if (actf2.getText().length() != 0) {
+          msg3.setText("アカウントが見つかりません。");
+          msg3.setGraphic(new ImageView(batsu));
+          ok1.setDisable(true);
+        } else {
+          msg3.setText("");
+          msg3.setGraphic(null);
+        }
+      }
+    }
+  }
+
+  void data_read() {
+    try {
+      ObjectInputStream os = new ObjectInputStream(new FileInputStream("Datas/" + actf2.getText() + ".ser"));
+      user = (User) os.readObject();
+      os.close();
+    } catch (Exception exp) {
+      Alert err = new Alert(Alert.AlertType.ERROR);
+      err.setTitle("エラー");
+      err.getDialogPane().setHeaderText("データを読み込むことに失敗しました。\nデータが失われる可能性があります。");
+      Optional<ButtonType> reserr = err.showAndWait();
+      if (reserr.get() == ButtonType.OK) {
+        System.exit(1);
+      }
+    }
   }
 
   void select_sub() {
@@ -614,49 +661,13 @@ public class Manager extends Application {
 
   void data_write() {
     try {
-      DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-      DocumentBuilder db = dbf.newDocumentBuilder();
-      Document doc = db.newDocument();
-
-      Element userdata = doc.createElement("user");
-      doc.appendChild(userdata);
-
-      Element name = doc.createElement("username");
-      userdata.appendChild(name);
-      name.appendChild(doc.createTextNode(String.valueOf(user.getName().getBytes())));
-
-      Element password = doc.createElement("password");
-      userdata.appendChild(password);
-      password.appendChild(doc.createTextNode(String.valueOf(user.getPassword().getBytes())));
-
-      for (int u = 0; u < user.getExamAll().size(); u++) {
-        Element examdata = doc.createElement("exam");
-        userdata.appendChild(examdata);
-        Element examname = doc.createElement("examname");
-        examdata.appendChild(examname);
-        examname.appendChild(doc.createTextNode(user.getExam(u).getName()));
-
-        for (int i = 0; i < user.getExam(u).getDataAll().size(); i++) {
-          Element sub = doc.createElement("subject");
-          Element subname = doc.createElement("subname");
-          Element score = doc.createElement("score");
-          examdata.appendChild(sub);
-          sub.appendChild(subname);
-          sub.appendChild(score);
-          subname.appendChild(doc.createTextNode(exam.getData(exam.getSub(i)).getName()));
-          score.appendChild(doc.createTextNode(String.valueOf((exam.getData(exam.getSub(i)).getScore()))));
-        }
-      }
-      TransformerFactory tff = TransformerFactory.newInstance();
-      Transformer tf = tff.newTransformer();
-      tf.setOutputProperty(OutputKeys.ENCODING, "Shift_JIS");
-      tf.setOutputProperty(OutputKeys.INDENT, "yes");
-      tf.transform(new DOMSource(doc),
-          new StreamResult("Datas\\" + String.valueOf(user.getName().getBytes()) + ".xml"));
+      ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream("Datas/" + user.getName() + ".ser"));
+      os.writeObject(user);
+      os.close();
     } catch (Exception exp) {
       Alert err = new Alert(Alert.AlertType.ERROR);
       err.setTitle("エラー");
-      err.getDialogPane().setHeaderText("データを保存することに失敗しました。\nデータが失われる可能性があります。");
+      err.getDialogPane().setHeaderText("データを書き込むことに失敗しました。\nデータが失われる可能性があります。");
       Optional<ButtonType> reserr = err.showAndWait();
       if (reserr.get() == ButtonType.OK) {
         System.exit(1);

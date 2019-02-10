@@ -1,6 +1,8 @@
+import java.io.*;
 import java.util.*;
 
-class User {
+class User implements Serializable {
+  static final long serialVersionUID = 1L;
   private String name;
   private String password;
   private ArrayList<Exam> examsList = new ArrayList<>();
@@ -39,7 +41,8 @@ class User {
   }
 }
 
-class Exam {
+class Exam implements Serializable{
+  static final long serialVersionUID = 1L;
   private String name;
   private ArrayList<String> usesubs;
   private HashMap<String, Subject> subsdata = new HashMap<String, Subject>();
@@ -74,7 +77,8 @@ class Exam {
   }
 }
 
-class Subject {
+class Subject implements Serializable {
+  static final long serialVersionUID = 1L;
   private String name;
   private int score;
 
