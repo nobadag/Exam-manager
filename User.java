@@ -46,6 +46,8 @@ class Exam implements Serializable {
   private String name;
   private ArrayList<String> usesubs;
   private HashMap<String, Subject> subsdata = new HashMap<String, Subject>();
+  private int total = 0;
+  private double ave = 0;
 
   Exam(String tmp) {
     name = tmp;
@@ -79,6 +81,21 @@ class Exam implements Serializable {
 
   public ArrayList<String> getSubAll() {
     return usesubs;
+  }
+
+  public int getTotal() {
+    for (int i = 0; i < subsdata.size(); i++) {
+      total += subsdata.get(usesubs.get(i)).getScore();
+    }
+    return total;
+  }
+
+  public double getAverage() {
+    if (total == 0) {
+      this.getTotal();
+    }
+    ave = total / subsdata.size();
+    return ave;
   }
 }
 
