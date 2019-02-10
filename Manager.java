@@ -20,6 +20,7 @@ public class Manager extends Application {
   private Scene welcome;
   private Scene make_acc;
   private Scene login_acc;
+  private Scene home;
   private Scene select_sub;
   private Scene select_when;
   private Scene input_sco;
@@ -252,7 +253,7 @@ public class Manager extends Application {
                 System.exit(1);
               }
             }
-            select_sub();
+            home();
           }
         });
       } else {
@@ -291,6 +292,10 @@ public class Manager extends Application {
 
     actf2.setOnAction(new Check_acc());
     pwf2.setOnAction(new Check_acc());
+
+    ok1.setOnAction(e -> {
+      home();
+    });
 
     BorderPane bp = new BorderPane();
     VBox vb = new VBox(20);
@@ -366,6 +371,39 @@ public class Manager extends Application {
         System.exit(1);
       }
     }
+  }
+
+  void home() {
+    // ユーザーのホーム画面
+    Label name = new Label(user.getName() + " さん");
+    Button newex = new Button("新規試験");
+    Button dataex = new Button("データベース");
+
+    name.setFont(Font.font("SansSerif", FontWeight.BOLD, 36));
+    newex.setFont(new Font(20));
+    dataex.setFont(new Font(20));
+
+    newex.setPrefWidth(180);
+    dataex.setPrefWidth(180);
+
+    newex.setOnAction(e -> {
+      select_sub();
+    });
+
+    VBox vb = new VBox(20);
+    BorderPane bp = new BorderPane();
+
+    vb.getChildren().add(name);
+    vb.getChildren().add(newex);
+    vb.getChildren().add(dataex);
+
+    vb.setAlignment(Pos.CENTER);
+
+    bp.setCenter(vb);
+
+    home = new Scene(bp);
+
+    stage.setScene(home);
   }
 
   void select_sub() {
