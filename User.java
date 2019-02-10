@@ -41,7 +41,7 @@ class User implements Serializable {
   }
 }
 
-class Exam implements Serializable{
+class Exam implements Serializable {
   static final long serialVersionUID = 1L;
   private String name;
   private ArrayList<String> usesubs;
@@ -55,9 +55,14 @@ class Exam implements Serializable{
     return name;
   }
 
-  public void setData(HashMap<String, Subject> tmp) {
-    subsdata.putAll(tmp);
-    usesubs = new ArrayList<>(tmp.keySet());
+  public void setData(String key, Subject tmp) {
+    subsdata.put(key, tmp);
+    usesubs.add(key);
+  }
+
+  public void setDataAll(HashMap<String, Subject> tmp1, ArrayList<String> tmp2) {
+    subsdata.putAll(tmp1);
+    usesubs.addAll(tmp2);
   }
 
   public Subject getData(String key) {

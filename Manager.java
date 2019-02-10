@@ -165,8 +165,8 @@ public class Manager extends Application {
     pwf1.setPrefHeight(30);
     ok.setDisable(true);
 
-    actf1.setOnAction(new Check_name());
-    pwf1.setOnAction(new Check_password());
+    actf1.setOnAction(new Inspection_name());
+    pwf1.setOnAction(new Inspection_password());
 
     ok.setFont(new Font(15));
 
@@ -197,7 +197,7 @@ public class Manager extends Application {
     stage.setScene(make_acc);
   }
 
-  class Check_name implements EventHandler<ActionEvent> {
+  class Inspection_name implements EventHandler<ActionEvent> {
     public void handle(ActionEvent event) {
       String name = new String(actf1.getText());
 
@@ -218,7 +218,7 @@ public class Manager extends Application {
     }
   }
 
-  class Check_password implements EventHandler<ActionEvent> {
+  class Inspection_password implements EventHandler<ActionEvent> {
     public void handle(ActionEvent event) {
       String pass = new String(pwf1.getText());
 
@@ -649,7 +649,7 @@ public class Manager extends Application {
     bp7.setCenter(vb);
 
     ok4.setOnAction(e -> {
-      exam.setData(subsMap);
+      exam.setDataAll(subsMap, usesubs);
       user.addExam(exam);
     });
 
