@@ -52,13 +52,22 @@ class Exam {
     return name;
   }
 
-  public void setData(HashMap<String, Subject> tmp) {
-    subsdata.putAll(tmp);
-    usesubs = new ArrayList<>(tmp.keySet());
+  public void setData(String tmp1, Subject tmp2) {
+    subsdata.put(tmp1, tmp2);
+    usesubs.add(tmp1);
+  }
+
+  public void setDataAll(HashMap<String, Subject> tmp1, ArrayList<String> tmp2) {
+    subsdata = tmp1;
+    usesubs = tmp2;
   }
 
   public Subject getData(String key) {
     return subsdata.get(key);
+  }
+
+  public Subject getDataInt(int tmp) {
+    return subsdata.get(usesubs.get(tmp));
   }
 
   public HashMap<String, Subject> getDataAll() {

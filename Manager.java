@@ -72,12 +72,12 @@ public class Manager extends Application {
   }
 
   public void init() throws Exception {
-    maru = new Image("Image\\マル.png", 50, 0, true, false);
-    batsu = new Image("Image\\バツ.png", 50, 0, true, false);
-    pencil = new Image("Image\\エンピツ.png", 30, 0, true, false);
+    maru = new Image("Image/マル.png", 50, 0, true, false);
+    batsu = new Image("Image/バツ.png", 50, 0, true, false);
+    pencil = new Image("Image/エンピツ.png", 30, 0, true, false);
 
     Datas = new File("Datas");
-    Roster = new File("Datas\\Roster.txt");
+    Roster = new File("Datas/Roster.txt");
 
     if (!Datas.exists()) {
       Datas.mkdir();
@@ -170,8 +170,8 @@ public class Manager extends Application {
     pwf1.setPrefHeight(30);
     ok.setDisable(true);
 
-    actf1.setOnAction(new Check_name());
-    pwf1.setOnAction(new Check_password());
+    actf1.setOnAction(new Inspection_name());
+    pwf1.setOnAction(new Inspection_password());
 
     ok.setFont(new Font(15));
 
@@ -202,7 +202,7 @@ public class Manager extends Application {
     stage.setScene(make_acc);
   }
 
-  class Check_name implements EventHandler<ActionEvent> {
+  class Inspection_name implements EventHandler<ActionEvent> {
     public void handle(ActionEvent event) {
       String name = new String(actf1.getText());
 
@@ -223,7 +223,7 @@ public class Manager extends Application {
     }
   }
 
-  class Check_password implements EventHandler<ActionEvent> {
+  class Inspection_password implements EventHandler<ActionEvent> {
     public void handle(ActionEvent event) {
       String pass = new String(pwf1.getText());
 
@@ -294,6 +294,9 @@ public class Manager extends Application {
 
     ok1.setFont(new Font(15));
 
+    actf2.setOnAction(new Check_acc());
+    pwf2.setOnAction(new Check_acc());
+
     BorderPane bp = new BorderPane();
     VBox vb = new VBox(20);
     GridPane gp = new GridPane();
@@ -319,6 +322,94 @@ public class Manager extends Application {
     login_acc = new Scene(bp);
 
     stage.setScene(login_acc);
+  }
+
+  class Check_acc implements EventHandler<ActionEvent> {
+    public void handle(ActionEvent event) {
+      String name = actf2.getText();
+      String pass;
+
+      if (usersname.contains(name)) {
+        pass = data_read_pass(name);
+        msg3.setText("アカウントが見つかりました。");
+        msg3.setGraphic(new ImageView(maru));
+        if (pwf2.getText().length() == 0 || pass == null) {
+          return;
+        }
+        if (pass.equals(pwf2.getText())) {
+          msg4.setText("パスワードが一致しました。");
+          msg4.setGraphic(new ImageView(maru));
+          ok1.setDisable(false);
+          user = new User(name, pwf2.getText());
+          data_read_exam();
+        } else {
+          msg4.setText("パスワードが一致しません。");
+          msg4.setGraphic(new ImageView(batsu));
+        }
+      } else {
+        msg3.setText("アカウントが見つかりません");
+        msg3.setGraphic(new ImageView(batsu));
+        ok1.setDisable(true);
+      }
+    }
+  }
+
+  String data_read_pass(String name) {
+    try {
+      DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+      DocumentBuilder db = dbf.newDocumentBuilder();
+      Document doc = db.parse(new FileInputStream("Datas/" + name + ".xml"));
+
+      Element userdata = doc.getDocumentElement();
+
+      NodeList passList = userdata.getElementsByTagName("password");
+      Element password = (Element) passList.item(0);
+      String pass = password.getTextContent();
+
+      return pass;
+    } catch (Exception exp) {
+      Alert err = new Alert(Alert.AlertType.ERROR);
+      err.setTitle("エラー");
+      err.getDialogPane().setHeaderText("データを読み込むことに失敗しました。");
+      err.show();
+      return null;
+    }
+  }
+
+  void data_read_exam() {
+    try {
+      DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+      DocumentBuilder db = dbf.newDocumentBuilder();
+      Document doc = db.parse(new FileInputStream("Datas/" + user.getName() + ".xml"));
+
+      Element userdata = doc.getDocumentElement();
+
+      NodeList examsList = userdata.getElementsByTagName("exam");
+
+      for (int i = 0; i < examsList.getLength(); i++) {
+        Element examtmp = (Element) examsList.item(0);
+        NodeList examnameList = examtmp.getElementsByTagName("examname");
+        Element examname = (Element) examnameList.item(0);
+        user.addExam(new Exam(examname.getTextContent()));
+
+        NodeList subsList = examtmp.getElementsByTagName("subject");
+        for (int j = 0; j < subsList.getLength(); j++) {
+          Element subtmp = (Element) subsList.item(j);
+          NodeList subnameList = subtmp.getElementsByTagName("subname");
+          Element subname = (Element) subnameList.item(0);
+          NodeList scoreList = subtmp.getElementsByTagName("score");
+          Element score = (Element) scoreList.item(0);
+          user.getExam(i).setData(subname.getTextContent(), new Subject(subname.getTextContent()));
+          user.getExam(i).getDataInt(j).setScore(Integer.parseInt(score.getTextContent()));
+        }
+      }
+    } catch (Exception exp) {
+      Alert err = new Alert(Alert.AlertType.ERROR);
+      err.setTitle("エラー");
+      err.getDialogPane().setHeaderText("データを読み込むことに失敗しました。");
+      err.show();
+      return;
+    }
   }
 
   void select_sub() {
@@ -602,7 +693,7 @@ public class Manager extends Application {
     bp7.setCenter(vb);
 
     ok4.setOnAction(e -> {
-      exam.setData(subsMap);
+      exam.setDataAll(subsMap, usesubs);
       user.addExam(exam);
       data_write();
     });
@@ -623,11 +714,11 @@ public class Manager extends Application {
 
       Element name = doc.createElement("username");
       userdata.appendChild(name);
-      name.appendChild(doc.createTextNode(String.valueOf(user.getName().getBytes())));
+      name.appendChild(doc.createTextNode(user.getName()));
 
       Element password = doc.createElement("password");
       userdata.appendChild(password);
-      password.appendChild(doc.createTextNode(String.valueOf(user.getPassword().getBytes())));
+      password.appendChild(doc.createTextNode(user.getPassword()));
 
       for (int u = 0; u < user.getExamAll().size(); u++) {
         Element examdata = doc.createElement("exam");
@@ -643,20 +734,19 @@ public class Manager extends Application {
           examdata.appendChild(sub);
           sub.appendChild(subname);
           sub.appendChild(score);
-          subname.appendChild(doc.createTextNode(exam.getData(exam.getSub(i)).getName()));
-          score.appendChild(doc.createTextNode(String.valueOf((exam.getData(exam.getSub(i)).getScore()))));
+          subname.appendChild(doc.createTextNode(exam.getDataInt(i).getName()));
+          score.appendChild(doc.createTextNode(String.valueOf((exam.getDataInt(i).getScore()))));
         }
       }
       TransformerFactory tff = TransformerFactory.newInstance();
       Transformer tf = tff.newTransformer();
       tf.setOutputProperty(OutputKeys.ENCODING, "Shift_JIS");
       tf.setOutputProperty(OutputKeys.INDENT, "yes");
-      tf.transform(new DOMSource(doc),
-          new StreamResult("Datas\\" + String.valueOf(user.getName().getBytes()) + ".xml"));
+      tf.transform(new DOMSource(doc), new StreamResult("Datas/" + user.getName() + ".xml"));
     } catch (Exception exp) {
       Alert err = new Alert(Alert.AlertType.ERROR);
       err.setTitle("エラー");
-      err.getDialogPane().setHeaderText("データを保存することに失敗しました。\nデータが失われる可能性があります。");
+      err.getDialogPane().setHeaderText("データを書き込むことに失敗しました。\nデータが失われる可能性があります。");
       Optional<ButtonType> reserr = err.showAndWait();
       if (reserr.get() == ButtonType.OK) {
         System.exit(1);
