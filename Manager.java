@@ -25,6 +25,7 @@ public class Manager extends Application {
   private Scene select_when;
   private Scene input_sco;
   private Scene check_sco;
+  private Scene updown;
 
   private File Datas;
   private File Roster;
@@ -32,6 +33,10 @@ public class Manager extends Application {
   private Image maru;
   private Image batsu;
   private Image pencil;
+  private Image up;
+  private Image down;
+  private Image flat;
+  private Image bar;
 
   private User user;
   private Exam exam;
@@ -68,9 +73,13 @@ public class Manager extends Application {
   }
 
   public void init() throws Exception {
-    maru = new Image("Image/マル.png", 50, 0, true, false);
-    batsu = new Image("Image/バツ.png", 50, 0, true, false);
-    pencil = new Image("Image/エンピツ.png", 30, 0, true, false);
+    maru = new Image("file:Image/マル.png", 50, 0, true, false);
+    batsu = new Image("file:Image/バツ.png", 50, 0, true, false);
+    pencil = new Image("file:Image/エンピツ.png", 30, 0, true, false);
+    up = new Image("file:Image/アップ.png", 30, 0, true, false);
+    down = new Image("file:Image/ダウン.png", 30, 0, true, false);
+    flat = new Image("file:Image/フラット.png", 30, 0, true, false);
+    bar = new Image("file:Image/バー.png", 30, 0, true, false);
 
     Datas = new File("Datas");
     Roster = new File("Datas/Roster.txt");
@@ -365,7 +374,7 @@ public class Manager extends Application {
     } catch (Exception exp) {
       Alert err = new Alert(Alert.AlertType.ERROR);
       err.setTitle("エラー");
-      err.getDialogPane().setHeaderText("データを読み込むことに失敗しました。");
+      err.getDialogPane().setHeaderText("データを読み込むことに失敗しました。\n" + exp);
       Optional<ButtonType> reserr = err.showAndWait();
       if (reserr.get() == ButtonType.OK) {
         System.exit(1);
@@ -687,13 +696,102 @@ public class Manager extends Application {
     bp7.setCenter(vb);
 
     ok4.setOnAction(e -> {
-      exam.setDataAll(subsMap, usesubs);
+      exam.addDataAll(subsMap, usesubs);
       user.addExam(exam);
+      data_write();
+      updown();
     });
 
     check_sco = new Scene(bp7);
 
     stage.setScene(check_sco);
+  }
+
+  void updown() {
+    // 結果報告画面
+    Label[] sublb = new Label[exam.getSubsize() + 2];
+    Label[] subvl = new Label[exam.getSubsize() + 2];
+    Label[] subdif = new Label[exam.getSubsize() + 2];
+    Button ok5 = new Button("  OK  ");
+    float now = 0;
+    float last = 0;
+
+    GridPane gp = new GridPane();
+    BorderPane bp = new BorderPane();
+    VBox vb = new VBox(10);
+
+    ok5.setFont(new Font(15));
+
+    for (int i = 0; i < exam.getSubsize() + 2; i++) {
+      sublb[i] = new Label();
+      subvl[i] = new Label();
+      subdif[i] = new Label();
+      if (i == 0) {
+        sublb[i].setText("合計点：");
+        subvl[i].setText(String.valueOf(exam.getTotal()) + " 点");
+      } else if (i == 1) {
+        sublb[i].setText("平均点");
+        subvl[i].setText(String.valueOf(String.format("%.1f", exam.getAverage())) + " 点");
+      } else {
+        sublb[i].setText(String.valueOf(exam.getSubData(exam.getSubName(i - 2)).getName()) + "：");
+        subvl[i].setText(String.valueOf(exam.getSubData(exam.getSubName(i - 2)).getScore()) + " 点");
+      }
+
+      if (user.getExamsize() > 1) {
+        if (i == 0) {
+          now = exam.getTotal();
+          last = user.getExam(user.getExamsize() - 2).getTotal();
+          subdif[i].setText(String.valueOf(String.format("%.0f", Math.abs(now - last))) + " 点");
+        } else if (i == 1) {
+          now = exam.getAverage();
+          last = user.getExam(user.getExamsize() - 2).getAverage();
+          subdif[i].setText(String.valueOf(String.format("%.1f", Math.abs(now - last))) + " 点");
+        } else {
+          if (user.getExam(user.getExamsize() - 2).getSubNameAll().contains(usesubs.get(i - 2))) {
+            now = exam.getSubData(usesubs.get(i - 2)).getScore();
+            last = user.getExam(user.getExamsize() - 2)
+                .getSubData(user.getExam(user.getExamsize() - 2).getSubName(i - 2)).getScore();
+            subdif[i].setText(String.valueOf(String.format("%.0f", Math.abs(now - last))) + " 点");
+          }
+        }
+
+        if (now > last) {
+          subdif[i].setGraphic(new ImageView(up));
+        } else if (now < last) {
+          subdif[i].setGraphic(new ImageView(down));
+        } else {
+          subdif[i].setGraphic(new ImageView(flat));
+        }
+
+        if (i > 1 && !user.getExam(user.getExamsize() - 2).getSubNameAll().contains(usesubs.get(i - 2))) {
+          subdif[i].setGraphic(new ImageView(bar));
+        }
+      } else {
+        subdif[i].setGraphic(new ImageView(bar));
+      }
+
+      sublb[i].setFont(new Font(17));
+      subvl[i].setFont(new Font(17));
+      subdif[i].setFont(new Font(17));
+      sublb[i].setPrefWidth(100);
+      subvl[i].setPrefWidth(100);
+      subdif[i].setPrefHeight(40);
+
+      gp.add(sublb[i], 0, i);
+      gp.add(subvl[i], 1, i);
+      gp.add(subdif[i], 2, i);
+    }
+
+    gp.setAlignment(Pos.CENTER);
+    vb.getChildren().add(gp);
+    vb.getChildren().add(ok5);
+    vb.setAlignment(Pos.CENTER);
+
+    bp.setCenter(vb);
+
+    updown = new Scene(bp);
+
+    stage.setScene(updown);
   }
 
   void data_write() {
@@ -704,7 +802,7 @@ public class Manager extends Application {
     } catch (Exception exp) {
       Alert err = new Alert(Alert.AlertType.ERROR);
       err.setTitle("エラー");
-      err.getDialogPane().setHeaderText("データを書き込むことに失敗しました。\nデータが失われる可能性があります。");
+      err.getDialogPane().setHeaderText("データを書き込むことに失敗しました。\nデータが失われる可能性があります。\n" + exp);
       Optional<ButtonType> reserr = err.showAndWait();
       if (reserr.get() == ButtonType.OK) {
         System.exit(1);

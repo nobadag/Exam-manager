@@ -39,15 +39,19 @@ class User implements Serializable {
   public ArrayList<Exam> getExamAll() {
     return examsList;
   }
+
+  public int getExamsize() {
+    return examsList.size();
+  }
 }
 
 class Exam implements Serializable {
   static final long serialVersionUID = 1L;
   private String name;
-  private ArrayList<String> usesubs;
+  private ArrayList<String> usesubs = new ArrayList<>();
   private HashMap<String, Subject> subsdata = new HashMap<String, Subject>();
   private int total = 0;
-  private double ave = 0;
+  private float ave = 0;
 
   Exam(String tmp) {
     name = tmp;
@@ -57,17 +61,17 @@ class Exam implements Serializable {
     return name;
   }
 
-  public void setData(String key, Subject tmp) {
+  public void addData(String key, Subject tmp) {
     subsdata.put(key, tmp);
     usesubs.add(key);
   }
 
-  public void setDataAll(HashMap<String, Subject> tmp1, ArrayList<String> tmp2) {
+  public void addDataAll(HashMap<String, Subject> tmp1, ArrayList<String> tmp2) {
     subsdata.putAll(tmp1);
     usesubs.addAll(tmp2);
   }
 
-  public Subject getData(String key) {
+  public Subject getSubData(String key) {
     return subsdata.get(key);
   }
 
@@ -75,26 +79,28 @@ class Exam implements Serializable {
     return subsdata;
   }
 
-  public String getSub(int tmp) {
+  public String getSubName(int tmp) {
     return usesubs.get(tmp);
   }
 
-  public ArrayList<String> getSubAll() {
+  public ArrayList<String> getSubNameAll() {
     return usesubs;
   }
 
+  public int getSubsize() {
+    return subsdata.size();
+  }
+
   public int getTotal() {
+    total = 0;
     for (int i = 0; i < subsdata.size(); i++) {
       total += subsdata.get(usesubs.get(i)).getScore();
     }
     return total;
   }
 
-  public double getAverage() {
-    if (total == 0) {
-      this.getTotal();
-    }
-    ave = total / subsdata.size();
+  public float getAverage() {
+    ave = (float) this.getTotal() / (float) subsdata.size();
     return ave;
   }
 }
