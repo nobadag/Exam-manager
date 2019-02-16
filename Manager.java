@@ -4,6 +4,7 @@ import javafx.application.*;
 import javafx.stage.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
+import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.layout.*;
 import javafx.scene.text.*;
 import javafx.scene.image.*;
@@ -656,7 +657,8 @@ public class Manager extends Application {
 
     GridPane gp = new GridPane();
     VBox vb = new VBox(10);
-    BorderPane bp7 = new BorderPane();
+    ScrollPane scp = new ScrollPane();
+    BorderPane bp = new BorderPane();
 
     ok4.setFont(new Font(15));
     right.setFont(new Font(18));
@@ -685,7 +687,6 @@ public class Manager extends Application {
     }
 
     gp.setAlignment(Pos.CENTER);
-    gp.setGridLinesVisible(true);
 
     vb.getChildren().add(right);
     vb.getChildren().add(gp);
@@ -693,7 +694,14 @@ public class Manager extends Application {
 
     vb.setAlignment(Pos.CENTER);
 
-    bp7.setCenter(vb);
+    bp.setCenter(vb);
+
+    bp.setPrefHeight(stage.getHeight());
+    bp.setPrefWidth(stage.getWidth());
+
+    scp.setContent(bp);
+
+    scp.setHbarPolicy(ScrollBarPolicy.NEVER);
 
     ok4.setOnAction(e -> {
       exam.addDataAll(subsMap, usesubs);
@@ -702,7 +710,7 @@ public class Manager extends Application {
       updown();
     });
 
-    check_sco = new Scene(bp7);
+    check_sco = new Scene(scp);
 
     stage.setScene(check_sco);
   }
@@ -719,6 +727,7 @@ public class Manager extends Application {
     GridPane gp = new GridPane();
     BorderPane bp = new BorderPane();
     VBox vb = new VBox(10);
+    ScrollPane scp = new ScrollPane();
 
     ok5.setFont(new Font(15));
 
@@ -776,6 +785,7 @@ public class Manager extends Application {
       sublb[i].setPrefWidth(100);
       subvl[i].setPrefWidth(100);
       subdif[i].setPrefHeight(40);
+      sublb[i].setAlignment(Pos.CENTER);
 
       gp.add(sublb[i], 0, i);
       gp.add(subvl[i], 1, i);
@@ -783,13 +793,21 @@ public class Manager extends Application {
     }
 
     gp.setAlignment(Pos.CENTER);
+
     vb.getChildren().add(gp);
     vb.getChildren().add(ok5);
     vb.setAlignment(Pos.CENTER);
 
     bp.setCenter(vb);
 
-    updown = new Scene(bp);
+    bp.setPrefHeight(stage.getHeight());
+    bp.setPrefWidth(stage.getWidth());
+
+    scp.setContent(bp);
+
+    scp.setHbarPolicy(ScrollBarPolicy.NEVER);
+
+    updown = new Scene(scp);
 
     stage.setScene(updown);
   }
