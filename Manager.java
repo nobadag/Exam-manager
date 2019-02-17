@@ -430,6 +430,8 @@ public class Manager extends Application {
 
     ok2.setFont(new Font(15));
 
+    usesubs.clear();
+
     int x = 0, y = 0;
     for (int i = 0; i < subnames.length; i++) {
       subs[i] = new CheckBox(subnames[i]);
@@ -511,7 +513,14 @@ public class Manager extends Application {
       wh[i].setToggleGroup(whtg);
       vb.getChildren().add(wh[i]);
     }
-    wh[0].setSelected(true);
+
+    int last;
+    if (user.getExamsize() > 0
+        && (last = Arrays.asList(when).indexOf(user.getExam(user.getExamsize() - 1).getName())) != when.length - 1) {
+      wh[last + 1].setSelected(true);
+    } else {
+      wh[0].setSelected(true);
+    }
 
     vb.getChildren().add(ok3);
 
@@ -529,6 +538,7 @@ public class Manager extends Application {
       // Examクラスのオブジェクトを生成
       exam = new Exam(usewhen);
       // 「OK」を押すと、点数入力画面へ
+      count = 0;
       input_sco();
     });
 
