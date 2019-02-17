@@ -251,9 +251,8 @@ public class Manager extends Application {
             // 「OK」を押すと、Userのオブジェクトを生成し、教科選択画面へ
             user = new User(actf1.getText(), pass);
             try {
-              PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(Roster.getPath(), true)));
-              pw.println(actf1.getText());
-              pw.close();
+              usersname.add(actf1.getText());
+              roster_write();
             } catch (Exception exp) {
               Alert err = new Alert(Alert.AlertType.ERROR);
               err.setTitle("エラー");
@@ -560,7 +559,7 @@ public class Manager extends Application {
 
     BorderPane bp = new BorderPane();
     VBox vb = new VBox(20);
-    HBox hb1 = new HBox(30);
+    HBox hb = new HBox(30);
     GridPane gp = new GridPane();
 
     scotf.setAlignment(Pos.CENTER);
@@ -614,11 +613,11 @@ public class Manager extends Application {
     vb.getChildren().add(check);
     vb.setAlignment(Pos.CENTER);
 
-    hb1.getChildren().add(vb);
-    hb1.getChildren().add(gp);
-    hb1.setAlignment(Pos.CENTER);
+    hb.getChildren().add(vb);
+    hb.getChildren().add(gp);
+    hb.setAlignment(Pos.CENTER);
 
-    bp.setCenter(hb1);
+    bp.setCenter(hb);
 
     input_sco = new Scene(bp);
 
@@ -839,6 +838,14 @@ public class Manager extends Application {
         System.exit(1);
       }
     }
+  }
+
+  void roster_write() throws Exception {
+    PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(Roster.getPath())));
+    for (String t : usersname) {
+      pw.println(t);
+    }
+    pw.close();
   }
 
   public void stop() {
