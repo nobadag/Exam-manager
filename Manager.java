@@ -742,8 +742,8 @@ public class Manager extends Application {
         sublb[i].setText("平均点");
         subvl[i].setText(String.valueOf(String.format("%.1f", exam.getAverage())) + " 点");
       } else {
-        sublb[i].setText(String.valueOf(exam.getSubData(exam.getSubName(i - 2)).getName()) + "：");
-        subvl[i].setText(String.valueOf(exam.getSubData(exam.getSubName(i - 2)).getScore()) + " 点");
+        sublb[i].setText(String.valueOf(exam.getSubDataInt(i - 2).getName() + "："));
+        subvl[i].setText(String.valueOf(exam.getSubDataInt(i - 2).getScore()) + " 点");
       }
 
       if (user.getExamsize() > 1) {
@@ -757,9 +757,8 @@ public class Manager extends Application {
           subdif[i].setText(String.valueOf(String.format("%.1f", Math.abs(now - last))) + " 点");
         } else {
           if (user.getExam(user.getExamsize() - 2).getSubNameAll().contains(usesubs.get(i - 2))) {
-            now = exam.getSubData(usesubs.get(i - 2)).getScore();
-            last = user.getExam(user.getExamsize() - 2)
-                .getSubData(user.getExam(user.getExamsize() - 2).getSubName(i - 2)).getScore();
+            now = exam.getSubDataInt(i - 2).getScore();
+            last = user.getExam(user.getExamsize() - 2).getSubDataInt(i - 2).getScore();
             subdif[i].setText(String.valueOf(String.format("%.0f", Math.abs(now - last))) + " 点");
           }
         }

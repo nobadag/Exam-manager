@@ -75,6 +75,10 @@ class Exam implements Serializable {
     return subsdata.get(key);
   }
 
+  public Subject getSubDataInt(int tmp) {
+    return subsdata.get(usesubs.get(tmp));
+  }
+
   public HashMap<String, Subject> getDataAll() {
     return subsdata;
   }
