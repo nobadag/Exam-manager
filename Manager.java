@@ -806,6 +806,10 @@ public class Manager extends Application {
 
     scp.setHbarPolicy(ScrollBarPolicy.NEVER);
 
+    ok5.setOnAction(e -> {
+      home();
+    });
+
     updown = new Scene(scp);
 
     stage.setScene(updown);
