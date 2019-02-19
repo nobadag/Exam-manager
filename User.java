@@ -52,6 +52,7 @@ class Exam implements Serializable {
   private HashMap<String, Subject> subsdata = new HashMap<String, Subject>();
   private int total = 0;
   private float ave = 0;
+  private Calendar cal = Calendar.getInstance();
 
   Exam(String tmp) {
     name = tmp;
@@ -106,6 +107,10 @@ class Exam implements Serializable {
   public float getAverage() {
     ave = (float) this.getTotal() / (float) subsdata.size();
     return ave;
+  }
+
+  public Calendar getCalendar(){
+    return cal;
   }
 }
 

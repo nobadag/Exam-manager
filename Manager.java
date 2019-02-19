@@ -1,15 +1,19 @@
 import java.io.*;
 import java.util.*;
+import java.text.*;
 import javafx.application.*;
 import javafx.stage.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
-import javafx.scene.control.ScrollPane.ScrollBarPolicy;
+import javafx.scene.control.ScrollPane.*;
+import javafx.scene.control.cell.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.*;
 import javafx.scene.image.*;
 import javafx.geometry.*;
 import javafx.event.*;
+import javafx.collections.*;
+import javafx.beans.property.*;
 
 public class Manager extends Application {
   public Stage stage;
@@ -27,6 +31,7 @@ public class Manager extends Application {
   private Scene input_sco;
   private Scene check_sco;
   private Scene updown;
+  private Scene database;
 
   private File Datas;
   private File Roster;
@@ -115,11 +120,11 @@ public class Manager extends Application {
 
   void welcome() {
     // welcomeの画面
-    Label wel = new Label("Exam-manager にようこそ\n");
+    Label des = new Label("Exam-manager にようこそ\n");
     Button nw = new Button("新規作成");
     Button op = new Button("ログイン");
 
-    wel.setFont(Font.font("SansSerif", FontWeight.BOLD, 36));
+    des.setFont(Font.font("SansSerif", FontWeight.BOLD, 36));
 
     nw.setFont(new Font(20));
     op.setFont(new Font(20));
@@ -133,7 +138,7 @@ public class Manager extends Application {
     BorderPane bp = new BorderPane();
     VBox home = new VBox(20);
 
-    home.getChildren().add(wel);
+    home.getChildren().add(des);
     home.getChildren().add(nw);
     home.getChildren().add(op);
 
@@ -399,6 +404,10 @@ public class Manager extends Application {
       select_sub();
     });
 
+    dataex.setOnAction(e -> {
+      database();
+    });
+
     VBox vb = new VBox(20);
     BorderPane bp = new BorderPane();
 
@@ -658,7 +667,7 @@ public class Manager extends Application {
 
   void check_sco() {
     // 点数確認画面
-    Label right = new Label("この点数でいいですか？");
+    Label des = new Label("この点数でいいですか？");
     Button ok4 = new Button("  OK  ");
     Label[] subch = new Label[subsMap.size()];
     Label[] scoch = new Label[subsMap.size()];
@@ -670,7 +679,7 @@ public class Manager extends Application {
     BorderPane bp = new BorderPane();
 
     ok4.setFont(new Font(15));
-    right.setFont(new Font(18));
+    des.setFont(new Font(18));
 
     for (int i = 0; i < subsMap.size(); i++) {
       subch[i] = new Label(usesubs.get(i) + "：");
@@ -697,7 +706,7 @@ public class Manager extends Application {
 
     gp.setAlignment(Pos.CENTER);
 
-    vb.getChildren().add(right);
+    vb.getChildren().add(des);
     vb.getChildren().add(gp);
     vb.getChildren().add(ok4);
 
@@ -726,6 +735,7 @@ public class Manager extends Application {
 
   void updown() {
     // 結果報告画面
+    Label des = new Label("試験結果");
     Label[] sublb = new Label[exam.getSubsize() + 2];
     Label[] subvl = new Label[exam.getSubsize() + 2];
     Label[] subdif = new Label[exam.getSubsize() + 2];
@@ -739,6 +749,7 @@ public class Manager extends Application {
     ScrollPane scp = new ScrollPane();
 
     ok5.setFont(new Font(15));
+    des.setFont(new Font(18));
 
     for (int i = 0; i < exam.getSubsize() + 2; i++) {
       sublb[i] = new Label();
@@ -802,6 +813,7 @@ public class Manager extends Application {
 
     gp.setAlignment(Pos.CENTER);
 
+    vb.getChildren().add(des);
     vb.getChildren().add(gp);
     vb.getChildren().add(ok5);
     vb.setAlignment(Pos.CENTER);
@@ -822,6 +834,88 @@ public class Manager extends Application {
     updown = new Scene(scp);
 
     stage.setScene(updown);
+  }
+
+  void database() {
+    Label des = new Label(user.getName() + " さんのデータベース");
+    Tab[] tabs = new Tab[subnames.length + 1];
+    TabPane tbp = new TabPane();
+
+    des.setFont(new Font(18));
+
+    for (int i = 0; i < subnames.length + 1; i++) {
+      TableView<RowSubData> tv = new TableView<>();
+      ObservableList<RowSubData> ovl = FXCollections.observableArrayList();
+      TableColumn<RowSubData, String> tc1 = new TableColumn<RowSubData, String>("試験");
+      TableColumn<RowSubData, String> tc2 = new TableColumn<RowSubData, String>("点数");
+      TableColumn<RowSubData, String> tc3 = new TableColumn<RowSubData, String>("月日");
+
+      tc1.setCellValueFactory(new PropertyValueFactory<RowSubData, String>("examname"));
+      tc2.setCellValueFactory(new PropertyValueFactory<RowSubData, String>("score"));
+      tc3.setCellValueFactory(new PropertyValueFactory<RowSubData, String>("date"));
+
+      for (int j = 0; j < user.getExamsize(); j++) {
+        Exam t = user.getExam(j);
+        if (i == 0) {
+          tabs[i] = new Tab("平均");
+          ovl.add(new RowSubData(t.getName(), t.getAverage(), t.getCalendar()));
+        } else {
+          tabs[i] = new Tab(subnames[i - 1]);
+          if (t.getSubNameAll().contains(subnames[i - 1])) {
+            ovl.add(new RowSubData(t.getName(), (float) t.getSubData(subnames[i - 1]).getScore(), t.getCalendar()));
+          }
+        }
+      }
+
+      tv.getColumns().add(tc1);
+      tv.getColumns().add(tc2);
+      tv.getColumns().add(tc3);
+
+      tv.setItems(ovl);
+
+      tabs[i].setContent(tv);
+      tbp.getTabs().add(tabs[i]);
+    }
+
+    VBox vb = new VBox(10);
+    BorderPane bp = new BorderPane();
+
+    vb.getChildren().add(des);
+    vb.getChildren().add(tbp);
+
+    vb.setAlignment(Pos.CENTER);
+
+    bp.setCenter(vb);
+
+    database = new Scene(bp);
+
+    stage.setScene(database);
+  }
+
+  public class RowSubData {
+    private final SimpleStringProperty examname;
+    private final SimpleFloatProperty score;
+    private final SimpleStringProperty date;
+
+    RowSubData(String exn, Float sco, Calendar cal) {
+      SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd/(E)");
+
+      examname = new SimpleStringProperty(exn);
+      score = new SimpleFloatProperty(sco);
+      date = new SimpleStringProperty(String.valueOf(sdf.format(cal.getTime())));
+    }
+
+    public SimpleStringProperty examnameProperty() {
+      return examname;
+    }
+
+    public SimpleFloatProperty scoreProperty() {
+      return score;
+    }
+
+    public SimpleStringProperty dateProperty() {
+      return date;
+    }
   }
 
   void data_write() {
