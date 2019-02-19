@@ -770,7 +770,7 @@ public class Manager extends Application {
         if (i == 0) {
           now = exam.getTotal();
           last = user.getExam(user.getExamsize() - 2).getTotal();
-          subdif[i].setText(String.valueOf(String.format("%.0f", Math.abs(now - last))) + " 点");
+          subdif[i].setText(String.valueOf(String.format("%.1f", Math.abs(now - last))) + " 点");
         } else if (i == 1) {
           now = exam.getAverage();
           last = user.getExam(user.getExamsize() - 2).getAverage();
@@ -779,7 +779,7 @@ public class Manager extends Application {
           if (user.getExam(user.getExamsize() - 2).getSubNameAll().contains(usesubs.get(i - 2))) {
             now = exam.getSubDataInt(i - 2).getScore();
             last = user.getExam(user.getExamsize() - 2).getSubDataInt(i - 2).getScore();
-            subdif[i].setText(String.valueOf(String.format("%.0f", Math.abs(now - last))) + " 点");
+            subdif[i].setText(String.valueOf(String.format("%.1f", Math.abs(now - last))) + " 点");
           }
         }
 
@@ -894,14 +894,14 @@ public class Manager extends Application {
 
   public class RowSubData {
     private final SimpleStringProperty examname;
-    private final SimpleFloatProperty score;
+    private final SimpleStringProperty score;
     private final SimpleStringProperty date;
 
     RowSubData(String exn, Float sco, Calendar cal) {
       SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd/(E)");
 
       examname = new SimpleStringProperty(exn);
-      score = new SimpleFloatProperty(sco);
+      score = new SimpleStringProperty(String.valueOf(String.format("%.1f", sco)));
       date = new SimpleStringProperty(String.valueOf(sdf.format(cal.getTime())));
     }
 
@@ -909,7 +909,7 @@ public class Manager extends Application {
       return examname;
     }
 
-    public SimpleFloatProperty scoreProperty() {
+    public SimpleStringProperty scoreProperty() {
       return score;
     }
 
