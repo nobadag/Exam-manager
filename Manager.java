@@ -408,6 +408,10 @@ public class Manager extends Application {
       database();
     });
 
+    if (user.getExamsize() == 0) {
+      dataex.setDisable(true);
+    }
+
     VBox vb = new VBox(20);
     BorderPane bp = new BorderPane();
 
@@ -854,6 +858,10 @@ public class Manager extends Application {
       tc2.setCellValueFactory(new PropertyValueFactory<RowSubData, String>("score"));
       tc3.setCellValueFactory(new PropertyValueFactory<RowSubData, String>("date"));
 
+      tc1.setPrefWidth(120);
+      tc2.setPrefWidth(50);
+      tc3.setPrefWidth(120);
+
       for (int j = 0; j < user.getExamsize(); j++) {
         Exam t = user.getExam(j);
         if (i == 0) {
@@ -873,9 +881,13 @@ public class Manager extends Application {
 
       tv.setItems(ovl);
 
+      tv.setStyle("-fx-font-size: " + 10 + "pt;");
+
       tabs[i].setContent(tv);
       tbp.getTabs().add(tabs[i]);
     }
+
+    tbp.setStyle("-fx-font-size: " + 10 + "pt;");
 
     VBox vb = new VBox(10);
     BorderPane bp = new BorderPane();
