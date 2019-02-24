@@ -155,6 +155,7 @@ public class Manager extends Application {
     op.setOnAction(e -> {
       login_acc();
     });
+
     stage.setScene(welcome);
   }
 
@@ -185,6 +186,24 @@ public class Manager extends Application {
     pwf1.setOnAction(new Inspection_password());
 
     ok.setFont(new Font(15));
+
+    ok.setOnAction(e -> {
+      // アカウント名確定のためのアラート
+      Alert really = new Alert(Alert.AlertType.CONFIRMATION);
+      really.setTitle("確認");
+      really.getDialogPane().setHeaderText("本当に " + actf1.getText() + " がアカウント名でいいですか？");
+
+      // 「OK」を押すと、アラートを表示
+      Optional<ButtonType> res = really.showAndWait();
+
+      if (res.get() == ButtonType.OK) {
+        // 「OK」を押すと、Userのオブジェクトを生成し、教科選択画面へ
+        user = new User(actf1.getText(), pwf1.getText());
+        usersname.add(actf1.getText());
+        roster_write();
+        home();
+      }
+    });
 
     BorderPane bp = new BorderPane();
     VBox vb = new VBox(20);
@@ -244,32 +263,6 @@ public class Manager extends Application {
         msg2.setGraphic(new ImageView(maru));
         ok.setDisable(false);
         pswrote = true;
-        ok.setOnAction(e -> {
-          // アカウント名確定のためのアラート
-          Alert really = new Alert(Alert.AlertType.CONFIRMATION);
-          really.setTitle("確認");
-          really.getDialogPane().setHeaderText("本当に " + actf1.getText() + " がアカウント名でいいですか？");
-
-          // 「OK」を押すと、アラートを表示
-          Optional<ButtonType> res = really.showAndWait();
-          if (res.get() == ButtonType.OK) {
-            // 「OK」を押すと、Userのオブジェクトを生成し、教科選択画面へ
-            user = new User(actf1.getText(), pass);
-            try {
-              usersname.add(actf1.getText());
-              roster_write();
-            } catch (Exception exp) {
-              Alert err = new Alert(Alert.AlertType.ERROR);
-              err.setTitle("エラー");
-              err.getDialogPane().setHeaderText("アカウント名とパスワードを保存できません。");
-              Optional<ButtonType> reserr = really.showAndWait();
-              if (reserr.get() == ButtonType.OK) {
-                System.exit(1);
-              }
-            }
-            home();
-          }
-        });
       } else {
         msg2.setText("パスワードの長さが足りません");
         msg2.setGraphic(new ImageView(batsu));
@@ -946,12 +939,22 @@ public class Manager extends Application {
     }
   }
 
-  void roster_write() throws Exception {
-    PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(Roster.getPath())));
-    for (String t : usersname) {
-      pw.println(t);
+  void roster_write() {
+    try {
+      PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(Roster.getPath())));
+      for (String t : usersname) {
+        pw.println(t);
+      }
+      pw.close();
+    } catch (Exception exp) {
+      Alert err = new Alert(Alert.AlertType.ERROR);
+      err.setTitle("エラー");
+      err.getDialogPane().setHeaderText("アカウント名とパスワードを保存できません。");
+      Optional<ButtonType> reserr = err.showAndWait();
+      if (reserr.get() == ButtonType.OK) {
+        System.exit(1);
+      }
     }
-    pw.close();
   }
 
   public void stop() {
