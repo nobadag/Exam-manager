@@ -10,6 +10,7 @@ import javafx.scene.control.cell.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.*;
 import javafx.scene.image.*;
+import javafx.scene.chart.*;
 import javafx.geometry.*;
 import javafx.event.*;
 import javafx.collections.*;
@@ -18,9 +19,13 @@ import javafx.beans.property.*;
 public class Manager extends Application {
   public Stage stage;
 
-  public final String[] subnames = { "‘Œê", "Ğ‰ï", "”Šw", "—‰È", "‰pŒê", "”üp", "‹Zp", "‰Æ’ë", "•ÛŒ’‘Ìˆç", "‰¹Šy" };
-  public final String[] when = { "‚PŠwŠúÀ—ÍƒeƒXƒg", "‚PŠwŠú’†ŠÔƒeƒXƒg", "‚PŠwŠúŠú––ƒeƒXƒg", "‚QŠwŠúŠm”FƒeƒXƒg", "‚QŠwŠú’†ŠÔƒeƒXƒg", "‚QŠwŠúŠú––ƒeƒXƒg", "‚RŠwŠúÀ—ÍƒeƒXƒg",
-      "‚RŠwŠúŠw”N––ƒeƒXƒg" };
+  public final String[] subnames = { "å›½èª", "ç¤¾ä¼š", "æ•°å­¦", "ç†ç§‘", "è‹±èª", "ç¾è¡“", "æŠ€è¡“", "å®¶åº­", "ä¿å¥ä½“è‚²", "éŸ³æ¥½" };
+  public final String[] when = { "ï¼‘å­¦æœŸå®ŸåŠ›ãƒ†ã‚¹ãƒˆ", "ï¼‘å­¦æœŸä¸­é–“ãƒ†ã‚¹ãƒˆ", "ï¼‘å­¦æœŸæœŸæœ«ãƒ†ã‚¹ãƒˆ", "ï¼’å­¦æœŸç¢ºèªãƒ†ã‚¹ãƒˆ", "ï¼’å­¦æœŸä¸­é–“ãƒ†ã‚¹ãƒˆ", "ï¼’å­¦æœŸæœŸæœ«ãƒ†ã‚¹ãƒˆ", "ï¼“å­¦æœŸå®ŸåŠ›ãƒ†ã‚¹ãƒˆ",
+      "ï¼“å­¦æœŸå­¦å¹´æœ«ãƒ†ã‚¹ãƒˆ" };
+  public final String[] omit = { "ï¼‘å®ŸåŠ›", "ï¼‘ä¸­é–“", "ï¼‘æœŸæœ«", "ï¼’ç¢ºèª", "ï¼’ä¸­é–“", "ï¼’æœŸæœ«", "ï¼“å®ŸåŠ›", "ï¼“å­¦æœ«" };
+  public HashMap<String, String> whomit = new HashMap<String, String>();
+  public final int min = 0;
+  public final int max = 100;
 
   private Scene welcome;
   private Scene make_acc;
@@ -74,18 +79,21 @@ public class Manager extends Application {
   private boolean acwrote = false;
   private boolean pswrote = false;
 
+  private Tab[] tabs;
+  private TabPane tbp = new TabPane();
+
   public static void main(String[] args) {
     launch(args);
   }
 
   public void init() throws Exception {
-    maru = new Image("file:Image/ƒ}ƒ‹.png", 50, 0, true, false);
-    batsu = new Image("file:Image/ƒoƒc.png", 50, 0, true, false);
-    pencil = new Image("file:Image/ƒGƒ“ƒsƒc.png", 30, 0, true, false);
-    up = new Image("file:Image/ƒAƒbƒv.png", 30, 0, true, false);
-    down = new Image("file:Image/ƒ_ƒEƒ“.png", 30, 0, true, false);
-    flat = new Image("file:Image/ƒtƒ‰ƒbƒg.png", 30, 0, true, false);
-    bar = new Image("file:Image/ƒo[.png", 30, 0, true, false);
+    maru = new Image("file:Image/ãƒãƒ«.png", 50, 0, true, false);
+    batsu = new Image("file:Image/ãƒãƒ„.png", 50, 0, true, false);
+    pencil = new Image("file:Image/ã‚¨ãƒ³ãƒ”ãƒ„.png", 30, 0, true, false);
+    up = new Image("file:Image/ã‚¢ãƒƒãƒ—.png", 30, 0, true, false);
+    down = new Image("file:Image/ãƒ€ã‚¦ãƒ³.png", 30, 0, true, false);
+    flat = new Image("file:Image/ãƒ•ãƒ©ãƒƒãƒˆ.png", 30, 0, true, false);
+    bar = new Image("file:Image/ãƒãƒ¼.png", 30, 0, true, false);
 
     Datas = new File("Datas");
     Roster = new File("Datas/Roster.txt");
@@ -104,6 +112,10 @@ public class Manager extends Application {
       }
       br.close();
     }
+
+    for (int i = 0; i < when.length; i++) {
+      whomit.put(when[i], omit[i]);
+    }
   }
 
   public void start(Stage temp) throws Exception {
@@ -119,10 +131,10 @@ public class Manager extends Application {
   }
 
   void welcome() {
-    // welcome‚Ì‰æ–Ê
-    Label des = new Label("Exam-manager ‚É‚æ‚¤‚±‚»\n");
-    Button nw = new Button("V‹Kì¬");
-    Button op = new Button("ƒƒOƒCƒ“");
+    // welcomeã®ç”»é¢
+    Label des = new Label("Exam-manager ã«ã‚ˆã†ã“ã\n");
+    Button nw = new Button("æ–°è¦ä½œæˆ");
+    Button op = new Button("ãƒ­ã‚°ã‚¤ãƒ³");
 
     des.setFont(Font.font("SansSerif", FontWeight.BOLD, 36));
 
@@ -132,8 +144,8 @@ public class Manager extends Application {
     nw.setPrefWidth(150);
     op.setPrefWidth(150);
 
-    nw.setTooltip(new Tooltip("ƒAƒJƒEƒ“ƒg‚ğV‹Kì¬‚µ‚Ü‚·"));
-    op.setTooltip(new Tooltip("ƒAƒJƒEƒ“ƒg‚ÉƒƒOƒCƒ“‚µ‚Ü‚·"));
+    nw.setTooltip(new Tooltip("ã‚¢ã‚«ã‚¦ãƒ³ãƒˆã‚’æ–°è¦ä½œæˆã—ã¾ã™"));
+    op.setTooltip(new Tooltip("ã‚¢ã‚«ã‚¦ãƒ³ãƒˆã«ãƒ­ã‚°ã‚¤ãƒ³ã—ã¾ã™"));
 
     BorderPane bp = new BorderPane();
     VBox home = new VBox(20);
@@ -147,7 +159,7 @@ public class Manager extends Application {
 
     welcome = new Scene(bp);
 
-    // uV‹Kv‚ğ‰Ÿ‚·‚ÆAƒAƒJƒEƒ“ƒgì¬‰æ–Ê‚Ö
+    // ã€Œæ–°è¦ã€ã‚’æŠ¼ã™ã¨ã€ã‚¢ã‚«ã‚¦ãƒ³ãƒˆä½œæˆç”»é¢ã¸
     nw.setOnAction(e -> {
       make_acc();
     });
@@ -160,10 +172,10 @@ public class Manager extends Application {
   }
 
   void make_acc() {
-    // ƒAƒJƒEƒ“ƒgì¬‰æ–Ê
-    Label des = new Label("ƒAƒJƒEƒ“ƒg‚ğì¬‚µ‚Ü‚µ‚å‚¤");
-    Label acc = new Label("ƒAƒJƒEƒ“ƒg–¼F");
-    Label pas = new Label("ƒpƒXƒ[ƒhF");
+    // ã‚¢ã‚«ã‚¦ãƒ³ãƒˆä½œæˆç”»é¢
+    Label des = new Label("ã‚¢ã‚«ã‚¦ãƒ³ãƒˆã‚’ä½œæˆã—ã¾ã—ã‚‡ã†");
+    Label acc = new Label("ã‚¢ã‚«ã‚¦ãƒ³ãƒˆåï¼š");
+    Label pas = new Label("ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰ï¼š");
 
     actf1 = new TextField();
     pwf1 = new PasswordField();
@@ -188,16 +200,16 @@ public class Manager extends Application {
     ok.setFont(new Font(15));
 
     ok.setOnAction(e -> {
-      // ƒAƒJƒEƒ“ƒg–¼Šm’è‚Ì‚½‚ß‚ÌƒAƒ‰[ƒg
+      // ã‚¢ã‚«ã‚¦ãƒ³ãƒˆåç¢ºå®šã®ãŸã‚ã®ã‚¢ãƒ©ãƒ¼ãƒˆ
       Alert really = new Alert(Alert.AlertType.CONFIRMATION);
-      really.setTitle("Šm”F");
-      really.getDialogPane().setHeaderText("–{“–‚É " + actf1.getText() + " ‚ªƒAƒJƒEƒ“ƒg–¼‚Å‚¢‚¢‚Å‚·‚©H");
+      really.setTitle("ç¢ºèª");
+      really.getDialogPane().setHeaderText("æœ¬å½“ã« " + actf1.getText() + " ãŒã‚¢ã‚«ã‚¦ãƒ³ãƒˆåã§ã„ã„ã§ã™ã‹ï¼Ÿ");
 
-      // uOKv‚ğ‰Ÿ‚·‚ÆAƒAƒ‰[ƒg‚ğ•\¦
+      // ã€ŒOKã€ã‚’æŠ¼ã™ã¨ã€ã‚¢ãƒ©ãƒ¼ãƒˆã‚’è¡¨ç¤º
       Optional<ButtonType> res = really.showAndWait();
 
       if (res.get() == ButtonType.OK) {
-        // uOKv‚ğ‰Ÿ‚·‚ÆAUser‚ÌƒIƒuƒWƒFƒNƒg‚ğ¶¬‚µA‹³‰È‘I‘ğ‰æ–Ê‚Ö
+        // ã€ŒOKã€ã‚’æŠ¼ã™ã¨ã€Userã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ç”Ÿæˆã—ã€æ•™ç§‘é¸æŠç”»é¢ã¸
         user = new User(actf1.getText(), pwf1.getText());
         usersname.add(actf1.getText());
         roster_write();
@@ -236,14 +248,14 @@ public class Manager extends Application {
     public void handle(ActionEvent event) {
       String name = new String(actf1.getText());
 
-      // ƒAƒJƒEƒ“ƒg–¼‚ª—LŒø‚©”»’è‚·‚é
+      // ã‚¢ã‚«ã‚¦ãƒ³ãƒˆåãŒæœ‰åŠ¹ã‹åˆ¤å®šã™ã‚‹
       if (name.length() == 0 || usersname.contains(name)) {
-        msg1.setText("‚±‚ÌƒAƒJƒEƒ“ƒg–¼‚ğg‚¤‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñB");
+        msg1.setText("ã“ã®ã‚¢ã‚«ã‚¦ãƒ³ãƒˆåã‚’ä½¿ã†ã“ã¨ã¯ã§ãã¾ã›ã‚“ã€‚");
         msg1.setGraphic(new ImageView(batsu));
         ok.setDisable(true);
         acwrote = false;
       } else {
-        msg1.setText("‚±‚ÌƒAƒJƒEƒ“ƒg–¼‚ğg‚¤‚±‚Æ‚ª‚Å‚«‚Ü‚·B");
+        msg1.setText("ã“ã®ã‚¢ã‚«ã‚¦ãƒ³ãƒˆåã‚’ä½¿ã†ã“ã¨ãŒã§ãã¾ã™ã€‚");
         msg1.setGraphic(new ImageView(maru));
         if (pswrote) {
           ok.setDisable(false);
@@ -257,14 +269,14 @@ public class Manager extends Application {
     public void handle(ActionEvent event) {
       String pass = new String(pwf1.getText());
 
-      // ƒpƒXƒ[ƒh‚ª—LŒø‚©”»’è‚·‚é
+      // ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰ãŒæœ‰åŠ¹ã‹åˆ¤å®šã™ã‚‹
       if (pass.length() >= 6 && acwrote) {
-        msg2.setText("‚±‚ÌƒpƒXƒ[ƒh‚ğg‚¤‚±‚Æ‚ª‚Å‚«‚Ü‚·B");
+        msg2.setText("ã“ã®ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰ã‚’ä½¿ã†ã“ã¨ãŒã§ãã¾ã™ã€‚");
         msg2.setGraphic(new ImageView(maru));
         ok.setDisable(false);
         pswrote = true;
       } else {
-        msg2.setText("ƒpƒXƒ[ƒh‚Ì’·‚³‚ª‘«‚è‚Ü‚¹‚ñ");
+        msg2.setText("ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰ã®é•·ã•ãŒè¶³ã‚Šã¾ã›ã‚“");
         msg2.setGraphic(new ImageView(batsu));
         ok.setDisable(true);
         pswrote = false;
@@ -273,10 +285,10 @@ public class Manager extends Application {
   }
 
   void login_acc() {
-    // ƒƒOƒCƒ“‰æ–Ê
-    Label des = new Label("ƒƒOƒCƒ“‚µ‚Ü‚µ‚å‚¤");
-    Label acc = new Label("ƒAƒJƒEƒ“ƒg–¼F");
-    Label pas = new Label("ƒpƒXƒ[ƒhF");
+    // ãƒ­ã‚°ã‚¤ãƒ³ç”»é¢
+    Label des = new Label("ãƒ­ã‚°ã‚¤ãƒ³ã—ã¾ã—ã‚‡ã†");
+    Label acc = new Label("ã‚¢ã‚«ã‚¦ãƒ³ãƒˆåï¼š");
+    Label pas = new Label("ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰ï¼š");
 
     actf2 = new TextField();
     pwf2 = new PasswordField();
@@ -334,16 +346,16 @@ public class Manager extends Application {
   class Check_acc implements EventHandler<ActionEvent> {
     public void handle(ActionEvent event) {
       if (usersname.contains(actf2.getText())) {
-        msg3.setText("ƒAƒJƒEƒ“ƒg‚ªŒ©‚Â‚©‚è‚Ü‚µ‚½B");
+        msg3.setText("ã‚¢ã‚«ã‚¦ãƒ³ãƒˆãŒè¦‹ã¤ã‹ã‚Šã¾ã—ãŸã€‚");
         msg3.setGraphic(new ImageView(maru));
         data_read();
         if (user.getPassword().equals(pwf2.getText())) {
-          msg4.setText("ƒpƒXƒ[ƒh‚ªˆê’v‚µ‚Ü‚µ‚½B");
+          msg4.setText("ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰ãŒä¸€è‡´ã—ã¾ã—ãŸã€‚");
           msg4.setGraphic(new ImageView(maru));
           ok1.setDisable(false);
         } else {
           if (pwf2.getText().length() != 0) {
-            msg4.setText("ƒpƒXƒ[ƒh‚ªˆê’v‚µ‚Ü‚¹‚ñB");
+            msg4.setText("ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰ãŒä¸€è‡´ã—ã¾ã›ã‚“ã€‚");
             msg4.setGraphic(new ImageView(batsu));
             ok1.setDisable(true);
           } else {
@@ -353,7 +365,7 @@ public class Manager extends Application {
         }
       } else {
         if (actf2.getText().length() != 0) {
-          msg3.setText("ƒAƒJƒEƒ“ƒg‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñB");
+          msg3.setText("ã‚¢ã‚«ã‚¦ãƒ³ãƒˆãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã€‚");
           msg3.setGraphic(new ImageView(batsu));
           ok1.setDisable(true);
         } else {
@@ -371,8 +383,8 @@ public class Manager extends Application {
       os.close();
     } catch (Exception exp) {
       Alert err = new Alert(Alert.AlertType.ERROR);
-      err.setTitle("ƒGƒ‰[");
-      err.getDialogPane().setHeaderText("ƒf[ƒ^‚ğ“Ç‚İ‚Ş‚±‚Æ‚É¸”s‚µ‚Ü‚µ‚½B\n" + exp);
+      err.setTitle("ã‚¨ãƒ©ãƒ¼");
+      err.getDialogPane().setHeaderText("ãƒ‡ãƒ¼ã‚¿ã‚’èª­ã¿è¾¼ã‚€ã“ã¨ã«å¤±æ•—ã—ã¾ã—ãŸã€‚" + exp);
       Optional<ButtonType> reserr = err.showAndWait();
       if (reserr.get() == ButtonType.OK) {
         System.exit(1);
@@ -381,10 +393,10 @@ public class Manager extends Application {
   }
 
   void home() {
-    // ƒ†[ƒU[‚Ìƒz[ƒ€‰æ–Ê
-    Label name = new Label(user.getName() + " ‚³‚ñ");
-    Button newex = new Button("V‹KŒ±");
-    Button dataex = new Button("ƒf[ƒ^ƒx[ƒX");
+    // ãƒ¦ãƒ¼ã‚¶ãƒ¼ã®ãƒ›ãƒ¼ãƒ ç”»é¢
+    Label name = new Label(user.getName() + " ã•ã‚“");
+    Button newex = new Button("æ–°è¦è©¦é¨“");
+    Button dataex = new Button("ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹");
 
     name.setFont(Font.font("SansSerif", FontWeight.BOLD, 36));
     newex.setFont(new Font(20));
@@ -422,8 +434,8 @@ public class Manager extends Application {
   }
 
   void select_sub() {
-    // ‹³‰È‘I‘ğ‰æ–Ê
-    Label des = new Label("‹³‰È‚ğ‘I‚ñ‚Å‚­‚¾‚³‚¢B");
+    // æ•™ç§‘é¸æŠç”»é¢
+    Label des = new Label("æ•™ç§‘ã‚’é¸ã‚“ã§ãã ã•ã„ã€‚");
     CheckBox[] subs = new CheckBox[subnames.length];
     Button ok2 = new Button("  OK  ");
     GridPane gp = new GridPane();
@@ -448,7 +460,7 @@ public class Manager extends Application {
       }
       gp.add(subs[i], x, y);
       subs[i].setOnAction(e -> {
-        // ‚P‚ÂˆÈãƒ`ƒFƒbƒN‚³‚ê‚Ä‚¢‚È‚¢‚ÆuOKv‚ğ–³Œø‚É‚·‚é
+        // ï¼‘ã¤ä»¥ä¸Šãƒã‚§ãƒƒã‚¯ã•ã‚Œã¦ã„ãªã„ã¨ã€ŒOKã€ã‚’ç„¡åŠ¹ã«ã™ã‚‹
         CheckBox t = (CheckBox) e.getSource();
         if (t.isSelected()) {
           dis++;
@@ -482,9 +494,9 @@ public class Manager extends Application {
     select_sub = new Scene(bp);
 
     ok2.setOnAction(e -> {
-      // uOKv‚ğ‰Ÿ‚·‚ÆAŒ±‘I‘ğ‰æ–Ê‚Ö
+      // ã€ŒOKã€ã‚’æŠ¼ã™ã¨ã€è©¦é¨“é¸æŠç”»é¢ã¸
       select_when();
-      // ƒ`ƒFƒbƒN‚³‚ê‚½•ªASubject‚ÌƒIƒuƒWƒFƒNƒg‚ğ¶¬
+      // ãƒã‚§ãƒƒã‚¯ã•ã‚ŒãŸåˆ†ã€Subjectã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ç”Ÿæˆ
       for (int i = 0; i < subs.length; i++) {
         if (subs[i].isSelected()) {
           usesubs.add(subs[i].getText());
@@ -497,8 +509,8 @@ public class Manager extends Application {
   }
 
   void select_when() {
-    // Œ±‘I‘ğ‰æ–Ê
-    Label des = new Label("‚¢‚Â‚ÌŒ±‚©‘I‚ñ‚Å‚­‚¾‚³‚¢B");
+    // è©¦é¨“é¸æŠç”»é¢
+    Label des = new Label("ã„ã¤ã®è©¦é¨“ã‹é¸ã‚“ã§ãã ã•ã„ã€‚");
     RadioButton[] wh = new RadioButton[when.length];
     ToggleGroup whtg = new ToggleGroup();
     Button ok3 = new Button("  OK  ");
@@ -536,13 +548,13 @@ public class Manager extends Application {
     select_when = new Scene(bp);
 
     ok3.setOnAction(e -> {
-      // ‚Ç‚ÌŒ±‚È‚Ì‚©‹L‰¯
+      // ã©ã®è©¦é¨“ãªã®ã‹è¨˜æ†¶
       Toggle sel = whtg.getSelectedToggle();
       RadioButton t = (RadioButton) sel;
       usewhen = t.getText();
-      // ExamƒNƒ‰ƒX‚ÌƒIƒuƒWƒFƒNƒg‚ğ¶¬
+      // Examã‚¯ãƒ©ã‚¹ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ç”Ÿæˆ
       exam = new Exam(usewhen);
-      // uOKv‚ğ‰Ÿ‚·‚ÆA“_”“ü—Í‰æ–Ê‚Ö
+      // ã€ŒOKã€ã‚’æŠ¼ã™ã¨ã€ç‚¹æ•°å…¥åŠ›ç”»é¢ã¸
       count = 0;
       input_sco();
     });
@@ -551,7 +563,7 @@ public class Manager extends Application {
   }
 
   void input_sco() {
-    // “_”“ü—Í‰æ–Ê
+    // ç‚¹æ•°å…¥åŠ›ç”»é¢
     Label selwh = new Label(usewhen);
     sub = new Label(usesubs.get(count));
     check = new Label();
@@ -570,7 +582,7 @@ public class Manager extends Application {
 
     scotf.setAlignment(Pos.CENTER);
 
-    // ƒeƒ“ƒL[‚ÌÀ‘•
+    // ãƒ†ãƒ³ã‚­ãƒ¼ã®å®Ÿè£…
     int x = 0;
     int y = 0;
     for (int i = 1; i <= 9; i++) {
@@ -596,7 +608,7 @@ public class Manager extends Application {
       tenkey[i].setPrefWidth(50);
       if (i <= 9) {
         tenkey[i].setOnAction(e -> {
-          // ‰Ÿ‚·‚ÆƒeƒLƒXƒgƒtƒB[ƒ‹ƒh‚É“ü—Í‚³‚ê‚Ä‚¢‚­
+          // æŠ¼ã™ã¨ãƒ†ã‚­ã‚¹ãƒˆãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã«å…¥åŠ›ã•ã‚Œã¦ã„ã
           Button tmp = (Button) e.getSource();
           scotf.setText(scotf.getText() + tmp.getText());
         });
@@ -604,7 +616,7 @@ public class Manager extends Application {
     }
 
     tenkey[10].setOnAction(e -> {
-      // ƒeƒLƒXƒgƒtƒB[ƒ‹ƒh‚ğƒNƒŠƒA
+      // ãƒ†ã‚­ã‚¹ãƒˆãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã‚’ã‚¯ãƒªã‚¢
       scotf.setText("");
     });
 
@@ -632,30 +644,30 @@ public class Manager extends Application {
 
   class Check_score implements EventHandler<ActionEvent> {
     public void handle(ActionEvent event) {
-      // —LŒø‚È”’l‚©”»’è
+      // æœ‰åŠ¹ãªæ•°å€¤ã‹åˆ¤å®š
       try {
         int score = Integer.parseInt(scotf.getText());
-        if (score < 0 || score > 100) {
-          // ”ÍˆÍ“à‚©‚Ì”»’è
-          check.setText("—LŒø‚È”’l‚Å‚Í‚ ‚è‚Ü‚¹‚ñB");
+        if (score < min || score > max) {
+          // ç¯„å›²å†…ã‹ã®åˆ¤å®š
+          check.setText("æœ‰åŠ¹ãªæ•°å€¤ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚");
           check.setGraphic(new ImageView(batsu));
           scotf.setText("");
         } else {
           subsMap.get(usesubs.get(count)).setScore(score);
           count++;
           if (count >= subsMap.size() || rand) {
-            // ÅŒã‚Ì‹³‰È‚ªI‚í‚é‚Æ“_”Šm”F‰æ–Ê‚Ö
-            // “_”•ÏX‚É‚æ‚éƒ‰ƒ“ƒ_ƒ€ƒAƒNƒZƒX‚È‚ç‚Î“_”Šm”F‰æ–Ê‚Ö
+            // æœ€å¾Œã®æ•™ç§‘ãŒçµ‚ã‚ã‚‹ã¨ç‚¹æ•°ç¢ºèªç”»é¢ã¸
+            // ç‚¹æ•°å¤‰æ›´ã«ã‚ˆã‚‹ãƒ©ãƒ³ãƒ€ãƒ ã‚¢ã‚¯ã‚»ã‚¹ãªã‚‰ã°ç‚¹æ•°ç¢ºèªç”»é¢ã¸
             rand = false;
             check_sco();
           } else {
-            // ‰‰ñ‚Ì“ü—Í‚È‚ç‚ÎŸ‚Ì‹³‰È‚Ö
+            // åˆå›ã®å…¥åŠ›ãªã‚‰ã°æ¬¡ã®æ•™ç§‘ã¸
             input_sco();
           }
         }
       } catch (NumberFormatException exp) {
-        // •¶š‚ªŠÜ‚Ü‚ê‚Ä‚¢‚½ê‡
-        check.setText("”’l‚Æ‚µ‚Ä“Ç‚İæ‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñB");
+        // æ–‡å­—ãŒå«ã¾ã‚Œã¦ã„ãŸå ´åˆ
+        check.setText("æ•°å€¤ã¨ã—ã¦èª­ã¿å–ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“ã€‚");
         check.setGraphic(new ImageView(batsu));
         scotf.setText("");
       }
@@ -663,8 +675,8 @@ public class Manager extends Application {
   }
 
   void check_sco() {
-    // “_”Šm”F‰æ–Ê
-    Label des = new Label("‚±‚Ì“_”‚Å‚¢‚¢‚Å‚·‚©H");
+    // ç‚¹æ•°ç¢ºèªç”»é¢
+    Label des = new Label("ã“ã®ç‚¹æ•°ã§ã„ã„ã§ã™ã‹ï¼Ÿ");
     Button ok4 = new Button("  OK  ");
     Label[] subch = new Label[subsMap.size()];
     Label[] scoch = new Label[subsMap.size()];
@@ -679,9 +691,9 @@ public class Manager extends Application {
     des.setFont(new Font(18));
 
     for (int i = 0; i < subsMap.size(); i++) {
-      subch[i] = new Label(usesubs.get(i) + "F");
-      scoch[i] = new Label(String.valueOf(subsMap.get(usesubs.get(i)).getScore()) + " “_");
-      change[i] = new Button("•ÏX");
+      subch[i] = new Label(usesubs.get(i) + "ï¼š");
+      scoch[i] = new Label(String.valueOf(subsMap.get(usesubs.get(i)).getScore()) + " ç‚¹");
+      change[i] = new Button("å¤‰æ›´");
       change[i].setGraphic(new ImageView(pencil));
       subch[i].setFont(new Font(17));
       scoch[i].setFont(new Font(17));
@@ -693,7 +705,7 @@ public class Manager extends Application {
       gp.add(scoch[i], 1, i);
       gp.add(change[i], 2, i);
       change[i].setOnAction(e -> {
-        // u•ÏXv‚ª‰Ÿ‚³‚ê‚½‚çA‚»‚Ì‹³‰È‚Ì“_”“ü—Í‰æ–Ê‚ÉˆÚ‚é
+        // ã€Œå¤‰æ›´ã€ãŒæŠ¼ã•ã‚ŒãŸã‚‰ã€ãã®æ•™ç§‘ã®ç‚¹æ•°å…¥åŠ›ç”»é¢ã«ç§»ã‚‹
         Button t = (Button) e.getSource();
         count = GridPane.getRowIndex(t);
         rand = true;
@@ -731,8 +743,8 @@ public class Manager extends Application {
   }
 
   void updown() {
-    // Œ‹‰Ê•ñ‰æ–Ê
-    Label des = new Label("Œ±Œ‹‰Ê");
+    // çµæœå ±å‘Šç”»é¢
+    Label des = new Label("è©¦é¨“çµæœ");
     Label[] sublb = new Label[exam.getSubsize() + 2];
     Label[] subvl = new Label[exam.getSubsize() + 2];
     Label[] subdif = new Label[exam.getSubsize() + 2];
@@ -753,30 +765,30 @@ public class Manager extends Application {
       subvl[i] = new Label();
       subdif[i] = new Label();
       if (i == 0) {
-        sublb[i].setText("‡Œv“_F");
-        subvl[i].setText(String.valueOf(exam.getTotal()) + " “_");
+        sublb[i].setText("åˆè¨ˆç‚¹ï¼š");
+        subvl[i].setText(String.valueOf(exam.getTotal()) + " ç‚¹");
       } else if (i == 1) {
-        sublb[i].setText("•½‹Ï“_");
-        subvl[i].setText(String.valueOf(String.format("%.1f", exam.getAverage())) + " “_");
+        sublb[i].setText("å¹³å‡ç‚¹");
+        subvl[i].setText(String.valueOf(String.format("%.1f", exam.getAverage())) + " ç‚¹");
       } else {
-        sublb[i].setText(String.valueOf(exam.getSubDataInt(i - 2).getName() + "F"));
-        subvl[i].setText(String.valueOf(exam.getSubDataInt(i - 2).getScore()) + " “_");
+        sublb[i].setText(String.valueOf(exam.getSubDataInt(i - 2).getName() + "ï¼š"));
+        subvl[i].setText(String.valueOf(exam.getSubDataInt(i - 2).getScore()) + " ç‚¹");
       }
 
       if (user.getExamsize() > 1) {
         if (i == 0) {
           now = exam.getTotal();
           last = user.getExam(user.getExamsize() - 2).getTotal();
-          subdif[i].setText(String.valueOf(String.format("%.1f", Math.abs(now - last))) + " “_");
+          subdif[i].setText(String.valueOf((int) Math.abs(now - last)) + " ç‚¹");
         } else if (i == 1) {
           now = exam.getAverage();
           last = user.getExam(user.getExamsize() - 2).getAverage();
-          subdif[i].setText(String.valueOf(String.format("%.1f", Math.abs(now - last))) + " “_");
+          subdif[i].setText(String.valueOf(String.format("%.1f", Math.abs(now - last))) + " ç‚¹");
         } else {
           if (user.getExam(user.getExamsize() - 2).getSubNameAll().contains(usesubs.get(i - 2))) {
             now = exam.getSubDataInt(i - 2).getScore();
             last = user.getExam(user.getExamsize() - 2).getSubDataInt(i - 2).getScore();
-            subdif[i].setText(String.valueOf(String.format("%.1f", Math.abs(now - last))) + " “_");
+            subdif[i].setText(String.valueOf((int) Math.abs(now - last)) + " ç‚¹");
           }
         }
 
@@ -834,36 +846,43 @@ public class Manager extends Application {
   }
 
   void database() {
-    Label des = new Label(user.getName() + " ‚³‚ñ‚Ìƒf[ƒ^ƒx[ƒX");
-    Tab[] tabs = new Tab[subnames.length + 1];
-    TabPane tbp = new TabPane();
+    Label des = new Label(user.getName() + " ã•ã‚“ã®ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹");
+    Button chart = new Button("ã‚°ãƒ©ãƒ•");
+    tabs = new Tab[subnames.length + 1];
 
     des.setFont(new Font(18));
 
     for (int i = 0; i < subnames.length + 1; i++) {
       TableView<RowSubData> tv = new TableView<>();
       ObservableList<RowSubData> ovl = FXCollections.observableArrayList();
-      TableColumn<RowSubData, String> tc1 = new TableColumn<RowSubData, String>("Œ±");
-      TableColumn<RowSubData, String> tc2 = new TableColumn<RowSubData, String>("“_”");
-      TableColumn<RowSubData, String> tc3 = new TableColumn<RowSubData, String>("Œ“ú");
+      TableColumn<RowSubData, String> tc1 = new TableColumn<RowSubData, String>("ç•ªå·");
+      TableColumn<RowSubData, String> tc2 = new TableColumn<RowSubData, String>("è©¦é¨“");
+      TableColumn<RowSubData, String> tc3 = new TableColumn<RowSubData, String>("ç‚¹æ•°");
+      TableColumn<RowSubData, String> tc4 = new TableColumn<RowSubData, String>("æœˆæ—¥");
 
-      tc1.setCellValueFactory(new PropertyValueFactory<RowSubData, String>("examname"));
-      tc2.setCellValueFactory(new PropertyValueFactory<RowSubData, String>("score"));
-      tc3.setCellValueFactory(new PropertyValueFactory<RowSubData, String>("date"));
+      tc1.setCellValueFactory(new PropertyValueFactory<RowSubData, String>("number"));
+      tc2.setCellValueFactory(new PropertyValueFactory<RowSubData, String>("examname"));
+      tc3.setCellValueFactory(new PropertyValueFactory<RowSubData, String>("score"));
+      tc4.setCellValueFactory(new PropertyValueFactory<RowSubData, String>("date"));
 
-      tc1.setPrefWidth(120);
-      tc2.setPrefWidth(50);
-      tc3.setPrefWidth(120);
+      tc1.setStyle("-fx-alignment: CENTER;");
 
+      tc2.setPrefWidth(120);
+      tc3.setPrefWidth(50);
+      tc4.setPrefWidth(120);
+
+      int c = 0;
       for (int j = 0; j < user.getExamsize(); j++) {
         Exam t = user.getExam(j);
         if (i == 0) {
-          tabs[i] = new Tab("•½‹Ï");
-          ovl.add(new RowSubData(t.getName(), t.getAverage(), t.getCalendar()));
+          tabs[i] = new Tab("å¹³å‡");
+          ovl.add(new RowSubData(j + 1, t.getName(), t.getAverage(), t.getCalendar()));
         } else {
           tabs[i] = new Tab(subnames[i - 1]);
           if (t.getSubNameAll().contains(subnames[i - 1])) {
-            ovl.add(new RowSubData(t.getName(), (float) t.getSubData(subnames[i - 1]).getScore(), t.getCalendar()));
+            ovl.add(
+                new RowSubData(c + 1, t.getName(), (float) t.getSubData(subnames[i - 1]).getScore(), t.getCalendar()));
+            c++;
           }
         }
       }
@@ -871,6 +890,7 @@ public class Manager extends Application {
       tv.getColumns().add(tc1);
       tv.getColumns().add(tc2);
       tv.getColumns().add(tc3);
+      tv.getColumns().add(tc4);
 
       tv.setItems(ovl);
 
@@ -882,6 +902,10 @@ public class Manager extends Application {
 
     tbp.setStyle("-fx-font-size: " + 10 + "pt;");
 
+    chart.setOnAction(e -> {
+      sco_chart();
+    });
+
     VBox vb = new VBox(10);
     BorderPane bp = new BorderPane();
 
@@ -890,6 +914,7 @@ public class Manager extends Application {
 
     vb.setAlignment(Pos.CENTER);
 
+    bp.setTop(chart);
     bp.setCenter(vb);
 
     database = new Scene(bp);
@@ -898,16 +923,21 @@ public class Manager extends Application {
   }
 
   public class RowSubData {
+    private final SimpleIntegerProperty number;
     private final SimpleStringProperty examname;
     private final SimpleStringProperty score;
     private final SimpleStringProperty date;
 
-    RowSubData(String exn, Float sco, Calendar cal) {
+    RowSubData(Integer num, String exn, Float sco, Calendar cal) {
       SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd/(E)");
-
+      number = new SimpleIntegerProperty(num);
       examname = new SimpleStringProperty(exn);
       score = new SimpleStringProperty(String.valueOf(String.format("%.1f", sco)));
       date = new SimpleStringProperty(String.valueOf(sdf.format(cal.getTime())));
+    }
+
+    public SimpleIntegerProperty numberProperty() {
+      return number;
     }
 
     public SimpleStringProperty examnameProperty() {
@@ -923,6 +953,40 @@ public class Manager extends Application {
     }
   }
 
+  void sco_chart() {
+    for (int i = 0; i < subnames.length + 1; i++) {
+      CategoryAxis xAxis = new CategoryAxis();
+      NumberAxis yAxis = new NumberAxis();
+
+      xAxis.setLabel("è©¦é¨“");
+      yAxis.setLabel("ç‚¹æ•°");
+
+      LineChart<String, Number> linechart = new LineChart<String, Number>(xAxis, yAxis);
+
+      XYChart.Series<String, Number> line = new XYChart.Series<>();
+
+      line.setName("ç‚¹æ•°");
+
+      for (int j = 0; j < user.getExamsize(); j++) {
+        Exam t = user.getExam(j);
+        if (i == 0) {
+          linechart.setTitle("å¹³å‡ç‚¹ã®å¤‰åŒ–");
+          line.getData().add(new XYChart.Data<>(whomit.get(t.getName()), t.getAverage()));
+        } else {
+          linechart.setTitle(subnames[i - 1] + " ã®ç‚¹æ•°ã®å¤‰åŒ–");
+          if (t.getSubNameAll().contains(subnames[i - 1])) {
+            line.getData().add(new XYChart.Data<>(whomit.get(t.getName()), t.getSubData(subnames[i - 1]).getScore()));
+          }
+        }
+      }
+
+      linechart.getData().add(line);
+
+      tabs[i].setContent(linechart);
+      tbp.getTabs().add(tabs[i]);
+    }
+  }
+
   void data_write() {
     try {
       ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream("Datas/" + user.getName() + ".ser"));
@@ -930,8 +994,8 @@ public class Manager extends Application {
       os.close();
     } catch (Exception exp) {
       Alert err = new Alert(Alert.AlertType.ERROR);
-      err.setTitle("ƒGƒ‰[");
-      err.getDialogPane().setHeaderText("ƒf[ƒ^‚ğ‘‚«‚Ş‚±‚Æ‚É¸”s‚µ‚Ü‚µ‚½B\nƒf[ƒ^‚ª¸‚í‚ê‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B\n" + exp);
+      err.setTitle("ã‚¨ãƒ©ãƒ¼");
+      err.getDialogPane().setHeaderText("ãƒ‡ãƒ¼ã‚¿ã‚’æ›¸ãè¾¼ã‚€ã“ã¨ã«å¤±æ•—ã—ã¾ã—ãŸã€‚" + exp);
       Optional<ButtonType> reserr = err.showAndWait();
       if (reserr.get() == ButtonType.OK) {
         System.exit(1);
@@ -948,8 +1012,8 @@ public class Manager extends Application {
       pw.close();
     } catch (Exception exp) {
       Alert err = new Alert(Alert.AlertType.ERROR);
-      err.setTitle("ƒGƒ‰[");
-      err.getDialogPane().setHeaderText("ƒAƒJƒEƒ“ƒg–¼‚ÆƒpƒXƒ[ƒh‚ğ•Û‘¶‚Å‚«‚Ü‚¹‚ñB");
+      err.setTitle("ã‚¨ãƒ©ãƒ¼");
+      err.getDialogPane().setHeaderText("ã‚¢ã‚«ã‚¦ãƒ³ãƒˆåã¨ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰ã‚’ä¿å­˜ã§ãã¾ã›ã‚“ã€‚");
       Optional<ButtonType> reserr = err.showAndWait();
       if (reserr.get() == ButtonType.OK) {
         System.exit(1);
