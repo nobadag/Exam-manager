@@ -36,7 +36,7 @@ public class Manager extends Application {
   private Scene input_sco;
   private Scene check_sco;
   private Scene updown;
-  private Scene database;
+  private Scene sco_table;
 
   private File Datas;
   private File Roster;
@@ -81,6 +81,10 @@ public class Manager extends Application {
 
   private Tab[] tabs;
   private TabPane tbp = new TabPane();
+  private ArrayList<TableView<RowSubData>> tvs = new ArrayList<>();
+  private ArrayList<LineChart<String, Number>> lns = new ArrayList<>();
+  private Button chart;
+  private boolean lnok = false;
 
   public static void main(String[] args) {
     launch(args);
@@ -410,7 +414,7 @@ public class Manager extends Application {
     });
 
     dataex.setOnAction(e -> {
-      database();
+      sco_table();
     });
 
     if (user.getExamsize() == 0) {
@@ -845,9 +849,9 @@ public class Manager extends Application {
     stage.setScene(updown);
   }
 
-  void database() {
+  void sco_table() {
     Label des = new Label(user.getName() + " さんのデータベース");
-    Button chart = new Button("グラフ");
+    chart = new Button("グラフ");
     tabs = new Tab[subnames.length + 1];
 
     des.setFont(new Font(18));
@@ -896,15 +900,12 @@ public class Manager extends Application {
 
       tv.setStyle("-fx-font-size: " + 10 + "pt;");
 
-      tabs[i].setContent(tv);
-      tbp.getTabs().add(tabs[i]);
+      tvs.add(tv);
     }
 
-    tbp.setStyle("-fx-font-size: " + 10 + "pt;");
+    set_table();
 
-    chart.setOnAction(e -> {
-      sco_chart();
-    });
+    tbp.setStyle("-fx-font-size: " + 10 + "pt;");
 
     VBox vb = new VBox(10);
     BorderPane bp = new BorderPane();
@@ -917,9 +918,25 @@ public class Manager extends Application {
     bp.setTop(chart);
     bp.setCenter(vb);
 
-    database = new Scene(bp);
+    sco_table = new Scene(bp);
 
-    stage.setScene(database);
+    stage.setScene(sco_table);
+  }
+
+  void set_table() {
+    for (int i = 0; i < tabs.length; i++) {
+      tabs[i].setContent(tvs.get(i));
+      tbp.getTabs().add(tabs[i]);
+    }
+
+    chart.setOnAction(e -> {
+      chart.setText("表");
+      if (lnok) {
+        set_chart();
+      } else {
+        sco_chart();
+      }
+    });
   }
 
   public class RowSubData {
@@ -982,9 +999,21 @@ public class Manager extends Application {
 
       linechart.getData().add(line);
 
-      tabs[i].setContent(linechart);
+      lns.add(linechart);
+    }
+    set_chart();
+  }
+
+  void set_chart() {
+    for (int i = 0; i < tabs.length; i++) {
+      tabs[i].setContent(lns.get(i));
       tbp.getTabs().add(tabs[i]);
     }
+
+    chart.setOnAction(e -> {
+      chart.setText("グラフ");
+      set_table();
+    });
   }
 
   void data_write() {
