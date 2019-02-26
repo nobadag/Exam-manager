@@ -84,6 +84,7 @@ public class Manager extends Application {
   private ArrayList<TableView<RowSubData>> tvs = new ArrayList<>();
   private ArrayList<LineChart<String, Number>> lns = new ArrayList<>();
   private Button chart;
+  private Button change;
   private boolean lnok = false;
 
   public static void main(String[] args) {
@@ -852,9 +853,24 @@ public class Manager extends Application {
   void sco_table() {
     Label des = new Label(user.getName() + " さんのデータベース");
     chart = new Button("グラフ");
+    change = new Button("変更");
     tabs = new Tab[subnames.length + 1];
 
     des.setFont(new Font(18));
+    chart.setFont(new Font(16));
+    change.setFont(new Font(16));
+
+    change.setGraphic(new ImageView(pencil));
+
+    chart.setPrefWidth(100);
+    change.setPrefWidth(100);
+
+    FlowPane fp = new FlowPane();
+
+    fp.getChildren().add(change);
+    fp.getChildren().add(chart);
+
+    fp.setAlignment(Pos.BOTTOM_RIGHT);
 
     for (int i = 0; i < subnames.length + 1; i++) {
       TableView<RowSubData> tv = new TableView<>();
@@ -915,8 +931,8 @@ public class Manager extends Application {
 
     vb.setAlignment(Pos.CENTER);
 
-    bp.setTop(chart);
     bp.setCenter(vb);
+    bp.setBottom(fp);
 
     sco_table = new Scene(bp);
 
@@ -937,6 +953,8 @@ public class Manager extends Application {
         sco_chart();
       }
     });
+
+    change.setDisable(false);
   }
 
   public class RowSubData {
@@ -1001,6 +1019,7 @@ public class Manager extends Application {
 
       lns.add(linechart);
     }
+
     set_chart();
   }
 
@@ -1014,6 +1033,8 @@ public class Manager extends Application {
       chart.setText("グラフ");
       set_table();
     });
+
+    change.setDisable(true);
   }
 
   void data_write() {
