@@ -68,8 +68,8 @@ class Exam implements Serializable {
   }
 
   public void addDataAll(HashMap<String, Subject> tmp1, ArrayList<String> tmp2) {
-    subsdata.putAll(tmp1);
-    usesubs.addAll(tmp2);
+    subsdata = tmp1;
+    usesubs = tmp2;
   }
 
   public Subject getSubData(String key) {
@@ -80,7 +80,7 @@ class Exam implements Serializable {
     return subsdata.get(usesubs.get(tmp));
   }
 
-  public HashMap<String, Subject> getDataAll() {
+  public HashMap<String, Subject> getSubDataAll() {
     return subsdata;
   }
 
@@ -109,7 +109,7 @@ class Exam implements Serializable {
     return ave;
   }
 
-  public Calendar getCalendar(){
+  public Calendar getCalendar() {
     return cal;
   }
 }

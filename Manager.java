@@ -76,16 +76,18 @@ public class Manager extends Application {
   private int count = 0;
 
   private boolean rand = false;
+  private boolean fromtable = false;
   private boolean acwrote = false;
   private boolean pswrote = false;
 
   private Tab[] tabs;
-  private TabPane tbp = new TabPane();
-  private ArrayList<TableView<RowSubData>> tvs = new ArrayList<>();
-  private ArrayList<LineChart<String, Number>> lns = new ArrayList<>();
+  private TabPane tbp;
+  private ArrayList<TableView<RowSubData>> tvs;
+  private ArrayList<LineChart<String, Number>> lns;
   private Button chart;
   private Button change;
   private boolean lnok = false;
+  private RowSubData row;
 
   public static void main(String[] args) {
     launch(args);
@@ -658,16 +660,23 @@ public class Manager extends Application {
           check.setGraphic(new ImageView(batsu));
           scotf.setText("");
         } else {
-          subsMap.get(usesubs.get(count)).setScore(score);
-          count++;
-          if (count >= subsMap.size() || rand) {
-            // 最後の教科が終わると点数確認画面へ
-            // 点数変更によるランダムアクセスならば点数確認画面へ
-            rand = false;
-            check_sco();
+          if (fromtable) {
+            user.getExam(row.getNumber()).getSubDataInt(count).setScore(score);
+            sco_table();
+            count = 0;
+            fromtable = false;
           } else {
-            // 初回の入力ならば次の教科へ
-            input_sco();
+            subsMap.get(usesubs.get(count)).setScore(score);
+            count++;
+            if (count >= subsMap.size() || rand) {
+              // 最後の教科が終わると点数確認画面へ
+              // 点数変更によるランダムアクセスならば点数確認画面へ
+              rand = false;
+              check_sco();
+            } else {
+              // 初回の入力ならば次の教科へ
+              input_sco();
+            }
           }
         }
       } catch (NumberFormatException exp) {
@@ -851,10 +860,12 @@ public class Manager extends Application {
   }
 
   void sco_table() {
+    tvs = new ArrayList<>();
     Label des = new Label(user.getName() + " さんのデータベース");
     chart = new Button("グラフ");
     change = new Button("変更");
     tabs = new Tab[subnames.length + 1];
+    tbp = new TabPane();
 
     des.setFont(new Font(18));
     chart.setFont(new Font(16));
@@ -864,6 +875,9 @@ public class Manager extends Application {
 
     chart.setPrefWidth(100);
     change.setPrefWidth(100);
+
+    chart.setPrefHeight(40);
+    change.setPrefHeight(40);
 
     FlowPane fp = new FlowPane();
 
@@ -886,24 +900,27 @@ public class Manager extends Application {
       tc4.setCellValueFactory(new PropertyValueFactory<RowSubData, String>("date"));
 
       tc1.setStyle("-fx-alignment: CENTER;");
+      tc3.setStyle("-fx-alignment: CENTER;");
 
       tc2.setPrefWidth(120);
       tc3.setPrefWidth(50);
       tc4.setPrefWidth(120);
 
-      int c = 0;
+      int c = 1;
       for (int j = 0; j < user.getExamsize(); j++) {
         Exam t = user.getExam(j);
         if (i == 0) {
           tabs[i] = new Tab("平均");
-          ovl.add(new RowSubData(j + 1, t.getName(), t.getAverage(), t.getCalendar()));
+          ovl.add(new RowSubData(j + 1, t.getName(), String.valueOf(String.format("%.1f", t.getAverage())),
+              t.getCalendar()));
         } else {
           tabs[i] = new Tab(subnames[i - 1]);
           if (t.getSubNameAll().contains(subnames[i - 1])) {
-            ovl.add(
-                new RowSubData(c + 1, t.getName(), (float) t.getSubData(subnames[i - 1]).getScore(), t.getCalendar()));
-            c++;
+            ovl.add(new RowSubData(c, t.getName(), String.valueOf(t.getSubDataInt(i - 1).getScore()), t.getCalendar()));
+          } else {
+            ovl.add(new RowSubData(c, t.getName(), "", t.getCalendar()));
           }
+          c++;
         }
       }
 
@@ -943,6 +960,15 @@ public class Manager extends Application {
     for (int i = 0; i < tabs.length; i++) {
       tabs[i].setContent(tvs.get(i));
       tbp.getTabs().add(tabs[i]);
+
+      TableView.TableViewSelectionModel<RowSubData> pos = tvs.get(i).getSelectionModel();
+      pos.selectedItemProperty().addListener(e -> {
+        row = pos.getSelectedItem();
+        subsMap = user.getExam(row.getNumber()).getSubDataAll();
+        usesubs = user.getExam(row.getNumber()).getSubNameAll();
+        usewhen = user.getExam(row.getNumber()).getName();
+        count = tvs.indexOf(pos.getTableView()) - 1;
+      });
     }
 
     chart.setOnAction(e -> {
@@ -955,19 +981,26 @@ public class Manager extends Application {
     });
 
     change.setDisable(false);
+
+    change.setOnAction(e -> {
+      fromtable = true;
+      input_sco();
+    });
   }
 
   public class RowSubData {
+    private int num;
     private final SimpleIntegerProperty number;
     private final SimpleStringProperty examname;
     private final SimpleStringProperty score;
     private final SimpleStringProperty date;
 
-    RowSubData(Integer num, String exn, Float sco, Calendar cal) {
+    RowSubData(Integer num, String exn, String sco, Calendar cal) {
       SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd/(E)");
+      this.num = num - 1;
       number = new SimpleIntegerProperty(num);
       examname = new SimpleStringProperty(exn);
-      score = new SimpleStringProperty(String.valueOf(String.format("%.1f", sco)));
+      score = new SimpleStringProperty(sco);
       date = new SimpleStringProperty(String.valueOf(sdf.format(cal.getTime())));
     }
 
@@ -986,9 +1019,14 @@ public class Manager extends Application {
     public SimpleStringProperty dateProperty() {
       return date;
     }
+
+    public int getNumber() {
+      return num;
+    }
   }
 
   void sco_chart() {
+    lns = new ArrayList<>();
     for (int i = 0; i < subnames.length + 1; i++) {
       CategoryAxis xAxis = new CategoryAxis();
       NumberAxis yAxis = new NumberAxis();
