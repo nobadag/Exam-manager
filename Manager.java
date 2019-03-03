@@ -922,6 +922,7 @@ public class Manager extends Application {
           }
           c++;
         }
+        tabs[i].setClosable(false);
       }
 
       tv.getColumns().add(tc1);
@@ -957,6 +958,8 @@ public class Manager extends Application {
   }
 
   void set_table() {
+    change.setDisable(true);
+
     for (int i = 0; i < tabs.length; i++) {
       tabs[i].setContent(tvs.get(i));
       tbp.getTabs().add(tabs[i]);
@@ -964,12 +967,21 @@ public class Manager extends Application {
       TableView.TableViewSelectionModel<RowSubData> pos = tvs.get(i).getSelectionModel();
       pos.selectedItemProperty().addListener(e -> {
         row = pos.getSelectedItem();
-        subsMap = user.getExam(row.getNumber()).getSubDataAll();
-        usesubs = user.getExam(row.getNumber()).getSubNameAll();
-        usewhen = user.getExam(row.getNumber()).getName();
-        count = tvs.indexOf(pos.getTableView()) - 1;
+        if (row.containsValue()) {
+          change.setDisable(false);
+          subsMap = user.getExam(row.getNumber()).getSubDataAll();
+          usesubs = user.getExam(row.getNumber()).getSubNameAll();
+          usewhen = user.getExam(row.getNumber()).getName();
+          count = tvs.indexOf(pos.getTableView()) - 1;
+        } else {
+          change.setDisable(true);
+        }
       });
     }
+
+    tbp.getSelectionModel().selectedItemProperty().addListener(e -> {
+      change.setDisable(true);
+    });
 
     chart.setOnAction(e -> {
       chart.setText("表");
@@ -980,8 +992,6 @@ public class Manager extends Application {
       }
     });
 
-    change.setDisable(false);
-
     change.setOnAction(e -> {
       fromtable = true;
       input_sco();
@@ -989,6 +999,7 @@ public class Manager extends Application {
   }
 
   public class RowSubData {
+    private boolean value = false;
     private int num;
     private final SimpleIntegerProperty number;
     private final SimpleStringProperty examname;
@@ -998,6 +1009,8 @@ public class Manager extends Application {
     RowSubData(Integer num, String exn, String sco, Calendar cal) {
       SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd/(E)");
       this.num = num - 1;
+      if (!sco.equals(""))
+        value = true;
       number = new SimpleIntegerProperty(num);
       examname = new SimpleStringProperty(exn);
       score = new SimpleStringProperty(sco);
@@ -1023,10 +1036,15 @@ public class Manager extends Application {
     public int getNumber() {
       return num;
     }
+
+    public boolean containsValue() {
+      return value;
+    }
   }
 
   void sco_chart() {
     lns = new ArrayList<>();
+
     for (int i = 0; i < subnames.length + 1; i++) {
       CategoryAxis xAxis = new CategoryAxis();
       NumberAxis yAxis = new NumberAxis();
