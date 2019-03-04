@@ -20,7 +20,7 @@ public class Manager extends Application {
   public Stage stage;
 
   public final String[] subnames = { "国語", "社会", "数学", "理科", "英語", "美術", "技術", "家庭", "保健体育", "音楽" };
-  public final String[] when = { "１学期実力テスト", "１学期中間テスト", "１学期期末テスト", "２学期確認テスト", "２学期中間テスト", "２学期期末テスト", "３学期実力テスト",
+  public final String[] whens = { "１学期実力テスト", "１学期中間テスト", "１学期期末テスト", "２学期確認テスト", "２学期中間テスト", "２学期期末テスト", "３学期実力テスト",
       "３学期学年末テスト" };
   public final String[] omit = { "１実力", "１中間", "１期末", "２確認", "２中間", "２期末", "３実力", "３学末" };
   public HashMap<String, String> whomit = new HashMap<String, String>();
@@ -120,8 +120,8 @@ public class Manager extends Application {
       br.close();
     }
 
-    for (int i = 0; i < when.length; i++) {
-      whomit.put(when[i], omit[i]);
+    for (int i = 0; i < whens.length; i++) {
+      whomit.put(whens[i], omit[i]);
     }
   }
 
@@ -404,13 +404,16 @@ public class Manager extends Application {
     Label name = new Label(user.getName() + " さん");
     Button newex = new Button("新規試験");
     Button dataex = new Button("データベース");
+    Button setting = new Button("設定");
 
     name.setFont(Font.font("SansSerif", FontWeight.BOLD, 36));
     newex.setFont(new Font(20));
     dataex.setFont(new Font(20));
+    setting.setFont(new Font(20));
 
     newex.setPrefWidth(180);
     dataex.setPrefWidth(180);
+    setting.setPrefWidth(180);
 
     newex.setOnAction(e -> {
       select_sub();
@@ -430,6 +433,7 @@ public class Manager extends Application {
     vb.getChildren().add(name);
     vb.getChildren().add(newex);
     vb.getChildren().add(dataex);
+    vb.getChildren().add(setting);
 
     vb.setAlignment(Pos.CENTER);
 
@@ -518,7 +522,7 @@ public class Manager extends Application {
   void select_when() {
     // 試験選択画面
     Label des = new Label("いつの試験か選んでください。");
-    RadioButton[] wh = new RadioButton[when.length];
+    RadioButton[] wh = new RadioButton[whens.length];
     ToggleGroup whtg = new ToggleGroup();
     Button ok3 = new Button("  OK  ");
 
@@ -530,8 +534,8 @@ public class Manager extends Application {
 
     ok3.setFont(new Font(15));
 
-    for (int i = 0; i < when.length; i++) {
-      wh[i] = new RadioButton(when[i]);
+    for (int i = 0; i < whens.length; i++) {
+      wh[i] = new RadioButton(whens[i]);
       wh[i].setFont(new Font(15));
       wh[i].setPrefWidth(150);
       wh[i].setToggleGroup(whtg);
@@ -540,7 +544,7 @@ public class Manager extends Application {
 
     int last;
     if (user.getExamsize() > 0
-        && (last = Arrays.asList(when).indexOf(user.getExam(user.getExamsize() - 1).getName())) != when.length - 1) {
+        && (last = Arrays.asList(whens).indexOf(user.getExam(user.getExamsize() - 1).getName())) != whens.length - 1) {
       wh[last + 1].setSelected(true);
     } else {
       wh[0].setSelected(true);
