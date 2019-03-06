@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.*;
+import java.util.stream.*;
 import java.text.*;
 import javafx.application.*;
 import javafx.stage.*;
@@ -460,30 +461,39 @@ public class Manager extends Application {
 
     usesubs.clear();
 
+    Stream<String> strsubnames = Stream.of(subnames);
+    Stream<CheckBox> strsubs = strsubnames.map(CheckBox::new);
+
+    subs = strsubs.peek(c -> {
+      c.setFont(new Font(15));
+      c.setPrefWidth(100);
+
+      c.setOnAction(e -> {
+        // １つ以上チェックされていないと「OK」を無効にする
+        CheckBox t = (CheckBox) e.getSource();
+
+        if (t.isSelected()) {
+          dis++;
+          usesubs.add(t.getText());
+        } else {
+          dis--;
+          usesubs.remove(t.getText());
+        }
+
+        if (dis == 0)
+          ok2.setDisable(true);
+        else
+          ok2.setDisable(false);
+      });
+    }).toArray(CheckBox[]::new);
+
     int x = 0, y = 0;
     for (int i = 0; i < subnames.length; i++) {
-      subs[i] = new CheckBox(subnames[i]);
-      subs[i].setFont(new Font(15));
-      subs[i].setPrefWidth(100);
       if (i % 3 == 0) {
         x = 0;
         y++;
       }
       gp.add(subs[i], x, y);
-      subs[i].setOnAction(e -> {
-        // １つ以上チェックされていないと「OK」を無効にする
-        CheckBox t = (CheckBox) e.getSource();
-        if (t.isSelected()) {
-          dis++;
-        } else {
-          dis--;
-        }
-        if (dis == 0) {
-          ok2.setDisable(true);
-        } else {
-          ok2.setDisable(false);
-        }
-      });
       x++;
     }
 
@@ -507,13 +517,8 @@ public class Manager extends Application {
     ok2.setOnAction(e -> {
       // 「OK」を押すと、試験選択画面へ
       select_when();
-      // チェックされた分、Subjectのオブジェクトを生成
-      for (int i = 0; i < subs.length; i++) {
-        if (subs[i].isSelected()) {
-          usesubs.add(subs[i].getText());
-          subsMap.put(subs[i].getText(), new Subject(subs[i].getText()));
-        }
-      }
+      // チェックされた教科のオブジェクトを作成
+      usesubs.stream().forEach(s -> subsMap.put(s, new Subject(s)));
     });
 
     stage.setScene(select_sub);
