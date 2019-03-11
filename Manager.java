@@ -461,31 +461,26 @@ public class Manager extends Application {
 
     usesubs.clear();
 
-    Stream<String> strsubnames = Stream.of(subnames);
-    Stream<CheckBox> strsubs = strsubnames.map(CheckBox::new);
+    subs = Stream.of(subnames).map(CheckBox::new).toArray(CheckBox[]::new);
+    Stream<CheckBox> strsubs = Stream.of(subs);
 
-    subs = strsubs.peek(c -> {
+    strsubs.parallel().forEach(c -> {
       c.setFont(new Font(15));
       c.setPrefWidth(100);
 
       c.setOnAction(e -> {
         // １つ以上チェックされていないと「OK」を無効にする
         CheckBox t = (CheckBox) e.getSource();
-
-        if (t.isSelected()) {
+        if (t.isSelected())
           dis++;
-          usesubs.add(t.getText());
-        } else {
+        else
           dis--;
-          usesubs.remove(t.getText());
-        }
-
         if (dis == 0)
           ok2.setDisable(true);
         else
           ok2.setDisable(false);
       });
-    }).toArray(CheckBox[]::new);
+    });
 
     int x = 0, y = 0;
     for (int i = 0; i < subnames.length; i++) {
@@ -514,11 +509,16 @@ public class Manager extends Application {
 
     select_sub = new Scene(bp);
 
+    Stream<CheckBox> t = Stream.of(subs);
+
     ok2.setOnAction(e -> {
       // 「OK」を押すと、試験選択画面へ
       select_when();
       // チェックされた教科のオブジェクトを作成
-      usesubs.stream().forEach(s -> subsMap.put(s, new Subject(s)));
+      t.filter(c -> c.isSelected()).forEachOrdered(c -> {
+        usesubs.add(c.getText());
+        subsMap.put(c.getText(), new Subject(c.getText()));
+      });
     });
 
     stage.setScene(select_sub);
@@ -539,13 +539,15 @@ public class Manager extends Application {
 
     ok3.setFont(new Font(15));
 
-    for (int i = 0; i < whens.length; i++) {
-      wh[i] = new RadioButton(whens[i]);
-      wh[i].setFont(new Font(15));
-      wh[i].setPrefWidth(150);
-      wh[i].setToggleGroup(whtg);
-      vb.getChildren().add(wh[i]);
-    }
+    wh = Stream.of(whens).map(RadioButton::new).toArray(RadioButton[]::new);
+    Stream<RadioButton> strwh = Stream.of(wh);
+
+    strwh.forEachOrdered(r -> {
+      r.setFont(new Font(15));
+      r.setPrefWidth(150);
+      r.setToggleGroup(whtg);
+      vb.getChildren().add(r);
+    });
 
     int last;
     if (user.getExamsize() > 0
@@ -611,7 +613,7 @@ public class Manager extends Application {
       x++;
     }
 
-    tenkey[0] = new Button(String.valueOf(0));
+    tenkey[0] = new Button("0");
     tenkey[10] = new Button("Clear");
     tenkey[11] = new Button("Enter");
 
@@ -619,17 +621,15 @@ public class Manager extends Application {
     gp.add(tenkey[10], 0, 4);
     gp.add(tenkey[11], 2, 4);
 
-    for (int i = 0; i < 12; i++) {
-      tenkey[i].setPrefHeight(50);
-      tenkey[i].setPrefWidth(50);
-      if (i <= 9) {
-        tenkey[i].setOnAction(e -> {
-          // 押すとテキストフィールドに入力されていく
-          Button tmp = (Button) e.getSource();
-          scotf.setText(scotf.getText() + tmp.getText());
-        });
-      }
-    }
+    Stream.of(tenkey).parallel().forEach(b -> {
+      b.setPrefHeight(50);
+      b.setPrefWidth(50);
+      b.setOnAction(e -> {
+        // 押すとテキストフィールドに入力されていく
+        Button tmp = (Button) e.getSource();
+        scotf.setText(scotf.getText() + tmp.getText());
+      });
+    });
 
     tenkey[10].setOnAction(e -> {
       // テキストフィールドをクリア
@@ -713,27 +713,38 @@ public class Manager extends Application {
     ok4.setFont(new Font(15));
     des.setFont(new Font(18));
 
-    for (int i = 0; i < subsMap.size(); i++) {
-      subch[i] = new Label(usesubs.get(i) + "：");
-      scoch[i] = new Label(String.valueOf(subsMap.get(usesubs.get(i)).getScore()) + " 点");
-      change[i] = new Button("変更");
-      change[i].setGraphic(new ImageView(pencil));
-      subch[i].setFont(new Font(17));
-      scoch[i].setFont(new Font(17));
-      subch[i].setPrefWidth(100);
-      scoch[i].setPrefWidth(100);
-      subch[i].setAlignment(Pos.CENTER);
-      scoch[i].setAlignment(Pos.CENTER);
-      gp.add(subch[i], 0, i);
-      gp.add(scoch[i], 1, i);
-      gp.add(change[i], 2, i);
-      change[i].setOnAction(e -> {
+    subch = usesubs.stream().parallel().map(s -> s + "：").map(Label::new).toArray(Label[]::new);
+    scoch = usesubs.stream().parallel().map(s -> String.valueOf(subsMap.get(s).getScore()) + " 点").map(Label::new)
+        .toArray(Label[]::new);
+    change = Stream.generate(() -> "変更").parallel().limit(subsMap.size()).map(Button::new).toArray(Button[]::new);
+
+    Stream.of(subch).parallel().forEach(l -> {
+      l.setFont(new Font(17));
+      l.setPrefWidth(100);
+      l.setAlignment(Pos.CENTER);
+    });
+
+    Stream.of(scoch).parallel().forEach(l -> {
+      l.setFont(new Font(17));
+      l.setPrefWidth(100);
+      l.setAlignment(Pos.CENTER);
+    });
+
+    Stream.of(change).parallel().forEach(b -> {
+      b.setGraphic(new ImageView(pencil));
+      b.setOnAction(e -> {
         // 「変更」が押されたら、その教科の点数入力画面に移る
         Button t = (Button) e.getSource();
         count = GridPane.getRowIndex(t);
         rand = true;
         input_sco();
       });
+    });
+
+    for (int i = 0; i < subsMap.size(); i++) {
+      gp.add(subch[i], 0, i);
+      gp.add(scoch[i], 1, i);
+      gp.add(change[i], 2, i);
     }
 
     gp.setAlignment(Pos.CENTER);
@@ -830,18 +841,26 @@ public class Manager extends Application {
         subdif[i].setGraphic(new ImageView(bar));
       }
 
-      sublb[i].setFont(new Font(17));
-      subvl[i].setFont(new Font(17));
-      subdif[i].setFont(new Font(17));
-      sublb[i].setPrefWidth(100);
-      subvl[i].setPrefWidth(100);
-      subdif[i].setPrefHeight(40);
-      sublb[i].setAlignment(Pos.CENTER);
-
       gp.add(sublb[i], 0, i);
       gp.add(subvl[i], 1, i);
       gp.add(subdif[i], 2, i);
     }
+
+    Stream.of(sublb).parallel().forEach(l -> {
+      l.setFont(new Font(17));
+      l.setPrefWidth(100);
+      l.setAlignment(Pos.CENTER);
+    });
+
+    Stream.of(subvl).parallel().forEach(l -> {
+      l.setFont(new Font(17));
+      l.setPrefWidth(100);
+    });
+
+    Stream.of(subdif).parallel().forEach(l -> {
+      l.setFont(new Font(17));
+      l.setPrefHeight(40);
+    });
 
     gp.setAlignment(Pos.CENTER);
 
