@@ -515,7 +515,7 @@ public class Manager extends Application {
       // 「OK」を押すと、試験選択画面へ
       select_when();
       // チェックされた教科のオブジェクトを作成
-      t.filter(c -> c.isSelected()).forEachOrdered(c -> {
+      t.filter(c -> c.isSelected()).forEach(c -> {
         usesubs.add(c.getText());
         subsMap.put(c.getText(), new Subject(c.getText()));
       });
@@ -542,7 +542,7 @@ public class Manager extends Application {
     wh = Stream.of(whens).map(RadioButton::new).toArray(RadioButton[]::new);
     Stream<RadioButton> strwh = Stream.of(wh);
 
-    strwh.forEachOrdered(r -> {
+    strwh.forEach(r -> {
       r.setFont(new Font(15));
       r.setPrefWidth(150);
       r.setToggleGroup(whtg);
@@ -779,12 +779,11 @@ public class Manager extends Application {
   void updown() {
     // 結果報告画面
     Label des = new Label("試験結果");
-    Label[] sublb = new Label[exam.getSubsize() + 2];
-    Label[] subvl = new Label[exam.getSubsize() + 2];
-    Label[] subdif = new Label[exam.getSubsize() + 2];
+    ArrayList<Label> sublb = new ArrayList<>();
+    ArrayList<Label> subvl = new ArrayList<>();
+    ArrayList<Label> subdif = new ArrayList<>();
+    ArrayList<Float> dif = new ArrayList<>();
     Button ok5 = new Button("  OK  ");
-    float now = 0;
-    float last = 0;
 
     GridPane gp = new GridPane();
     BorderPane bp = new BorderPane();
@@ -794,70 +793,75 @@ public class Manager extends Application {
     ok5.setFont(new Font(15));
     des.setFont(new Font(18));
 
-    for (int i = 0; i < exam.getSubsize() + 2; i++) {
-      sublb[i] = new Label();
-      subvl[i] = new Label();
-      subdif[i] = new Label();
-      if (i == 0) {
-        sublb[i].setText("合計点：");
-        subvl[i].setText(String.valueOf(exam.getTotal()) + " 点");
-      } else if (i == 1) {
-        sublb[i].setText("平均点");
-        subvl[i].setText(String.valueOf(String.format("%.1f", exam.getAverage())) + " 点");
-      } else {
-        sublb[i].setText(String.valueOf(exam.getSubDataInt(i - 2).getName() + "："));
-        subvl[i].setText(String.valueOf(exam.getSubDataInt(i - 2).getScore()) + " 点");
-      }
+    sublb.add(new Label("合計点："));
+    subvl.add(new Label(String.valueOf(exam.getTotal()) + " 点"));
 
-      if (user.getExamsize() > 1) {
-        if (i == 0) {
-          now = exam.getTotal();
-          last = user.getExam(user.getExamsize() - 2).getTotal();
-          subdif[i].setText(String.valueOf((int) Math.abs(now - last)) + " 点");
-        } else if (i == 1) {
-          now = exam.getAverage();
-          last = user.getExam(user.getExamsize() - 2).getAverage();
-          subdif[i].setText(String.valueOf(String.format("%.1f", Math.abs(now - last))) + " 点");
+    sublb.add(new Label("平均点："));
+    subvl.add(new Label(String.format("%.1f", exam.getAverage()) + " 点"));
+
+    usesubs.stream().map(s -> s + "：").map(Label::new).forEach(sublb::add);
+    usesubs.stream().map(s -> String.valueOf(exam.getSubData(s).getScore()) + " 点").map(Label::new).forEach(subvl::add);
+
+    if (user.getExamsize() > 1) {
+      float now = exam.getTotal();
+      float last = user.getExam(user.getExamsize() - 2).getTotal();
+      dif.add(now - last);
+
+      now = exam.getAverage();
+      last = user.getExam(user.getExamsize() - 2).getAverage();
+      dif.add(now - last);
+
+      usesubs.stream().map(s -> user.getExam(user.getExamsize() - 2).getSubData(s)).forEach(d -> {
+        if (d != null) {
+          float n = exam.getSubData(d.getName()).getScore();
+          float l = d.getScore();
+          dif.add(n - l);
         } else {
-          if (user.getExam(user.getExamsize() - 2).getSubNameAll().contains(usesubs.get(i - 2))) {
-            now = exam.getSubDataInt(i - 2).getScore();
-            last = user.getExam(user.getExamsize() - 2).getSubDataInt(i - 2).getScore();
-            subdif[i].setText(String.valueOf((int) Math.abs(now - last)) + " 点");
+          dif.add(null);
+        }
+      });
+
+      dif.stream().forEach(f -> {
+        Label t = new Label();
+        if (f != null) {
+          t.setText(String.format("%.1f", Math.abs(f)) + " 点");
+          if (f > 0) {
+            t.setGraphic(new ImageView(up));
+          } else if (f < 0) {
+            t.setGraphic(new ImageView(down));
+          } else {
+            t.setGraphic(new ImageView(flat));
           }
-        }
-
-        if (now > last) {
-          subdif[i].setGraphic(new ImageView(up));
-        } else if (now < last) {
-          subdif[i].setGraphic(new ImageView(down));
         } else {
-          subdif[i].setGraphic(new ImageView(flat));
+          t.setGraphic(new ImageView(bar));
         }
-
-        if (i > 1 && !user.getExam(user.getExamsize() - 2).getSubNameAll().contains(usesubs.get(i - 2))) {
-          subdif[i].setGraphic(new ImageView(bar));
-        }
-      } else {
-        subdif[i].setGraphic(new ImageView(bar));
-      }
-
-      gp.add(sublb[i], 0, i);
-      gp.add(subvl[i], 1, i);
-      gp.add(subdif[i], 2, i);
+        subdif.add(t);
+      });
+    } else {
+      Stream.generate(Label::new).limit(exam.getSubsize() + 2).forEach(l -> {
+        l.setGraphic(new ImageView(bar));
+        subdif.add(l);
+      });
     }
 
-    Stream.of(sublb).parallel().forEach(l -> {
+    for (int i = 0; i < exam.getSubsize() + 2; i++) {
+      gp.add(sublb.get(i), 0, i);
+      gp.add(subvl.get(i), 1, i);
+      gp.add(subdif.get(i), 2, i);
+    }
+
+    sublb.parallelStream().forEach(l -> {
       l.setFont(new Font(17));
       l.setPrefWidth(100);
       l.setAlignment(Pos.CENTER);
     });
 
-    Stream.of(subvl).parallel().forEach(l -> {
+    subvl.parallelStream().forEach(l -> {
       l.setFont(new Font(17));
       l.setPrefWidth(100);
     });
 
-    Stream.of(subdif).parallel().forEach(l -> {
+    subdif.parallelStream().forEach(l -> {
       l.setFont(new Font(17));
       l.setPrefHeight(40);
     });
