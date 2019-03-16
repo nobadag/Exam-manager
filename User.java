@@ -7,17 +7,17 @@ class User implements Serializable {
   private String password;
   private ArrayList<Exam> examsList = new ArrayList<>();
 
-  User(String tmp1, String tmp2) {
-    name = tmp1;
-    password = tmp2;
+  User(String n, String p) {
+    name = n;
+    password = p;
   }
 
-  public void setName(String tmp) {
-    name = tmp;
+  public void setName(String n) {
+    name = n;
   }
 
-  public void setPassword(String tmp) {
-    password = tmp;
+  public void setPassword(String p) {
+    password = p;
   }
 
   public String getName() {
@@ -28,12 +28,12 @@ class User implements Serializable {
     return password;
   }
 
-  public void addExam(Exam tmp) {
-    examsList.add(tmp);
+  public void addExam(Exam exam) {
+    examsList.add(exam);
   }
 
-  public Exam getExam(int tmp) {
-    return examsList.get(tmp);
+  public Exam getExam(int value) {
+    return examsList.get(value);
   }
 
   public ArrayList<Exam> getExamAll() {
@@ -54,38 +54,38 @@ class Exam implements Serializable {
   private float ave = 0;
   private Calendar cal = Calendar.getInstance();
 
-  Exam(String tmp) {
-    name = tmp;
+  Exam(String n) {
+    name = n;
   }
 
   public String getName() {
     return name;
   }
 
-  public void addData(String key, Subject tmp) {
-    subsdata.put(key, tmp);
+  public void addData(String key, Subject data) {
+    subsdata.put(key, data);
     usesubs.add(key);
   }
 
-  public void addDataAll(HashMap<String, Subject> tmp1, ArrayList<String> tmp2) {
-    subsdata = tmp1;
-    usesubs = tmp2;
+  public void addDataAll(HashMap<String, Subject> datas, ArrayList<String> names) {
+    subsdata.putAll(datas);
+    usesubs.addAll(names);
   }
 
   public Subject getSubData(String key) {
     return subsdata.get(key);
   }
 
-  public Subject getSubDataInt(int tmp) {
-    return subsdata.get(usesubs.get(tmp));
+  public Subject getSubDataInt(int value) {
+    return subsdata.get(usesubs.get(value));
   }
 
   public HashMap<String, Subject> getSubDataAll() {
     return subsdata;
   }
 
-  public String getSubName(int tmp) {
-    return usesubs.get(tmp);
+  public String getSubName(int value) {
+    return usesubs.get(value);
   }
 
   public ArrayList<String> getSubNameAll() {
@@ -98,14 +98,16 @@ class Exam implements Serializable {
 
   public int getTotal() {
     total = 0;
-    for (int i = 0; i < subsdata.size(); i++) {
-      total += subsdata.get(usesubs.get(i)).getScore();
+    for (String s : usesubs) {
+      total += subsdata.get(s).getScore();
     }
     return total;
   }
 
   public float getAverage() {
-    ave = (float) this.getTotal() / (float) subsdata.size();
+    if (total == 0)
+      this.getTotal();
+    ave = (float) total / (float) subsdata.size();
     return ave;
   }
 
@@ -119,12 +121,12 @@ class Subject implements Serializable {
   private String name;
   private int score;
 
-  Subject(String tmp) {
-    name = tmp;
+  Subject(String n) {
+    name = n;
   }
 
-  public void setScore(int tmp) {
-    score = tmp;
+  public void setScore(int s) {
+    score = s;
   }
 
   public String getName() {
