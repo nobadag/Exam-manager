@@ -803,19 +803,13 @@ public class Manager extends Application {
     usesubs.stream().map(s -> String.valueOf(exam.getSubData(s).getScore()) + " 点").map(Label::new).forEach(subvl::add);
 
     if (user.getExamsize() > 1) {
-      float now = exam.getTotal();
-      float last = user.getExam(user.getExamsize() - 2).getTotal();
-      dif.add(now - last);
+      dif.add(new Float(exam.getTotal() - user.getExam(user.getExamsize() - 2).getTotal()));
 
-      now = exam.getAverage();
-      last = user.getExam(user.getExamsize() - 2).getAverage();
-      dif.add(now - last);
+      dif.add(new Float(exam.getAverage() - user.getExam(user.getExamsize() - 2).getAverage()));
 
       usesubs.stream().map(s -> user.getExam(user.getExamsize() - 2).getSubData(s)).forEach(d -> {
         if (d != null) {
-          float n = exam.getSubData(d.getName()).getScore();
-          float l = d.getScore();
-          dif.add(n - l);
+          dif.add(new Float(exam.getSubData(d.getName()).getScore() - d.getScore()));
         } else {
           dif.add(null);
         }
@@ -824,12 +818,13 @@ public class Manager extends Application {
       dif.stream().forEach(f -> {
         Label t = new Label();
         if (f != null) {
-          t.setText(String.format("%.1f", Math.abs(f)) + " 点");
-          if (f > 0) {
+          float pf = f.floatValue();
+          t.setText(String.format("%.1f", Math.abs(pf)) + " 点");
+          if (pf > 0) {
             t.setGraphic(new ImageView(up));
-          } else if (f < 0) {
+          } else if (pf < 0) {
             t.setGraphic(new ImageView(down));
-          } else {
+          } else if (pf == 0) {
             t.setGraphic(new ImageView(flat));
           }
         } else {
