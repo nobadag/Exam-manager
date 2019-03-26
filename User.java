@@ -6,25 +6,27 @@ class User implements Serializable {
   private String name;
   private String password;
   private ArrayList<Exam> examsList = new ArrayList<>();
-  private List<String> subnames;
-  private List<String> whens;
-  private List<String> omits;
-  private HashMap<String, String> whomit = new HashMap<String, String>();
+  private ArrayList<String> subnames = new ArrayList<>();
+  private ArrayList<String> whens = new ArrayList<>();
+  private ArrayList<String> omits = new ArrayList<>();
+  private HashMap<String, String> whomits = new HashMap<String, String>();
+  private HashMap<String, String> omwhens = new HashMap<String, String>();
 
   User(String n, String p) {
     name = n;
     password = p;
 
-    if (subnames == null)
-      subnames = Arrays.asList("国語", "社会", "数学", "理科", "英語", "美術", "技術", "家庭", "保健体育", "音楽");
-    if (whens == null)
-      whens = Arrays.asList("１学期実力テスト", "１学期中間テスト", "１学期期末テスト", "２学期確認テスト", "２学期中間テスト", "２学期期末テスト", "３学期実力テスト",
-          "３学期学年末テスト");
-    if (omits == null)
-      omits = Arrays.asList("１実力", "１中間", "１期末", "２確認", "２中間", "２期末", "３実力", "３学末");
+    if (subnames.isEmpty())
+      subnames.addAll(Arrays.asList("国語", "社会", "数学", "理科", "英語", "美術", "技術", "家庭", "保健体育", "音楽"));
+    if (whens.isEmpty())
+      whens.addAll(Arrays.asList("１学期実力テスト", "１学期中間テスト", "１学期期末テスト", "２学期確認テスト", "２学期中間テスト", "２学期期末テスト", "３学期実力テスト",
+          "３学期学年末テスト"));
+    if (omits.isEmpty())
+      omits.addAll(Arrays.asList("１実力", "１中間", "１期末", "２確認", "２中間", "２期末", "３実力", "３学末"));
 
     for (int i = 0; i < whens.size(); i++) {
-      whomit.put(whens.get(i), omits.get(i));
+      whomits.put(whens.get(i), omits.get(i));
+      omwhens.put(omits.get(i), whens.get(i));
     }
   }
 
@@ -58,6 +60,48 @@ class User implements Serializable {
 
   public int getExamsize() {
     return examsList.size();
+  }
+
+  public ArrayList<String> getSubNames() {
+    return subnames;
+  }
+
+  public ArrayList<String> getWhens() {
+    return whens;
+  }
+
+  public ArrayList<String> getOmits() {
+    return omits;
+  }
+
+  public HashMap<String, String> getWhomits() {
+    return whomits;
+
+  }
+
+  public HashMap<String, String> getOmwhens() {
+    return omwhens;
+  }
+
+  public void changeSubName(int index, String n) {
+    subnames.remove(index);
+    subnames.add(index, n);
+  }
+
+  public void changeWhen(int index, String w) {
+    omwhens.replace(omits.get(index), w);
+    whomits.remove(whens.get(index));
+    whomits.put(w, omits.get(index));
+    whens.remove(index);
+    whens.add(index, w);
+  }
+
+  public void changeOmit(int index, String o) {
+    whomits.replace(whens.get(index), o);
+    omwhens.remove(omits.get(index));
+    omwhens.put(o, whens.get(index));
+    omits.remove(index);
+    omits.add(index, o);
   }
 }
 
