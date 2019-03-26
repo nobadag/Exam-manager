@@ -120,10 +120,6 @@ public class Manager extends Application {
       }
       br.close();
     }
-
-    for (int i = 0; i < whens.length; i++) {
-      whomit.put(whens[i], omit[i]);
-    }
   }
 
   public void start(Stage temp) throws Exception {

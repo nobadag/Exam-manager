@@ -6,10 +6,26 @@ class User implements Serializable {
   private String name;
   private String password;
   private ArrayList<Exam> examsList = new ArrayList<>();
+  private List<String> subnames;
+  private List<String> whens;
+  private List<String> omits;
+  private HashMap<String, String> whomit = new HashMap<String, String>();
 
   User(String n, String p) {
     name = n;
     password = p;
+
+    if (subnames == null)
+      subnames = Arrays.asList("国語", "社会", "数学", "理科", "英語", "美術", "技術", "家庭", "保健体育", "音楽");
+    if (whens == null)
+      whens = Arrays.asList("１学期実力テスト", "１学期中間テスト", "１学期期末テスト", "２学期確認テスト", "２学期中間テスト", "２学期期末テスト", "３学期実力テスト",
+          "３学期学年末テスト");
+    if (omits == null)
+      omits = Arrays.asList("１実力", "１中間", "１期末", "２確認", "２中間", "２期末", "３実力", "３学末");
+
+    for (int i = 0; i < whens.size(); i++) {
+      whomit.put(whens.get(i), omits.get(i));
+    }
   }
 
   public void setName(String n) {
