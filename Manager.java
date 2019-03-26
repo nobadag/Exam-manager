@@ -81,7 +81,7 @@ public class Manager extends Application {
   private boolean acwrote = false;
   private boolean pswrote = false;
 
-  private Tab[] tabs;
+  private ArrayList<Tab> tabs;
   private TabPane tbp;
   private ArrayList<TableView<RowSubData>> tvs;
   private ArrayList<LineChart<String, Number>> lns;
@@ -540,9 +540,8 @@ public class Manager extends Application {
     ok3.setFont(new Font(15));
 
     wh = Stream.of(whens).map(RadioButton::new).toArray(RadioButton[]::new);
-    Stream<RadioButton> strwh = Stream.of(wh);
 
-    strwh.forEach(r -> {
+    Stream.of(wh).forEach(r -> {
       r.setFont(new Font(15));
       r.setPrefWidth(150);
       r.setToggleGroup(whtg);
@@ -804,9 +803,7 @@ public class Manager extends Application {
 
     if (user.getExamsize() > 1) {
       dif.add(new Float(exam.getTotal() - user.getExam(user.getExamsize() - 2).getTotal()));
-
       dif.add(new Float(exam.getAverage() - user.getExam(user.getExamsize() - 2).getAverage()));
-
       usesubs.stream().map(s -> user.getExam(user.getExamsize() - 2).getSubData(s)).forEach(d -> {
         if (d != null) {
           dif.add(new Float(exam.getSubData(d.getName()).getScore() - d.getScore()));
@@ -891,7 +888,7 @@ public class Manager extends Application {
     Label des = new Label(user.getName() + " さんのデータベース");
     chart = new Button("グラフ");
     change = new Button("変更");
-    tabs = new Tab[subnames.length + 1];
+    tabs = new ArrayList<>();
     tbp = new TabPane();
 
     des.setFont(new Font(18));
@@ -912,6 +909,11 @@ public class Manager extends Application {
     fp.getChildren().add(chart);
 
     fp.setAlignment(Pos.BOTTOM_RIGHT);
+
+    tabs.add(new Tab("平均"));
+    Stream.of(subnames).map(Tab::new).forEach(tabs::add);
+
+    tabs.parallelStream().forEach(t -> t.setClosable(false));
 
     for (int i = 0; i < subnames.length + 1; i++) {
       TableView<RowSubData> tv = new TableView<>();
@@ -937,11 +939,8 @@ public class Manager extends Application {
       for (int j = 0; j < user.getExamsize(); j++) {
         Exam t = user.getExam(j);
         if (i == 0) {
-          tabs[i] = new Tab("平均");
-          ovl.add(new RowSubData(j + 1, t.getName(), String.valueOf(String.format("%.1f", t.getAverage())),
-              t.getCalendar()));
+          ovl.add(new RowSubData(c, t.getName(), String.format("%.1f", t.getAverage()), t.getCalendar()));
         } else {
-          tabs[i] = new Tab(subnames[i - 1]);
           if (t.getSubNameAll().contains(subnames[i - 1])) {
             ovl.add(new RowSubData(c, t.getName(), String.valueOf(t.getSubDataInt(i - 1).getScore()), t.getCalendar()));
           } else {
@@ -949,7 +948,6 @@ public class Manager extends Application {
           }
           c++;
         }
-        tabs[i].setClosable(false);
       }
 
       tv.getColumns().add(tc1);
@@ -987,14 +985,12 @@ public class Manager extends Application {
   void set_table() {
     change.setDisable(true);
 
-    for (int i = 0; i < tabs.length; i++) {
-      tabs[i].setContent(tvs.get(i));
-      tbp.getTabs().add(tabs[i]);
+    tabs.stream().forEach(tbp.getTabs()::add);
 
-      TableView.TableViewSelectionModel<RowSubData> pos = tvs.get(i).getSelectionModel();
+    tvs.parallelStream().map(tv -> tv.getSelectionModel()).forEach(pos -> {
       pos.selectedItemProperty().addListener(e -> {
         row = pos.getSelectedItem();
-        if (row.containsValue()) {
+        if (!tabs.get(0).isSelected() || row.containsValue()) {
           change.setDisable(false);
           subsMap = user.getExam(row.getNumber()).getSubDataAll();
           usesubs = user.getExam(row.getNumber()).getSubNameAll();
@@ -1004,6 +1000,10 @@ public class Manager extends Application {
           change.setDisable(true);
         }
       });
+    });
+
+    for (int i = 0; i < tabs.size(); i++) {
+      tabs.get(i).setContent(tvs.get(i));
     }
 
     tbp.getSelectionModel().selectedItemProperty().addListener(e -> {
@@ -1107,9 +1107,10 @@ public class Manager extends Application {
   }
 
   void set_chart() {
-    for (int i = 0; i < tabs.length; i++) {
-      tabs[i].setContent(lns.get(i));
-      tbp.getTabs().add(tabs[i]);
+    tabs.stream().forEach(tbp.getTabs()::add);
+
+    for (int i = 0; i < tabs.size(); i++) {
+      tabs.get(i).setContent(lns.get(i));
     }
 
     chart.setOnAction(e -> {
