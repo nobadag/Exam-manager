@@ -20,11 +20,6 @@ import javafx.beans.property.*;
 public class Manager extends Application {
   public Stage stage;
 
-  public final String[] subnames = { "国語", "社会", "数学", "理科", "英語", "美術", "技術", "家庭", "保健体育", "音楽" };
-  public final String[] whens = { "１学期実力テスト", "１学期中間テスト", "１学期期末テスト", "２学期確認テスト", "２学期中間テスト", "２学期期末テスト", "３学期実力テスト",
-      "３学期学年末テスト" };
-  public final String[] omit = { "１実力", "１中間", "１期末", "２確認", "２中間", "２期末", "３実力", "３学末" };
-  public HashMap<String, String> whomit = new HashMap<String, String>();
   public final int min = 0;
   public final int max = 100;
 
@@ -444,7 +439,7 @@ public class Manager extends Application {
   void select_sub() {
     // 教科選択画面
     Label des = new Label("教科を選んでください。");
-    CheckBox[] subs = new CheckBox[subnames.length];
+    CheckBox[] subs = new CheckBox[user.getSubNames().size()];
     Button ok2 = new Button("  OK  ");
     GridPane gp = new GridPane();
 
@@ -457,7 +452,7 @@ public class Manager extends Application {
 
     usesubs.clear();
 
-    subs = Stream.of(subnames).map(CheckBox::new).toArray(CheckBox[]::new);
+    subs = user.getSubNames().stream().map(CheckBox::new).toArray(CheckBox[]::new);
     Stream<CheckBox> strsubs = Stream.of(subs);
 
     strsubs.parallel().forEach(c -> {
@@ -479,7 +474,7 @@ public class Manager extends Application {
     });
 
     int x = 0, y = 0;
-    for (int i = 0; i < subnames.length; i++) {
+    for (int i = 0; i < user.getSubNames().size(); i++) {
       if (i % 3 == 0) {
         x = 0;
         y++;
@@ -523,7 +518,7 @@ public class Manager extends Application {
   void select_when() {
     // 試験選択画面
     Label des = new Label("いつの試験か選んでください。");
-    RadioButton[] wh = new RadioButton[whens.length];
+    RadioButton[] wh = new RadioButton[user.getWhens().size()];
     ToggleGroup whtg = new ToggleGroup();
     Button ok3 = new Button("  OK  ");
 
@@ -535,7 +530,7 @@ public class Manager extends Application {
 
     ok3.setFont(new Font(15));
 
-    wh = Stream.of(whens).map(RadioButton::new).toArray(RadioButton[]::new);
+    wh = user.getWhens().stream().map(RadioButton::new).toArray(RadioButton[]::new);
 
     Stream.of(wh).forEach(r -> {
       r.setFont(new Font(15));
@@ -546,7 +541,8 @@ public class Manager extends Application {
 
     int last;
     if (user.getExamsize() > 0
-        && (last = Arrays.asList(whens).indexOf(user.getExam(user.getExamsize() - 1).getName())) != whens.length - 1) {
+        && (last = user.getWhens().indexOf(user.getExam(user.getExamsize() - 1).getName())) != user.getWhens().size()
+            - 1) {
       wh[last + 1].setSelected(true);
     } else {
       wh[0].setSelected(true);
@@ -907,11 +903,11 @@ public class Manager extends Application {
     fp.setAlignment(Pos.BOTTOM_RIGHT);
 
     tabs.add(new Tab("平均"));
-    Stream.of(subnames).map(Tab::new).forEach(tabs::add);
+    user.getSubNames().stream().map(Tab::new).forEach(tabs::add);
 
     tabs.parallelStream().forEach(t -> t.setClosable(false));
 
-    for (int i = 0; i < subnames.length + 1; i++) {
+    for (int i = 0; i < user.getSubNames().size() + 1; i++) {
       TableView<RowSubData> tv = new TableView<>();
       ObservableList<RowSubData> ovl = FXCollections.observableArrayList();
       TableColumn<RowSubData, String> tc1 = new TableColumn<RowSubData, String>("番号");
@@ -937,7 +933,7 @@ public class Manager extends Application {
         if (i == 0) {
           ovl.add(new RowSubData(c, t.getName(), String.format("%.1f", t.getAverage()), t.getCalendar()));
         } else {
-          if (t.getSubNameAll().contains(subnames[i - 1])) {
+          if (t.getSubNameAll().contains(user.getSubNames().get(i - 1))) {
             ovl.add(new RowSubData(c, t.getName(), String.valueOf(t.getSubDataInt(i - 1).getScore()), t.getCalendar()));
           } else {
             ovl.add(new RowSubData(c, t.getName(), "", t.getCalendar()));
@@ -1068,7 +1064,7 @@ public class Manager extends Application {
   void sco_chart() {
     lns = new ArrayList<>();
 
-    for (int i = 0; i < subnames.length + 1; i++) {
+    for (int i = 0; i < user.getSubNames().size() + 1; i++) {
       CategoryAxis xAxis = new CategoryAxis();
       NumberAxis yAxis = new NumberAxis();
 
@@ -1085,11 +1081,12 @@ public class Manager extends Application {
         Exam t = user.getExam(j);
         if (i == 0) {
           linechart.setTitle("平均点の変化");
-          line.getData().add(new XYChart.Data<>(whomit.get(t.getName()), t.getAverage()));
+          line.getData().add(new XYChart.Data<>(user.getWhomits().get(t.getName()), t.getAverage()));
         } else {
-          linechart.setTitle(subnames[i - 1] + " の点数の変化");
-          if (t.getSubNameAll().contains(subnames[i - 1])) {
-            line.getData().add(new XYChart.Data<>(whomit.get(t.getName()), t.getSubData(subnames[i - 1]).getScore()));
+          linechart.setTitle(user.getSubNames().get(i - 1) + " の点数の変化");
+          if (t.getSubNameAll().contains(user.getSubNames().get(i - 1))) {
+            line.getData().add(new XYChart.Data<>(user.getWhomits().get(t.getName()),
+                t.getSubData(user.getSubNames().get(i - 1)).getScore()));
           }
         }
       }
