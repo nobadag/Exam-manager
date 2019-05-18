@@ -15,7 +15,9 @@ class User implements Serializable {
   User(String n, String p) {
     name = n;
     password = p;
+  }
 
+  public void userinit() {
     if (subnames.isEmpty())
       subnames.addAll(Arrays.asList("国語", "社会", "数学", "理科", "英語", "美術", "技術", "家庭", "保健体育", "音楽"));
     if (whens.isEmpty())
