@@ -88,8 +88,14 @@ public class Manager extends Application {
 
   private Tab[] items = new Tab[2];
   private ArrayList<TextField> subtf = new ArrayList<>();
-  private ArrayList<Label> judge = new ArrayList<>();
-  private ArrayList<CheckBox> mark = new ArrayList<>();
+  private ArrayList<Label> subjudge = new ArrayList<>();
+  private ArrayList<CheckBox> submark = new ArrayList<>();
+
+  private ArrayList<TextField> whentf = new ArrayList<>();
+  private ArrayList<TextField> omittf = new ArrayList<>();
+  private ArrayList<Label> whenjudge = new ArrayList<>();
+  private ArrayList<Label> omitjudge = new ArrayList<>();
+  private ArrayList<CheckBox> whenmark = new ArrayList<>();
 
   public static void main(String[] args) {
     launch(args);
@@ -111,9 +117,7 @@ public class Manager extends Application {
       Datas.mkdir();
     }
 
-    if (!Roster.exists()) {
-      Roster.createNewFile();
-    } else {
+    if (Roster.exists()) {
       String line;
       BufferedReader br = new BufferedReader(new FileReader(Roster.getPath()));
       while ((line = br.readLine()) != null) {
@@ -428,7 +432,7 @@ public class Manager extends Application {
     }
 
     setting.setOnAction(e -> {
-      setting();
+      sub_setting();
     });
 
     VBox vb = new VBox(20);
@@ -1126,7 +1130,7 @@ public class Manager extends Application {
     change.setDisable(true);
   }
 
-  void setting() {
+  void sub_setting() {
     TabPane tbp = new TabPane();
 
     items[0] = new Tab("教科");
@@ -1155,13 +1159,13 @@ public class Manager extends Application {
     save.setPrefWidth(150);
 
     user.getSubNames().stream().map(TextField::new).forEach(subtf::add);
-    Stream.generate(Label::new).limit(user.getSubNames().size()).forEach(judge::add);
-    Stream.generate(CheckBox::new).limit(user.getSubNames().size()).forEach(mark::add);
+    Stream.generate(Label::new).limit(user.getSubNames().size()).forEach(subjudge::add);
+    Stream.generate(CheckBox::new).limit(user.getSubNames().size()).forEach(submark::add);
 
     for (int i = 0; i < subtf.size(); i++) {
-      gp.add(mark.get(i), 0, i);
+      gp.add(submark.get(i), 0, i);
       gp.add(subtf.get(i), 1, i);
-      gp.add(judge.get(i), 2, i);
+      gp.add(subjudge.get(i), 2, i);
     }
 
     gp.setAlignment(Pos.CENTER);
@@ -1171,7 +1175,7 @@ public class Manager extends Application {
       t.setFont(new Font(17));
     });
 
-    judge.parallelStream().forEach(l -> {
+    subjudge.parallelStream().forEach(l -> {
       l.setFont(new Font(17));
       l.setPrefWidth(300);
     });
@@ -1206,30 +1210,30 @@ public class Manager extends Application {
 
     plus.setOnAction(e -> {
       TextField newsubtf = new TextField();
-      Label newjudge = new Label();
+      Label newsubjudge = new Label();
 
       newsubtf.setOnAction(new Inspection_subject());
       newsubtf.setFont(new Font(17));
 
-      newjudge.setFont(new Font(17));
-      newjudge.setPrefWidth(300);
+      newsubjudge.setFont(new Font(17));
+      newsubjudge.setPrefWidth(300);
 
-      newjudge.setText("この教科名を使うことはできません。");
-      newjudge.setGraphic(new ImageView(batsu));
+      newsubjudge.setText("この教科名を使うことはできません。");
+      newsubjudge.setGraphic(new ImageView(batsu));
 
       subtf.add(newsubtf);
-      judge.add(newjudge);
-      mark.add(new CheckBox());
+      subjudge.add(newsubjudge);
+      submark.add(new CheckBox());
 
       sub_change(bp, des, hb);
     });
 
     minus.setOnAction(e -> {
       for (int i = 0; i < subtf.size(); i++) {
-        if (mark.get(i).isSelected()) {
+        if (submark.get(i).isSelected()) {
           subtf.remove(i);
-          judge.remove(i);
-          mark.remove(i);
+          subjudge.remove(i);
+          submark.remove(i);
         }
       }
 
@@ -1242,6 +1246,8 @@ public class Manager extends Application {
       }
     });
 
+    when_setting();
+
     setting = new Scene(tbp);
 
     stage.setScene(setting);
@@ -1252,9 +1258,9 @@ public class Manager extends Application {
     VBox newvb = new VBox(10);
 
     for (int i = 0; i < subtf.size(); i++) {
-      newgp.add(mark.get(i), 0, i);
+      newgp.add(submark.get(i), 0, i);
       newgp.add(subtf.get(i), 1, i);
-      newgp.add(judge.get(i), 2, i);
+      newgp.add(subjudge.get(i), 2, i);
     }
 
     newgp.setAlignment(Pos.CENTER);
@@ -1275,12 +1281,131 @@ public class Manager extends Application {
       t.setText(name);
 
       int row = GridPane.getRowIndex(t);
-      if (name.isEmpty() || user.getSubNames().contains(name)) {
-        judge.get(row).setText("この教科名を使うことはできません。");
-        judge.get(row).setGraphic(new ImageView(batsu));
+      if (name.isEmpty()) {
+        subjudge.get(row).setText("この教科名を使うことはできません。");
+        subjudge.get(row).setGraphic(new ImageView(batsu));
       } else {
-        judge.get(row).setText("この教科名を使うことができます。");
-        judge.get(row).setGraphic(new ImageView(maru));
+        subjudge.get(row).setText("この教科名を使うことができます。");
+        subjudge.get(row).setGraphic(new ImageView(maru));
+      }
+    }
+  }
+
+  void when_setting() {
+    Label des = new Label("試験の変更");
+    Button plus = new Button("試験を追加");
+    Button minus = new Button("試験を削除");
+    Button save = new Button("保存");
+
+    VBox vb = new VBox(10);
+    GridPane gp = new GridPane();
+    HBox hb = new HBox();
+    ScrollPane scp = new ScrollPane();
+    BorderPane bp = new BorderPane();
+
+    des.setFont(new Font(20));
+    plus.setFont(new Font(17));
+    minus.setFont(new Font(17));
+    save.setFont(new Font(17));
+
+    plus.setPrefWidth(150);
+    minus.setPrefWidth(150);
+    save.setPrefWidth(150);
+
+    user.getWhens().stream().map(TextField::new).forEach(whentf::add);
+    user.getOmits().stream().map(TextField::new).forEach(omittf::add);
+    Stream.generate(Label::new).limit(user.getWhens().size()).forEach(whenjudge::add);
+    Stream.generate(Label::new).limit(user.getOmits().size()).forEach(omitjudge::add);
+    Stream.generate(CheckBox::new).limit(user.getWhens().size()).forEach(whenmark::add);
+
+    int j = 0;
+    for (int i = 0; i < whentf.size(); i++) {
+      gp.add(whenmark.get(i), 0, j);
+      gp.add(whentf.get(i), 1, j);
+      gp.add(whenjudge.get(i), 2, j);
+      gp.add(omittf.get(i), 1, j + 1);
+      gp.add(omitjudge.get(i), 2, j + 1);
+      j += 2;
+    }
+
+    gp.setAlignment(Pos.CENTER);
+
+    whentf.parallelStream().forEach(t -> {
+      t.setOnAction(new Inspection_when());
+      t.setFont(new Font(17));
+    });
+
+    omittf.parallelStream().forEach(t -> {
+      t.setOnAction(new Inspection_omit());
+      t.setFont(new Font(17));
+    });
+
+    whenjudge.parallelStream().forEach(l -> {
+      l.setFont(new Font(17));
+      l.setPrefWidth(300);
+    });
+
+    omitjudge.parallelStream().forEach(l -> {
+      l.setFont(new Font(17));
+      l.setPrefWidth(300);
+    });
+
+    hb.getChildren().add(plus);
+    hb.getChildren().add(minus);
+    hb.getChildren().add(save);
+
+    hb.setAlignment(Pos.CENTER);
+
+    vb.getChildren().add(des);
+    vb.getChildren().add(hb);
+    vb.getChildren().add(gp);
+
+    vb.setAlignment(Pos.CENTER);
+
+    bp.setCenter(vb);
+
+    bp.setPrefHeight(stage.getHeight());
+    bp.setPrefWidth(stage.getWidth());
+
+    scp.setContent(bp);
+
+    scp.setHbarPolicy(ScrollBarPolicy.NEVER);
+
+    items[1].setContent(scp);
+  }
+
+  class Inspection_when implements EventHandler<ActionEvent> {
+    public void handle(ActionEvent event) {
+      TextField t = (TextField) event.getSource();
+      String name = t.getText().trim();
+      t.setText(name);
+
+      int row = GridPane.getRowIndex(t) / 2;
+
+      if (name.isEmpty()) {
+        whenjudge.get(row).setText("この試験名を使うことはできません。");
+        whenjudge.get(row).setGraphic(new ImageView(batsu));
+      } else {
+        whenjudge.get(row).setText("この試験名を使うことができます。");
+        whenjudge.get(row).setGraphic(new ImageView(maru));
+      }
+    }
+  }
+
+  class Inspection_omit implements EventHandler<ActionEvent> {
+    public void handle(ActionEvent event) {
+      TextField t = (TextField) event.getSource();
+      String name = t.getText().trim();
+      t.setText(name);
+
+      int row = (GridPane.getRowIndex(t) - 1) / 2;
+
+      if (name.isEmpty() || name.length() > 4) {
+        omitjudge.get(row).setText("この省略名を使うことはできません。");
+        omitjudge.get(row).setGraphic(new ImageView(batsu));
+      } else {
+        omitjudge.get(row).setText("この省略名を使うことができます。");
+        omitjudge.get(row).setGraphic(new ImageView(maru));
       }
     }
   }
@@ -1303,6 +1428,7 @@ public class Manager extends Application {
 
   void roster_write() {
     try {
+      Roster.createNewFile();
       PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(Roster.getPath())));
       for (String t : usersname) {
         pw.println(t);
