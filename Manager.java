@@ -1274,6 +1274,7 @@ public class Manager extends Application {
     bp.setCenter(newvb);
   }
 
+
   class Inspection_subject implements EventHandler<ActionEvent> {
     public void handle(ActionEvent event) {
       TextField t = (TextField) event.getSource();
@@ -1372,6 +1373,87 @@ public class Manager extends Application {
     scp.setHbarPolicy(ScrollBarPolicy.NEVER);
 
     items[1].setContent(scp);
+
+    plus.setOnAction(e -> {
+      TextField newwhentf = new TextField();
+      TextField newomittf = new TextField();
+      Label newwhenjudge = new Label();
+      Label newomitjudge = new Label();
+
+      newwhentf.setOnAction(new Inspection_when());
+      newwhentf.setFont(new Font(17));
+
+      newomittf.setOnAction(new Inspection_omit());
+      newomittf.setFont(new Font(17));
+
+      newwhenjudge.setFont(new Font(17));
+      newwhenjudge.setPrefWidth(300);
+
+      newomitjudge.setFont(new Font(17));
+      newomitjudge.setPrefWidth(300);
+
+      newwhenjudge.setText("この試験名を使うことはできません。");
+      newomitjudge.setText("この省略名を使うことはできません。");
+
+      newwhenjudge.setGraphic(new ImageView(batsu));
+      newomitjudge.setGraphic(new ImageView(batsu));
+
+      whentf.add(newwhentf);
+      whenjudge.add(newwhenjudge);
+      whenmark.add(new CheckBox());
+
+      omittf.add(newomittf);
+      omitjudge.add(newomitjudge);
+      whenmark.add(new CheckBox());
+
+      when_change(bp, des, hb);
+    });
+
+    minus.setOnAction(e -> {
+      for (int i = 0; i < whentf.size(); i++) {
+        if (whenmark.get(i).isSelected()) {
+          whentf.remove(i);
+          whenjudge.remove(i);
+          omittf.remove(i);
+          omitjudge.remove(i);
+          whenmark.remove(i);
+        }
+      }
+
+      when_change(bp, des, hb);
+    });
+
+    save.setOnAction(e -> {
+      for (int i = 0; i < whentf.size(); i++) {
+        user.changeWhen(i,whentf.get(i).getText());
+        user.changeOmit(i,omittf.get(i).getText());
+      }
+    });
+  }
+
+  void when_change(BorderPane bp, Label des, HBox hb) {
+    GridPane newgp = new GridPane();
+    VBox newvb = new VBox(10);
+
+    int j = 0;
+    for(int i = 0; i < whentf.size(); i++) {
+      newgp.add(whenmark.get(i), 0, j);
+      newgp.add(whentf.get(i), 1, j);
+      newgp.add(whenjudge.get(i), 2, j);
+      newgp.add(omittf.get(i), 1, j + 1);
+      newgp.add(omitjudge.get(i), 2, j + 1);
+      j += 2;
+    }
+
+    newgp.setAlignment(Pos.CENTER);
+
+    newvb.getChildren().add(des);
+    newvb.getChildren().add(hb);
+    newvb.getChildren().add(newgp);
+
+    newvb.setAlignment(Pos.CENTER);
+
+    bp.setCenter(newvb);
   }
 
   class Inspection_when implements EventHandler<ActionEvent> {
