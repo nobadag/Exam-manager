@@ -87,15 +87,20 @@ public class Manager extends Application {
   private RowSubData row;
 
   private Tab[] items = new Tab[2];
+
+  private Button subsave;
   private ArrayList<TextField> subtf = new ArrayList<>();
   private ArrayList<Label> subjudge = new ArrayList<>();
   private ArrayList<CheckBox> submark = new ArrayList<>();
+  private int subsavelock = 0;
 
+  private Button whensave;
   private ArrayList<TextField> whentf = new ArrayList<>();
   private ArrayList<TextField> omittf = new ArrayList<>();
   private ArrayList<Label> whenjudge = new ArrayList<>();
   private ArrayList<Label> omitjudge = new ArrayList<>();
   private ArrayList<CheckBox> whenmark = new ArrayList<>();
+  private int whensavelock = 0;
 
   public static void main(String[] args) {
     launch(args);
@@ -1139,7 +1144,7 @@ public class Manager extends Application {
     Label des = new Label("教科の変更");
     Button plus = new Button("教科を追加");
     Button minus = new Button("教科を削除");
-    Button save = new Button("保存");
+    subsave = new Button("保存");
 
     VBox vb = new VBox(10);
     GridPane gp = new GridPane();
@@ -1152,11 +1157,11 @@ public class Manager extends Application {
     des.setFont(new Font(20));
     plus.setFont(new Font(17));
     minus.setFont(new Font(17));
-    save.setFont(new Font(17));
+    subsave.setFont(new Font(17));
 
     plus.setPrefWidth(150);
     minus.setPrefWidth(150);
-    save.setPrefWidth(150);
+    subsave.setPrefWidth(150);
 
     user.getSubNames().stream().map(TextField::new).forEach(subtf::add);
     Stream.generate(Label::new).limit(user.getSubNames().size()).forEach(subjudge::add);
@@ -1182,7 +1187,7 @@ public class Manager extends Application {
 
     hb.getChildren().add(plus);
     hb.getChildren().add(minus);
-    hb.getChildren().add(save);
+    hb.getChildren().add(subsave);
 
     hb.setAlignment(Pos.CENTER);
 
@@ -1240,17 +1245,17 @@ public class Manager extends Application {
       sub_change(bp, des, hb);
     });
 
-    save.setOnAction(e -> {
+    subsave.setOnAction(e -> {
       for (int i = 0; i < subtf.size(); i++) {
         user.changeSubName(i, subtf.get(i).getText());
       }
     });
 
-    when_setting();
-
     setting = new Scene(tbp);
 
     stage.setScene(setting);
+
+    when_setting();
   }
 
   void sub_change(BorderPane bp, Label des, HBox hb) {
@@ -1274,7 +1279,6 @@ public class Manager extends Application {
     bp.setCenter(newvb);
   }
 
-
   class Inspection_subject implements EventHandler<ActionEvent> {
     public void handle(ActionEvent event) {
       TextField t = (TextField) event.getSource();
@@ -1285,9 +1289,16 @@ public class Manager extends Application {
       if (name.isEmpty()) {
         subjudge.get(row).setText("この教科名を使うことはできません。");
         subjudge.get(row).setGraphic(new ImageView(batsu));
+
+        subsavelock++;
+        subsave.setDisable(true);
       } else {
         subjudge.get(row).setText("この教科名を使うことができます。");
         subjudge.get(row).setGraphic(new ImageView(maru));
+
+        subsavelock--;
+        if(subsavelock == 0)
+          subsave.setDisable(false);
       }
     }
   }
@@ -1296,7 +1307,9 @@ public class Manager extends Application {
     Label des = new Label("試験の変更");
     Button plus = new Button("試験を追加");
     Button minus = new Button("試験を削除");
-    Button save = new Button("保存");
+    whensave = new Button("保存");
+    Button upwhen = new Button("↑");
+    Button downwhen = new Button("↓");
 
     VBox vb = new VBox(10);
     GridPane gp = new GridPane();
@@ -1307,11 +1320,15 @@ public class Manager extends Application {
     des.setFont(new Font(20));
     plus.setFont(new Font(17));
     minus.setFont(new Font(17));
-    save.setFont(new Font(17));
+    whensave.setFont(new Font(17));
+    upwhen.setFont(new Font(17));
+    downwhen.setFont(new Font(17));
 
     plus.setPrefWidth(150);
     minus.setPrefWidth(150);
-    save.setPrefWidth(150);
+    whensave.setPrefWidth(150);
+    whensave.setPrefWidth(100);
+    whensave.setPrefWidth(100);
 
     user.getWhens().stream().map(TextField::new).forEach(whentf::add);
     user.getOmits().stream().map(TextField::new).forEach(omittf::add);
@@ -1353,7 +1370,9 @@ public class Manager extends Application {
 
     hb.getChildren().add(plus);
     hb.getChildren().add(minus);
-    hb.getChildren().add(save);
+    hb.getChildren().add(whensave);
+    hb.getChildren().add(upwhen);
+    hb.getChildren().add(downwhen);
 
     hb.setAlignment(Pos.CENTER);
 
@@ -1423,12 +1442,72 @@ public class Manager extends Application {
       when_change(bp, des, hb);
     });
 
-    save.setOnAction(e -> {
+    whensave.setOnAction(e -> {
       for (int i = 0; i < whentf.size(); i++) {
-        user.changeWhen(i,whentf.get(i).getText());
-        user.changeOmit(i,omittf.get(i).getText());
+        user.changeWhen(i, whentf.get(i).getText());
+        user.changeOmit(i, omittf.get(i).getText());
       }
     });
+
+    upwhen.setOnAction(e -> when_updown("UP"));
+
+    downwhen.setOnAction(e -> when_updown("DOWN"));
+  }
+
+  void when_updown(String str) {
+    int val = 0;
+    int end = 0;
+    int ret = 0;
+    int next = 0;
+
+    if (str.equals("UP")) {
+      val = -1;
+      end = 0;
+      ret = whentf.size() - 1;
+    } else if (str.equals("DOWN")) {
+      val = 1;
+      end = whentf.size() - 1;
+      ret = 0;
+    }
+
+    for (int i = 0; i < whentf.size(); i++) {
+      if (whenmark.get(i).isSelected()) {
+        if (i == end)
+          next = ret;
+        else
+          next = i + val;
+
+        whenmark.get(i).setSelected(false);
+
+        String tstr;
+        ImageView timg;
+
+        tstr = whentf.get(next).getText();
+        whentf.get(next).setText(whentf.get(i).getText());
+        whentf.get(i).setText(tstr);
+
+        tstr = omittf.get(next).getText();
+        omittf.get(next).setText(omittf.get(i).getText());
+        omittf.get(i).setText(tstr);
+
+        tstr = whenjudge.get(next).getText();
+        whenjudge.get(next).setText(whenjudge.get(i).getText());
+        whenjudge.get(i).setText(tstr);
+
+        tstr = omitjudge.get(next).getText();
+        omitjudge.get(next).setText(omitjudge.get(i).getText());
+        omitjudge.get(i).setText(tstr);
+
+        timg = (ImageView) whenjudge.get(next).getGraphic();
+        whenjudge.get(next).setGraphic(whenjudge.get(i).getGraphic());
+        whenjudge.get(i).setGraphic(timg);
+
+        timg = (ImageView) omitjudge.get(next).getGraphic();
+        omitjudge.get(next).setGraphic(omitjudge.get(i).getGraphic());
+        omitjudge.get(i).setGraphic(timg);
+      }
+    }
+
   }
 
   void when_change(BorderPane bp, Label des, HBox hb) {
@@ -1436,7 +1515,7 @@ public class Manager extends Application {
     VBox newvb = new VBox(10);
 
     int j = 0;
-    for(int i = 0; i < whentf.size(); i++) {
+    for (int i = 0; i < whentf.size(); i++) {
       newgp.add(whenmark.get(i), 0, j);
       newgp.add(whentf.get(i), 1, j);
       newgp.add(whenjudge.get(i), 2, j);
@@ -1467,9 +1546,16 @@ public class Manager extends Application {
       if (name.isEmpty()) {
         whenjudge.get(row).setText("この試験名を使うことはできません。");
         whenjudge.get(row).setGraphic(new ImageView(batsu));
+
+        whensavelock++;
+        whensave.setDisable(true);
       } else {
         whenjudge.get(row).setText("この試験名を使うことができます。");
         whenjudge.get(row).setGraphic(new ImageView(maru));
+
+        whensavelock--;
+        if(whensavelock == 0)
+          whensave.setDisable(false);
       }
     }
   }
@@ -1485,9 +1571,16 @@ public class Manager extends Application {
       if (name.isEmpty() || name.length() > 4) {
         omitjudge.get(row).setText("この省略名を使うことはできません。");
         omitjudge.get(row).setGraphic(new ImageView(batsu));
+
+        whensavelock++;
+        whensave.setDisable(true);
       } else {
         omitjudge.get(row).setText("この省略名を使うことができます。");
         omitjudge.get(row).setGraphic(new ImageView(maru));
+
+        whensavelock--;
+        if(whensavelock == 0)
+          whensave.setDisable(false);
       }
     }
   }
