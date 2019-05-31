@@ -38,6 +38,7 @@ public class Manager extends Application {
   private File Datas;
   private File Roster;
 
+  private Image back;
   private Image maru;
   private Image batsu;
   private Image pencil;
@@ -52,6 +53,9 @@ public class Manager extends Application {
   private HashMap<String, Subject> subsMap = new HashMap<String, Subject>();
   private ArrayList<String> usesubs = new ArrayList<>();
   private String usewhen;
+
+  private ToolBar toolbar = new ToolBar();
+  private Button backbt = new Button();
 
   private TextField actf1;
   private PasswordField pwf1;
@@ -107,6 +111,7 @@ public class Manager extends Application {
   }
 
   public void init() throws Exception {
+    back = new Image("file:Image/戻る.png", 20, 0, true, false);
     maru = new Image("file:Image/マル.png", 50, 0, true, false);
     batsu = new Image("file:Image/バツ.png", 50, 0, true, false);
     pencil = new Image("file:Image/エンピツ.png", 30, 0, true, false);
@@ -130,6 +135,9 @@ public class Manager extends Application {
       }
       br.close();
     }
+
+    backbt.setGraphic(new ImageView(back));
+    toolbar.getItems().add(backbt);
   }
 
   public void start(Stage temp) throws Exception {
@@ -169,6 +177,11 @@ public class Manager extends Application {
     home.getChildren().add(op);
 
     home.setAlignment(Pos.CENTER);
+
+    backbt.setDisable(true);
+
+    bp.setTop(toolbar);
+
     bp.setCenter(home);
 
     welcome = new Scene(bp);
@@ -251,6 +264,14 @@ public class Manager extends Application {
     vb.getChildren().add(ok);
 
     vb.setAlignment(Pos.CENTER);
+
+    backbt.setDisable(false);
+
+    backbt.setOnAction(e -> {
+      welcome();
+    });
+
+    bp.setTop(toolbar);
 
     bp.setCenter(vb);
 
@@ -352,6 +373,14 @@ public class Manager extends Application {
 
     vb.setAlignment(Pos.CENTER);
 
+    backbt.setDisable(false);
+
+    backbt.setOnAction(e -> {
+      welcome();
+    });
+
+    bp.setTop(toolbar);
+
     bp.setCenter(vb);
 
     login_acc = new Scene(bp);
@@ -401,10 +430,7 @@ public class Manager extends Application {
       Alert err = new Alert(Alert.AlertType.ERROR);
       err.setTitle("エラー");
       err.getDialogPane().setHeaderText("データを読み込むことに失敗しました。" + exp);
-      Optional<ButtonType> reserr = err.showAndWait();
-      if (reserr.get() == ButtonType.OK) {
-        System.exit(1);
-      }
+      err.showAndWait();
     }
   }
 
@@ -449,6 +475,14 @@ public class Manager extends Application {
     vb.getChildren().add(setting);
 
     vb.setAlignment(Pos.CENTER);
+
+    backbt.setDisable(false);
+
+    backbt.setOnAction(e -> {
+      welcome();
+    });
+
+    bp.setTop(toolbar);
 
     bp.setCenter(vb);
 
@@ -517,6 +551,14 @@ public class Manager extends Application {
 
     BorderPane bp = new BorderPane();
 
+    backbt.setDisable(false);
+
+    backbt.setOnAction(e -> {
+      home();
+    });
+
+    bp.setTop(toolbar);
+
     bp.setCenter(subvb);
 
     select_sub = new Scene(bp);
@@ -572,6 +614,14 @@ public class Manager extends Application {
     vb.getChildren().add(ok3);
 
     vb.setAlignment(Pos.CENTER);
+
+    backbt.setDisable(false);
+
+    backbt.setOnAction(e -> {
+      select_sub();
+    });
+
+    bp.setTop(toolbar);
 
     bp.setCenter(vb);
 
@@ -662,6 +712,19 @@ public class Manager extends Application {
     hb.getChildren().add(vb);
     hb.getChildren().add(gp);
     hb.setAlignment(Pos.CENTER);
+
+    backbt.setDisable(false);
+
+    backbt.setOnAction(e -> {
+      if (count == 0) {
+        select_when();
+      } else {
+        count--;
+        input_sco();
+      }
+    });
+
+    bp.setTop(toolbar);
 
     bp.setCenter(hb);
 
@@ -766,6 +829,15 @@ public class Manager extends Application {
     vb.getChildren().add(ok4);
 
     vb.setAlignment(Pos.CENTER);
+
+    backbt.setDisable(false);
+
+    backbt.setOnAction(e -> {
+      count--;
+      input_sco();
+    });
+
+    bp.setTop(toolbar);
 
     bp.setCenter(vb);
 
@@ -878,6 +950,14 @@ public class Manager extends Application {
     vb.getChildren().add(ok5);
     vb.setAlignment(Pos.CENTER);
 
+    backbt.setDisable(false);
+
+    backbt.setOnAction(e -> {
+      check_sco();
+    });
+
+    bp.setTop(toolbar);
+
     bp.setCenter(vb);
 
     bp.setPrefHeight(stage.getHeight());
@@ -986,6 +1066,14 @@ public class Manager extends Application {
     vb.getChildren().add(tbp);
 
     vb.setAlignment(Pos.CENTER);
+
+    backbt.setDisable(false);
+
+    backbt.setOnAction(e -> {
+      home();
+    });
+
+    bp.setTop(toolbar);
 
     bp.setCenter(vb);
     bp.setBottom(fp);
@@ -1121,6 +1209,10 @@ public class Manager extends Application {
   }
 
   void set_chart() {
+    for(int i = 0; i < lns.size(); i++){
+      tabs.get(i).setContent(lns.get(i));
+    }
+
     tabs.stream().forEach(tbp.getTabs()::add);
 
     for (int i = 0; i < tabs.size(); i++) {
@@ -1151,6 +1243,7 @@ public class Manager extends Application {
     HBox hb = new HBox();
     ScrollPane scp = new ScrollPane();
     BorderPane bp = new BorderPane();
+    BorderPane bigbp = new BorderPane();
 
     tbp.setStyle("-fx-font-size: " + 12 + "pt;");
 
@@ -1251,7 +1344,17 @@ public class Manager extends Application {
       }
     });
 
-    setting = new Scene(tbp);
+    backbt.setDisable(false);
+
+    backbt.setOnAction(e -> {
+      home();
+    });
+
+    bigbp.setTop(toolbar);
+
+    bigbp.setCenter(tbp);
+
+    setting = new Scene(bigbp);
 
     stage.setScene(setting);
 
@@ -1297,7 +1400,7 @@ public class Manager extends Application {
         subjudge.get(row).setGraphic(new ImageView(maru));
 
         subsavelock--;
-        if(subsavelock == 0)
+        if (subsavelock == 0)
           subsave.setDisable(false);
       }
     }
@@ -1554,7 +1657,7 @@ public class Manager extends Application {
         whenjudge.get(row).setGraphic(new ImageView(maru));
 
         whensavelock--;
-        if(whensavelock == 0)
+        if (whensavelock == 0)
           whensave.setDisable(false);
       }
     }
@@ -1579,7 +1682,7 @@ public class Manager extends Application {
         omitjudge.get(row).setGraphic(new ImageView(maru));
 
         whensavelock--;
-        if(whensavelock == 0)
+        if (whensavelock == 0)
           whensave.setDisable(false);
       }
     }
