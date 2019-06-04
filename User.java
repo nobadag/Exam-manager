@@ -11,6 +11,7 @@ class User implements Serializable {
   private ArrayList<String> omits = new ArrayList<>();
   private HashMap<String, String> whomits = new HashMap<String, String>();
   private HashMap<String, String> omwhens = new HashMap<String, String>();
+  private boolean set = false;
 
   User(String n, String p) {
     name = n;
@@ -78,7 +79,6 @@ class User implements Serializable {
 
   public HashMap<String, String> getWhomits() {
     return whomits;
-
   }
 
   public HashMap<String, String> getOmwhens() {
@@ -104,6 +104,14 @@ class User implements Serializable {
     omwhens.put(o, whens.get(index));
     omits.remove(index);
     omits.add(index, o);
+  }
+
+  public void SetOK() {
+    set = true;
+  }
+
+  public boolean isSetOK() {
+    return set;
   }
 }
 

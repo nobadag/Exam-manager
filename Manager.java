@@ -458,9 +458,11 @@ public class Manager extends Application {
       sco_table();
     });
 
-    if (user.getExamsize() == 0) {
+    if (user.getExamsize() == 0)
       dataex.setDisable(true);
-    }
+
+    if (!user.isSetOK())
+      newex.setDisable(true);
 
     setting.setOnAction(e -> {
       sub_setting();
@@ -978,13 +980,11 @@ public class Manager extends Application {
 
   void sco_table() {
     tvs = new ArrayList<>();
-    Label des = new Label(user.getName() + " さんのデータベース");
     chart = new Button("グラフ");
     change = new Button("変更");
     tabs = new ArrayList<>();
     tbp = new TabPane();
 
-    des.setFont(new Font(18));
     chart.setFont(new Font(16));
     change.setFont(new Font(16));
 
@@ -1062,7 +1062,6 @@ public class Manager extends Application {
     VBox vb = new VBox(10);
     BorderPane bp = new BorderPane();
 
-    vb.getChildren().add(des);
     vb.getChildren().add(tbp);
 
     vb.setAlignment(Pos.CENTER);
@@ -1209,10 +1208,6 @@ public class Manager extends Application {
   }
 
   void set_chart() {
-    for(int i = 0; i < lns.size(); i++){
-      tabs.get(i).setContent(lns.get(i));
-    }
-
     tabs.stream().forEach(tbp.getTabs()::add);
 
     for (int i = 0; i < tabs.size(); i++) {
@@ -1234,6 +1229,7 @@ public class Manager extends Application {
     items[1] = new Tab("試験");
 
     Label des = new Label("教科の変更");
+    Label lead = new Label();
     Button plus = new Button("教科を追加");
     Button minus = new Button("教科を削除");
     subsave = new Button("保存");
@@ -1285,6 +1281,14 @@ public class Manager extends Application {
     hb.setAlignment(Pos.CENTER);
 
     vb.getChildren().add(des);
+
+    if (!user.isSetOK()) {
+      user.SetOK();
+      lead.setText("まず、あなたの学校に教科と試験を合わせてください。");
+      lead.setFont(new Font(17));
+      vb.getChildren().add(lead);
+    }
+
     vb.getChildren().add(hb);
     vb.getChildren().add(gp);
 
