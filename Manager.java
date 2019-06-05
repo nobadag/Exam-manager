@@ -1229,7 +1229,7 @@ public class Manager extends Application {
     items[1] = new Tab("試験");
 
     Label des = new Label("教科の変更");
-    Label lead = new Label();
+    Label lead = new Label("まず、あなたの学校に教科と試験を合わせてください。");
     Button plus = new Button("教科を追加");
     Button minus = new Button("教科を削除");
     subsave = new Button("保存");
@@ -1284,7 +1284,6 @@ public class Manager extends Application {
 
     if (!user.isSetOK()) {
       user.SetOK();
-      lead.setText("まず、あなたの学校に教科と試験を合わせてください。");
       lead.setFont(new Font(17));
       vb.getChildren().add(lead);
     }
@@ -1551,8 +1550,7 @@ public class Manager extends Application {
 
     whensave.setOnAction(e -> {
       for (int i = 0; i < whentf.size(); i++) {
-        user.changeWhen(i, whentf.get(i).getText());
-        user.changeOmit(i, omittf.get(i).getText());
+        user.changeWhen(i, whentf.get(i).getText(),omittf.get(i).getText());
       }
     });
 
@@ -1562,6 +1560,7 @@ public class Manager extends Application {
   }
 
   void when_updown(String str) {
+    ArrayList<Integer> nexts = new ArrayList<>();
     int val = 0;
     int end = 0;
     int ret = 0;
@@ -1612,9 +1611,14 @@ public class Manager extends Application {
         timg = (ImageView) omitjudge.get(next).getGraphic();
         omitjudge.get(next).setGraphic(omitjudge.get(i).getGraphic());
         omitjudge.get(i).setGraphic(timg);
+
+        nexts.add(next);
       }
     }
 
+    for(Integer n : nexts){
+      whenmark.get(n).setSelected(true);
+    }
   }
 
   void when_change(BorderPane bp, Label des, HBox hb) {

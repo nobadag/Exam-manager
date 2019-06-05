@@ -86,24 +86,25 @@ class User implements Serializable {
   }
 
   public void changeSubName(int index, String n) {
-    subnames.remove(index);
-    subnames.add(index, n);
+    if(index == 0)
+      subnames.clear();
+
+    subnames.add(index,n);
+
   }
 
-  public void changeWhen(int index, String w) {
-    omwhens.replace(omits.get(index), w);
-    whomits.remove(whens.get(index));
-    whomits.put(w, omits.get(index));
-    whens.remove(index);
-    whens.add(index, w);
-  }
+  public void changeWhen(int index, String w,String o) {
+    if(index == 0){
+      whens.clear();
+      omits.clear();
+      whomits.clear();
+      omwhens.clear();
+    }
 
-  public void changeOmit(int index, String o) {
-    whomits.replace(whens.get(index), o);
-    omwhens.remove(omits.get(index));
-    omwhens.put(o, whens.get(index));
-    omits.remove(index);
-    omits.add(index, o);
+    whens.add(index,w);
+    omits.add(index,o);
+    whomits.put(w,o);
+    omwhens.put(o,w);
   }
 
   public void SetOK() {
