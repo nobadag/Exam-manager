@@ -119,18 +119,24 @@ class User implements Serializable {
 class Exam implements Serializable {
   static final long serialVersionUID = 1L;
   private String name;
+  private String omit;
   private ArrayList<String> usesubs = new ArrayList<>();
   private HashMap<String, Subject> subsdata = new HashMap<String, Subject>();
   private int total = 0;
   private float ave = 0;
   private Calendar cal = Calendar.getInstance();
 
-  Exam(String n) {
+  Exam(String n,User u) {
     name = n;
+    omit = u.getWhomits().get(n);
   }
 
   public String getName() {
     return name;
+  }
+
+  public String getOmit() {
+    return omit;
   }
 
   public void addData(String key, Subject data) {

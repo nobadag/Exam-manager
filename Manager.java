@@ -635,7 +635,7 @@ public class Manager extends Application {
       RadioButton t = (RadioButton) sel;
       usewhen = t.getText();
       // Examクラスのオブジェクトを生成
-      exam = new Exam(usewhen);
+      exam = new Exam(usewhen, user);
       // 「OK」を押すと、点数入力画面へ
       count = 0;
       input_sco();
@@ -970,6 +970,7 @@ public class Manager extends Application {
     scp.setHbarPolicy(ScrollBarPolicy.NEVER);
 
     ok5.setOnAction(e -> {
+      count = 0;
       home();
     });
 
@@ -1185,16 +1186,30 @@ public class Manager extends Application {
 
       line.setName("点数");
 
+      ArrayList<String> checker = new ArrayList<>();
+      ArrayList<Integer> counter = new ArrayList<>();
+      int n = 1;
+
       for (int j = 0; j < user.getExamsize(); j++) {
         Exam t = user.getExam(j);
+        String omit = t.getOmit();
+
+        if (checker.contains(omit)) {
+          n = counter.get(checker.indexOf(omit)) + 1;
+        } else {
+          n = 1;
+          checker.add(omit);
+          counter.add(1);
+        }
+
         if (i == 0) {
           linechart.setTitle("平均点の変化");
-          line.getData().add(new XYChart.Data<>(user.getWhomits().get(t.getName()), t.getAverage()));
+          line.getData().add(new XYChart.Data<>(omit + " (" + n + ")", t.getAverage()));
         } else {
           linechart.setTitle(user.getSubNames().get(i - 1) + " の点数の変化");
           if (t.getSubNameAll().contains(user.getSubNames().get(i - 1))) {
-            line.getData().add(new XYChart.Data<>(user.getWhomits().get(t.getName()),
-                t.getSubData(user.getSubNames().get(i - 1)).getScore()));
+            line.getData()
+                .add(new XYChart.Data<>(omit + " (" + n + ")", t.getSubData(user.getSubNames().get(i - 1)).getScore()));
           }
         }
       }
@@ -1550,7 +1565,7 @@ public class Manager extends Application {
 
     whensave.setOnAction(e -> {
       for (int i = 0; i < whentf.size(); i++) {
-        user.changeWhen(i, whentf.get(i).getText(),omittf.get(i).getText());
+        user.changeWhen(i, whentf.get(i).getText(), omittf.get(i).getText());
       }
     });
 
@@ -1616,7 +1631,7 @@ public class Manager extends Application {
       }
     }
 
-    for(Integer n : nexts){
+    for (Integer n : nexts) {
       whenmark.get(n).setSelected(true);
     }
   }
