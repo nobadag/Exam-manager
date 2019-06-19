@@ -20,9 +20,6 @@ import javafx.beans.property.*;
 public class Manager extends Application {
   public Stage stage;
 
-  public final int min = 0;
-  public final int max = 100;
-
   private Scene welcome;
   private Scene make_acc;
   private Scene login_acc;
@@ -90,7 +87,7 @@ public class Manager extends Application {
   private boolean lnok = false;
   private RowSubData row;
 
-  private Tab[] items = new Tab[2];
+  private Tab[] items = new Tab[3];
 
   private Button subsave;
   private ArrayList<TextField> subtf = new ArrayList<>();
@@ -461,7 +458,7 @@ public class Manager extends Application {
     if (user.getExamsize() == 0)
       dataex.setDisable(true);
 
-    if (!user.isSetOK())
+    if (!user.isOK())
       newex.setDisable(true);
 
     setting.setOnAction(e -> {
@@ -740,7 +737,7 @@ public class Manager extends Application {
       // 有効な数値か判定
       try {
         int score = Integer.parseInt(scotf.getText());
-        if (score < min || score > max) {
+        if (score < user.getMin() || score > user.getMax()) {
           // 範囲内かの判定
           check.setText("有効な数値ではありません。");
           check.setGraphic(new ImageView(batsu));
@@ -1242,6 +1239,7 @@ public class Manager extends Application {
 
     items[0] = new Tab("教科");
     items[1] = new Tab("試験");
+    items[2] = new Tab("ユーザー");
 
     Label des = new Label("教科の変更");
     Label lead = new Label("まず、あなたの学校に教科と試験を合わせてください。");
@@ -1297,8 +1295,8 @@ public class Manager extends Application {
 
     vb.getChildren().add(des);
 
-    if (!user.isSetOK()) {
-      user.SetOK();
+    if (!user.isOK()) {
+      user.setOK();
       lead.setFont(new Font(17));
       vb.getChildren().add(lead);
     }
@@ -1570,8 +1568,9 @@ public class Manager extends Application {
     });
 
     upwhen.setOnAction(e -> when_updown("UP"));
-
     downwhen.setOnAction(e -> when_updown("DOWN"));
+
+    user_setting();
   }
 
   void when_updown(String str) {
@@ -1709,6 +1708,43 @@ public class Manager extends Application {
           whensave.setDisable(false);
       }
     }
+  }
+
+  void user_setting() {
+    Label[] contentlb = new Label[2];
+    TextField[] contenttf = new TextField[2];
+
+    GridPane gp = new GridPane();
+    BorderPane bp = new BorderPane();
+
+    contentlb[0] = new Label("点数の上限：");
+    contentlb[1] = new Label("点数の下限：");
+
+    contenttf[0] = new TextField(String.valueOf(user.getMax()));
+    contenttf[1] = new TextField(String.valueOf(user.getMin()));
+
+    for (int i = 0; i < contentlb.length; i++) {
+      contentlb[i].setFont(new Font(17));
+      contentlb[i].setPrefWidth(100);
+
+      contenttf[i].setFont(new Font(17));
+      contenttf[i].setPrefWidth(200);
+      contenttf[i].setAlignment(Pos.CENTER);
+
+      gp.add(contentlb[i], 0, i);
+      gp.add(contenttf[i], 2, i);
+    }
+
+    gp.setAlignment(Pos.CENTER);
+
+    gp.setVgap(10);
+
+    bp.setCenter(gp);
+
+    bp.setPrefHeight(stage.getHeight());
+    bp.setPrefWidth(stage.getWidth());
+
+    items[2].setContent(bp);
   }
 
   void data_write() {

@@ -12,6 +12,8 @@ class User implements Serializable {
   private HashMap<String, String> whomits = new HashMap<String, String>();
   private HashMap<String, String> omwhens = new HashMap<String, String>();
   private boolean set = false;
+  private int max = 100;
+  private int min = 0;
 
   User(String n, String p) {
     name = n;
@@ -86,33 +88,48 @@ class User implements Serializable {
   }
 
   public void changeSubName(int index, String n) {
-    if(index == 0)
+    if (index == 0)
       subnames.clear();
 
-    subnames.add(index,n);
-
+    subnames.add(index, n);
   }
 
-  public void changeWhen(int index, String w,String o) {
-    if(index == 0){
+  public void changeWhen(int index, String w, String o) {
+    if (index == 0) {
       whens.clear();
       omits.clear();
       whomits.clear();
       omwhens.clear();
     }
 
-    whens.add(index,w);
-    omits.add(index,o);
-    whomits.put(w,o);
-    omwhens.put(o,w);
+    whens.add(index, w);
+    omits.add(index, o);
+    whomits.put(w, o);
+    omwhens.put(o, w);
   }
 
-  public void SetOK() {
+  public void setOK() {
     set = true;
   }
 
-  public boolean isSetOK() {
+  public boolean isOK() {
     return set;
+  }
+
+  public void setMax(int m) {
+    max = m;
+  }
+
+  public int getMax() {
+    return max;
+  }
+
+  public void setMin(int m) {
+    min = m;
+  }
+
+  public int getMin() {
+    return min;
   }
 }
 
@@ -126,7 +143,7 @@ class Exam implements Serializable {
   private float ave = 0;
   private Calendar cal = Calendar.getInstance();
 
-  Exam(String n,User u) {
+  Exam(String n, User u) {
     name = n;
     omit = u.getWhomits().get(n);
   }
