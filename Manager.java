@@ -213,9 +213,11 @@ public class Manager extends Application {
     msg1.setFont(new Font(18));
     msg2.setFont(new Font(18));
     actf1.setFont(new Font(15));
+
     pwf1.setPrefWidth(300);
     actf1.setPrefHeight(30);
     pwf1.setPrefHeight(30);
+
     ok.setDisable(true);
 
     actf1.setOnAction(new Inspection_name());
@@ -267,6 +269,8 @@ public class Manager extends Application {
     backbt.setOnAction(e -> {
       welcome();
     });
+
+    actf1.requestFocus();
 
     bp.setTop(toolbar);
 
@@ -375,6 +379,8 @@ public class Manager extends Application {
     backbt.setOnAction(e -> {
       welcome();
     });
+
+    actf2.requestFocus();
 
     bp.setTop(toolbar);
 
@@ -1711,11 +1717,17 @@ public class Manager extends Application {
   }
 
   void user_setting() {
+    Label des = new Label("ユーザー設定");
+    Button save = new Button("保存");
     Label[] contentlb = new Label[2];
     TextField[] contenttf = new TextField[2];
 
+    VBox vb = new VBox(15);
     GridPane gp = new GridPane();
     BorderPane bp = new BorderPane();
+
+    des.setFont(new Font(20));
+    save.setFont(new Font(17));
 
     contentlb[0] = new Label("点数の上限：");
     contentlb[1] = new Label("点数の下限：");
@@ -1736,10 +1748,15 @@ public class Manager extends Application {
     }
 
     gp.setAlignment(Pos.CENTER);
-
     gp.setVgap(10);
 
-    bp.setCenter(gp);
+    vb.getChildren().add(des);
+    vb.getChildren().add(save);
+    vb.getChildren().add(gp);
+
+    vb.setAlignment(Pos.CENTER);
+
+    bp.setCenter(vb);
 
     bp.setPrefHeight(stage.getHeight());
     bp.setPrefWidth(stage.getWidth());
