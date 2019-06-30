@@ -1793,9 +1793,16 @@ public class Manager extends Application {
             contjudge[0].setText("下限値を下回っています。");
             contjudge[0].setGraphic(new ImageView(batsu));
             usersavelock++;
+            usersave.setDisable(true);
           } else {
             contjudge[0].setText("この上限値を使うことができます。");
             contjudge[0].setGraphic(new ImageView(maru));
+
+            if (usersavelock != 0) {
+              usersavelock--;
+              if (usersavelock == 0)
+                usersave.setDisable(false);
+            }
           }
         } else {
           if (Integer.parseInt(contenttf[0].getText()) < value) {
@@ -1805,19 +1812,19 @@ public class Manager extends Application {
           } else {
             contjudge[1].setText("この下限値を使うことができます。");
             contjudge[1].setGraphic(new ImageView(maru));
+
+            if (usersavelock != 0) {
+              usersavelock--;
+              if (usersavelock == 0)
+                usersave.setDisable(false);
+            }
           }
         }
-
-        usersavelock--;
-        if (usersavelock == 0)
-          usersave.setDisable(false);
-        else
-          usersave.setDisable(true);
       } catch (NumberFormatException exp) {
         contjudge[row].setText("数値として読み取ることができません。");
         contjudge[row].setGraphic(new ImageView(batsu));
-        t.setText("");
         usersavelock++;
+        usersave.setDisable(true);
       }
     }
   }
