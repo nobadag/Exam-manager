@@ -93,7 +93,6 @@ public class Manager extends Application {
   private ArrayList<TextField> subtf = new ArrayList<>();
   private ArrayList<Label> subjudge = new ArrayList<>();
   private ArrayList<CheckBox> submark = new ArrayList<>();
-  private int subsavelock = 0;
 
   private Button whensave;
   private ArrayList<TextField> whentf = new ArrayList<>();
@@ -101,12 +100,10 @@ public class Manager extends Application {
   private ArrayList<Label> whenjudge = new ArrayList<>();
   private ArrayList<Label> omitjudge = new ArrayList<>();
   private ArrayList<CheckBox> whenmark = new ArrayList<>();
-  private int whensavelock = 0;
 
   private Button usersave;
   private Label[] contjudge;
   private TextField[] contenttf;
-  private int usersavelock = 0;
 
   public static void main(String[] args) {
     launch(args);
@@ -1394,16 +1391,9 @@ public class Manager extends Application {
       if (name.isEmpty()) {
         subjudge.get(row).setText("この教科名を使うことはできません。");
         subjudge.get(row).setGraphic(new ImageView(batsu));
-
-        subsavelock++;
-        subsave.setDisable(true);
       } else {
         subjudge.get(row).setText("この教科名を使うことができます。");
         subjudge.get(row).setGraphic(new ImageView(maru));
-
-        subsavelock--;
-        if (subsavelock == 0)
-          subsave.setDisable(false);
       }
     }
   }
@@ -1678,16 +1668,9 @@ public class Manager extends Application {
       if (name.isEmpty()) {
         whenjudge.get(row).setText("この試験名を使うことはできません。");
         whenjudge.get(row).setGraphic(new ImageView(batsu));
-
-        whensavelock++;
-        whensave.setDisable(true);
       } else {
         whenjudge.get(row).setText("この試験名を使うことができます。");
         whenjudge.get(row).setGraphic(new ImageView(maru));
-
-        whensavelock--;
-        if (whensavelock == 0)
-          whensave.setDisable(false);
       }
     }
   }
@@ -1703,16 +1686,10 @@ public class Manager extends Application {
       if (name.isEmpty() || name.length() > 4) {
         omitjudge.get(row).setText("この省略名を使うことはできません。");
         omitjudge.get(row).setGraphic(new ImageView(batsu));
-
-        whensavelock++;
         whensave.setDisable(true);
       } else {
         omitjudge.get(row).setText("この省略名を使うことができます。");
         omitjudge.get(row).setGraphic(new ImageView(maru));
-
-        whensavelock--;
-        if (whensavelock == 0)
-          whensave.setDisable(false);
       }
     }
   }
@@ -1792,39 +1769,22 @@ public class Manager extends Application {
           if (Integer.parseInt(contenttf[1].getText()) > value) {
             contjudge[0].setText("下限値を下回っています。");
             contjudge[0].setGraphic(new ImageView(batsu));
-            usersavelock++;
-            usersave.setDisable(true);
           } else {
             contjudge[0].setText("この上限値を使うことができます。");
             contjudge[0].setGraphic(new ImageView(maru));
-
-            if (usersavelock != 0) {
-              usersavelock--;
-              if (usersavelock == 0)
-                usersave.setDisable(false);
-            }
           }
         } else {
           if (Integer.parseInt(contenttf[0].getText()) < value) {
             contjudge[1].setText("上限値を上回っています。");
             contjudge[1].setGraphic(new ImageView(batsu));
-            usersavelock++;
           } else {
             contjudge[1].setText("この下限値を使うことができます。");
             contjudge[1].setGraphic(new ImageView(maru));
-
-            if (usersavelock != 0) {
-              usersavelock--;
-              if (usersavelock == 0)
-                usersave.setDisable(false);
-            }
           }
         }
       } catch (NumberFormatException exp) {
         contjudge[row].setText("数値として読み取ることができません。");
         contjudge[row].setGraphic(new ImageView(batsu));
-        usersavelock++;
-        usersave.setDisable(true);
       }
     }
   }
