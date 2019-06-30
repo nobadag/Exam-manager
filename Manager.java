@@ -103,8 +103,10 @@ public class Manager extends Application {
   private ArrayList<CheckBox> whenmark = new ArrayList<>();
   private int whensavelock = 0;
 
+  private Button usersave;
   private Label[] contjudge;
   private TextField[] contenttf;
+  private int usersavelock = 0;
 
   public static void main(String[] args) {
     launch(args);
@@ -1717,7 +1719,7 @@ public class Manager extends Application {
 
   void user_setting() {
     Label des = new Label("ユーザー設定");
-    Button save = new Button("保存");
+    usersave = new Button("保存");
     Label[] contentlb = new Label[2];
     contenttf = new TextField[2];
     contjudge = new Label[2];
@@ -1727,7 +1729,7 @@ public class Manager extends Application {
     BorderPane bp = new BorderPane();
 
     des.setFont(new Font(20));
-    save.setFont(new Font(17));
+    usersave.setFont(new Font(17));
 
     contentlb[0] = new Label("点数の上限：");
     contentlb[1] = new Label("点数の下限：");
@@ -1757,7 +1759,7 @@ public class Manager extends Application {
     gp.setVgap(10);
 
     vb.getChildren().add(des);
-    vb.getChildren().add(save);
+    vb.getChildren().add(usersave);
     vb.getChildren().add(gp);
 
     vb.setAlignment(Pos.CENTER);
@@ -1768,6 +1770,11 @@ public class Manager extends Application {
     bp.setPrefWidth(stage.getWidth());
 
     items[2].setContent(bp);
+
+    usersave.setOnAction(e -> {
+      user.setMax(Integer.parseInt(contenttf[0].getText()));
+      user.setMin(Integer.parseInt(contenttf[1].getText()));
+    });
   }
 
   class Inspection_MinMax implements EventHandler<ActionEvent> {
@@ -1785,6 +1792,7 @@ public class Manager extends Application {
           if (Integer.parseInt(contenttf[1].getText()) > value) {
             contjudge[0].setText("下限値を下回っています。");
             contjudge[0].setGraphic(new ImageView(batsu));
+            usersavelock++;
           } else {
             contjudge[0].setText("この上限値を使うことができます。");
             contjudge[0].setGraphic(new ImageView(maru));
@@ -1793,15 +1801,23 @@ public class Manager extends Application {
           if (Integer.parseInt(contenttf[0].getText()) < value) {
             contjudge[1].setText("上限値を上回っています。");
             contjudge[1].setGraphic(new ImageView(batsu));
+            usersavelock++;
           } else {
             contjudge[1].setText("この下限値を使うことができます。");
             contjudge[1].setGraphic(new ImageView(maru));
           }
         }
+
+        usersavelock--;
+        if (usersavelock == 0)
+          usersave.setDisable(false);
+        else
+          usersave.setDisable(true);
       } catch (NumberFormatException exp) {
         contjudge[row].setText("数値として読み取ることができません。");
         contjudge[row].setGraphic(new ImageView(batsu));
         t.setText("");
+        usersavelock++;
       }
     }
   }
