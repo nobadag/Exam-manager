@@ -1269,10 +1269,15 @@ public class Manager extends Application {
     minus.setPrefWidth(150);
     subsave.setPrefWidth(150);
 
+    subtf.clear();
+    subjudge.clear();
+    submark.clear();
+
     user.getSubNames().stream().map(TextField::new).forEach(subtf::add);
     Stream.generate(Label::new).limit(user.getSubNames().size()).forEach(subjudge::add);
     Stream.generate(CheckBox::new).limit(user.getSubNames().size()).forEach(submark::add);
 
+    gp = new GridPane();
     for (int i = 0; i < subtf.size(); i++) {
       gp.add(submark.get(i), 0, i);
       gp.add(subtf.get(i), 1, i);
@@ -1445,6 +1450,12 @@ public class Manager extends Application {
     whensave.setPrefWidth(150);
     whensave.setPrefWidth(100);
     whensave.setPrefWidth(100);
+
+    whentf.clear();
+    omittf.clear();
+    whenjudge.clear();
+    omitjudge.clear();
+    whenmark.clear();
 
     user.getWhens().stream().map(TextField::new).forEach(whentf::add);
     user.getOmits().stream().map(TextField::new).forEach(omittf::add);
@@ -1713,6 +1724,8 @@ public class Manager extends Application {
 
     contenttf[0] = new TextField(String.valueOf(user.getMax()));
     contenttf[1] = new TextField(String.valueOf(user.getMin()));
+
+    usersave.setPrefWidth(150);
 
     for (int i = 0; i < contentlb.length; i++) {
       contjudge[i] = new Label();
