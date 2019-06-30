@@ -103,6 +103,9 @@ public class Manager extends Application {
   private ArrayList<CheckBox> whenmark = new ArrayList<>();
   private int whensavelock = 0;
 
+  private Label[] contjudge;
+  private TextField[] contenttf;
+
   public static void main(String[] args) {
     launch(args);
   }
@@ -270,8 +273,6 @@ public class Manager extends Application {
       welcome();
     });
 
-    actf1.requestFocus();
-
     bp.setTop(toolbar);
 
     bp.setCenter(vb);
@@ -379,8 +380,6 @@ public class Manager extends Application {
     backbt.setOnAction(e -> {
       welcome();
     });
-
-    actf2.requestFocus();
 
     bp.setTop(toolbar);
 
@@ -1383,27 +1382,6 @@ public class Manager extends Application {
     when_setting();
   }
 
-  void sub_change(BorderPane bp, Label des, HBox hb) {
-    GridPane newgp = new GridPane();
-    VBox newvb = new VBox(10);
-
-    for (int i = 0; i < subtf.size(); i++) {
-      newgp.add(submark.get(i), 0, i);
-      newgp.add(subtf.get(i), 1, i);
-      newgp.add(subjudge.get(i), 2, i);
-    }
-
-    newgp.setAlignment(Pos.CENTER);
-
-    newvb.getChildren().add(des);
-    newvb.getChildren().add(hb);
-    newvb.getChildren().add(newgp);
-
-    newvb.setAlignment(Pos.CENTER);
-
-    bp.setCenter(newvb);
-  }
-
   class Inspection_subject implements EventHandler<ActionEvent> {
     public void handle(ActionEvent event) {
       TextField t = (TextField) event.getSource();
@@ -1426,6 +1404,27 @@ public class Manager extends Application {
           subsave.setDisable(false);
       }
     }
+  }
+
+  void sub_change(BorderPane bp, Label des, HBox hb) {
+    GridPane newgp = new GridPane();
+    VBox newvb = new VBox(10);
+
+    for (int i = 0; i < subtf.size(); i++) {
+      newgp.add(submark.get(i), 0, i);
+      newgp.add(subtf.get(i), 1, i);
+      newgp.add(subjudge.get(i), 2, i);
+    }
+
+    newgp.setAlignment(Pos.CENTER);
+
+    newvb.getChildren().add(des);
+    newvb.getChildren().add(hb);
+    newvb.getChildren().add(newgp);
+
+    newvb.setAlignment(Pos.CENTER);
+
+    bp.setCenter(newvb);
   }
 
   void when_setting() {
@@ -1720,7 +1719,8 @@ public class Manager extends Application {
     Label des = new Label("ユーザー設定");
     Button save = new Button("保存");
     Label[] contentlb = new Label[2];
-    TextField[] contenttf = new TextField[2];
+    contenttf = new TextField[2];
+    contjudge = new Label[2];
 
     VBox vb = new VBox(15);
     GridPane gp = new GridPane();
@@ -1736,15 +1736,21 @@ public class Manager extends Application {
     contenttf[1] = new TextField(String.valueOf(user.getMin()));
 
     for (int i = 0; i < contentlb.length; i++) {
+      contjudge[i] = new Label();
       contentlb[i].setFont(new Font(17));
       contentlb[i].setPrefWidth(100);
 
       contenttf[i].setFont(new Font(17));
-      contenttf[i].setPrefWidth(200);
+      contenttf[i].setPrefWidth(100);
       contenttf[i].setAlignment(Pos.CENTER);
+      contenttf[i].setOnAction(new Inspection_MinMax());
+
+      contjudge[i].setFont(new Font(17));
+      contjudge[i].setPrefWidth(300);
 
       gp.add(contentlb[i], 0, i);
-      gp.add(contenttf[i], 2, i);
+      gp.add(contenttf[i], 1, i);
+      gp.add(contjudge[i], 2, i);
     }
 
     gp.setAlignment(Pos.CENTER);
@@ -1762,6 +1768,42 @@ public class Manager extends Application {
     bp.setPrefWidth(stage.getWidth());
 
     items[2].setContent(bp);
+  }
+
+  class Inspection_MinMax implements EventHandler<ActionEvent> {
+    public void handle(ActionEvent event) {
+      TextField t = (TextField) event.getSource();
+      String str = t.getText().trim();
+      t.setText(str);
+
+      int row = GridPane.getRowIndex(t);
+
+      try {
+        int value = Integer.parseInt(str);
+
+        if (row == 0) {
+          if (Integer.parseInt(contenttf[1].getText()) > value) {
+            contjudge[0].setText("下限値を下回っています。");
+            contjudge[0].setGraphic(new ImageView(batsu));
+          } else {
+            contjudge[0].setText("この上限値を使うことができます。");
+            contjudge[0].setGraphic(new ImageView(maru));
+          }
+        } else {
+          if (Integer.parseInt(contenttf[0].getText()) < value) {
+            contjudge[1].setText("上限値を上回っています。");
+            contjudge[1].setGraphic(new ImageView(batsu));
+          } else {
+            contjudge[1].setText("この下限値を使うことができます。");
+            contjudge[1].setGraphic(new ImageView(maru));
+          }
+        }
+      } catch (NumberFormatException exp) {
+        contjudge[row].setText("数値として読み取ることができません。");
+        contjudge[row].setGraphic(new ImageView(batsu));
+        t.setText("");
+      }
+    }
   }
 
   void data_write() {
