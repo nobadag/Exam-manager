@@ -279,6 +279,8 @@ public class Manager extends Application {
     make_acc = new Scene(bp);
 
     stage.setScene(make_acc);
+
+    actf1.requestFocus();
   }
 
   class Inspection_name implements EventHandler<ActionEvent> {
@@ -299,6 +301,7 @@ public class Manager extends Application {
           ok.setDisable(false);
         }
         acwrote = true;
+        pwf1.requestFocus();
       }
     }
   }
@@ -387,6 +390,8 @@ public class Manager extends Application {
     login_acc = new Scene(bp);
 
     stage.setScene(login_acc);
+
+    actf2.requestFocus();
   }
 
   class Check_acc implements EventHandler<ActionEvent> {
@@ -395,6 +400,7 @@ public class Manager extends Application {
         msg3.setText("アカウントが見つかりました。");
         msg3.setGraphic(new ImageView(maru));
         data_read();
+        pwf2.requestFocus();
         if (user.getPassword().equals(pwf2.getText())) {
           msg4.setText("パスワードが一致しました。");
           msg4.setGraphic(new ImageView(maru));
@@ -499,9 +505,11 @@ public class Manager extends Application {
     Label des = new Label("教科を選んでください。");
     CheckBox[] subck = new CheckBox[user.getSubNames().size()];
     Button ok2 = new Button("  OK  ");
-    GridPane gp = new GridPane();
 
+    GridPane gp = new GridPane();
     VBox subvb = new VBox(10);
+    BorderPane bp = new BorderPane();
+    ScrollPane scp = new ScrollPane();
 
     des.setFont(new Font(18));
     subvb.getChildren().add(des);
@@ -552,8 +560,6 @@ public class Manager extends Application {
 
     subvb.setAlignment(Pos.CENTER);
 
-    BorderPane bp = new BorderPane();
-
     backbt.setDisable(false);
 
     backbt.setOnAction(e -> {
@@ -564,7 +570,14 @@ public class Manager extends Application {
 
     bp.setCenter(subvb);
 
-    select_sub = new Scene(bp);
+    bp.setPrefHeight(stage.getHeight());
+    bp.setPrefWidth(stage.getWidth());
+
+    scp.setContent(bp);
+
+    scp.setHbarPolicy(ScrollBarPolicy.NEVER);
+
+    select_sub = new Scene(scp);
 
     Stream<CheckBox> t = Arrays.stream(subck);
 
@@ -590,6 +603,7 @@ public class Manager extends Application {
 
     BorderPane bp = new BorderPane();
     VBox vb = new VBox(10);
+    ScrollPane scp = new ScrollPane();
 
     des.setFont(new Font(18));
     vb.getChildren().add(des);
@@ -628,7 +642,14 @@ public class Manager extends Application {
 
     bp.setCenter(vb);
 
-    select_when = new Scene(bp);
+    bp.setPrefHeight(stage.getHeight());
+    bp.setPrefWidth(stage.getWidth());
+
+    scp.setContent(bp);
+
+    scp.setHbarPolicy(ScrollBarPolicy.NEVER);
+
+    select_when = new Scene(scp);
 
     ok3.setOnAction(e -> {
       // どの試験なのか記憶
@@ -734,6 +755,8 @@ public class Manager extends Application {
     input_sco = new Scene(bp);
 
     stage.setScene(input_sco);
+
+    scotf.requestFocus();
   }
 
   class Check_score implements EventHandler<ActionEvent> {
@@ -1031,13 +1054,15 @@ public class Manager extends Application {
       tc4.setPrefWidth(120);
 
       int c = 1;
+      int n = 0;
       for (int j = 0; j < user.getExamsize(); j++) {
         Exam t = user.getExam(j);
         if (i == 0) {
           ovl.add(new RowSubData(c, t.getName(), String.format("%.1f", t.getAverage()), t.getCalendar()));
         } else {
           if (t.getSubNameAll().contains(user.getSubNames().get(i - 1))) {
-            ovl.add(new RowSubData(c, t.getName(), String.valueOf(t.getSubDataInt(i - 1).getScore()), t.getCalendar()));
+            ovl.add(new RowSubData(c, t.getName(), String.valueOf(t.getSubDataInt(n).getScore()), t.getCalendar()));
+            n++;
           } else {
             ovl.add(new RowSubData(c, t.getName(), "", t.getCalendar()));
           }
